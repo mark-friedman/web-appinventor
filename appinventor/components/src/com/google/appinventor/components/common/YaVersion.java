@@ -284,9 +284,11 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 105:
   // - WEB_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 106:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 107:
   // - FORM_COMPONENT_VERSION was incremented to 14.
 
-  public static final int YOUNG_ANDROID_VERSION = 106;
+  public static final int YOUNG_ANDROID_VERSION = 107;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -791,10 +793,14 @@ public class YaVersion {
   public static final int SPINNER_COMPONENT_VERSION = 1;
 
   // For LISTVIEW_COMPONENT_VERSION 1:
-  // -- Initial version.
+  // - Initial version.
   // For LISTVIEW_COMPONENT_VERSION 2:
-  // - Added the Elements property getter
-  public static final int LISTVIEW_COMPONENT_VERSION = 2;
+  // - Added Elements property
+  // For LISTVIEW_COMPONENT_VERSION 3:
+  // - Added BackgroundColor Property
+  // - Added TextColor Property
+
+  public static final int LISTVIEW_COMPONENT_VERSION = 3;
 
   // For YANDEX_COMPONENT_VERSION 1:
   // - Initial version.
@@ -819,11 +825,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.22ai2zx1";
+  public static final String PREFERRED_COMPANION = "2.23ai2zx1";
   public static final String COMPANION_UPDATE_URL = "";
   public static final String COMPANION_UPDATE_URL1 = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.20ai2", "2.20ai2zx1", "2.21ai2", "2.21ai2zx1",
-                                                          "2.22ai2", "2.22ai2zx1" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.22ai2", "2.22ai2zx1", "2.23ai2", "2.23ai2zx1", };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
