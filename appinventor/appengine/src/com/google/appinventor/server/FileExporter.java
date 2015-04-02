@@ -7,9 +7,11 @@
 package com.google.appinventor.server;
 
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.ProjectWebOutputZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
@@ -33,6 +35,42 @@ public interface FileExporter {
    */
   RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target)
       throws IOException;
+
+    /**
+     * Export a particular screen's built html
+     *
+     * @param userId the userId
+     * @param projectId the project id belonging to the userId
+     * @param target the output target platform (required)
+     * @param currentScreen the currentScreen (required)
+     * @return RawFile with the name and content of the exported file
+     * @throws IllegalArgumentException if download request cannot be fulfilled
+     *         (either no output file or too many output files)
+     */
+    RawFile exportProjectOutputFile(String userId, long projectId, String target, String currentScreen)
+            throws IOException;
+
+    /**
+     * Exports project web output files as a zip.
+     *
+     * @param userId the userId
+     * @param projectId the project id belonging to the userId
+     * @param assetFileIds the asset file ids representing referenced files, e.g. image files.
+     * @param zipName the desired name for the zip
+     * @param fatalError set to true to cause missing GCS file to throw exception
+     * @return the zip file, which includes a count of the number of zipped files
+     *         and (indirectly) the name of the file and its contents
+     * @throws IllegalArgumentException if download request cannot be fulfilled
+     *         (no source files)
+     * @throws IOException if files cannot be written
+     */
+
+    ProjectWebOutputZip exportProjectWebOutputZip(String userId,
+                                                  long projectId,
+                                                  ArrayList<String> assetFileIds,
+                                                  String zipName,
+                                                  boolean fatalError) throws IOException;
+
 
   /**
    * Exports the project source files as a zip.

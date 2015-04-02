@@ -34,11 +34,7 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
-import com.google.appinventor.shared.rpc.project.Project;
-import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
-import com.google.appinventor.shared.rpc.project.RawFile;
-import com.google.appinventor.shared.rpc.project.TextFile;
-import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.project.*;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -551,6 +547,181 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return projectId.t;
   }
+
+    /**
+     * Exports project web files as a zip archive
+     * @param userId a user Id (the request is made on behalf of this user)
+     * @param projectId  project ID
+     * @param assetFileIds the asset file ids representing referenced files, e.g. image files.
+     * @param zipName  the name of the zip file
+     * @param fatalError set true to cause missing GCS file to throw exception
+
+     * @return  project with the content as requested by params.
+     * @throws IOException if files cannot be written
+     */
+    @Override
+    public ProjectWebOutputZip exportProjectWebOutputZip(final String userId,
+                                                         final long projectId,
+                                                         final ArrayList<String> assetFileIds,
+                                                         String zipName,
+                                                         final boolean fatalError) throws IOException {
+        final Result<Integer> fileCount = new Result<Integer>();
+        fileCount.t = 0;
+        // We collect up all the file data for the project in a transaction but
+        // then we read the data and write the zip file outside of the transaction
+        // to avoid problems reading blobs in a transaction with the wrong
+        // entity group.
+        final List<FileData> fileData = new ArrayList<FileData>();
+        final Result<String> projectName = new Result<String>();
+        projectName.t = null;
+        String fileName = null;
+
+        ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
+        final ZipOutputStream out = new ZipOutputStream(zipFile);
+
+        try {
+            runJobWithRetries(new JobRetryHelper() {
+                @Override
+                public void run(Objectify datastore) {
+                    Key<ProjectData> projectKey = projectKey(projectId);
+                    boolean foundFiles = false;
+                    for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+                        // Scan for files built for web output
+                        if (fd.role.equals(FileData.RoleEnum.TARGET) &&
+                                fd.fileName.startsWith("build/web/")) {
+
+                            fileData.add(fd);
+                            foundFiles = true;
+                        }
+                        // Look for reference files for web output. e.g. images
+                        else {
+                            for (String assetFileID : assetFileIds) {
+                                if (fd.role.equals(FileData.RoleEnum.SOURCE) &&
+                                        fd.fileName.equalsIgnoreCase(assetFileID)) {
+
+                                    fileData.add(fd);
+                                    foundFiles = true;
+                                }
+                            }
+                        }
+                    }
+                    if (foundFiles) {
+                        ProjectData pd = datastore.find(projectKey);
+                        projectName.t = pd.name;
+                    }
+                }
+            });
+
+            // Process the file contents outside of the job since we can't read
+            // blobs in the job.
+            for (FileData fd : fileData) {
+                fileName = fd.fileName;
+                byte[] data = null;
+                if (fd.isBlob) {
+                    try {
+                        data = getBlobstoreBytes(fd.blobstorePath);
+                    } catch (BlobReadException e) {
+                        throw CrashReport.createAndLogError(LOG, null,
+                                collectProjectErrorInfo(userId, projectId, fileName), e);
+                    }
+                } else if (fd.isGCS) {
+                    try {
+                        int count;
+                        boolean npfHappened = false;
+                        boolean recovered = false;
+                        for (count = 0; count < 5; count++) {
+                            GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
+                            int bytesRead = 0;
+                            int fileSize = 0;
+                            ByteBuffer resultBuffer;
+                            try {
+                                fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+                                resultBuffer = ByteBuffer.allocate(fileSize);
+                                GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+                                try {
+                                    while (bytesRead < fileSize) {
+                                        bytesRead += readChannel.read(resultBuffer);
+                                        if (bytesRead < fileSize) {
+                                            LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                                        }
+                                    }
+                                    recovered = true;
+                                    data = resultBuffer.array();
+                                    break;        // We got the data, break out of the loop!
+                                } finally {
+                                    readChannel.close();
+                                }
+                            } catch (NullPointerException e) {
+                                // This happens if the object in GCS is non-existent, which would happen
+                                // when people uploaded a zero length object. As of this change, we now
+                                // store zero length objects into GCS, but there are plenty of older objects
+                                // that are missing in GCS.
+                                LOG.log(Level.WARNING, "exportProjectFile: NPF recorded for " + fd.gcsName);
+                                npfHappened = true;
+                                resultBuffer = ByteBuffer.allocate(0);
+                                data = resultBuffer.array();
+                            }
+                        }
+
+                        // report out on how things went above
+                        if (npfHappened) {    // We lost at least once
+                            if (recovered) {
+                                LOG.log(Level.WARNING, "recovered from NPF in exportProjectFile filename = " + fd.gcsName +
+                                        " count = " + count);
+                            } else {
+                                LOG.log(Level.WARNING, "FATAL NPF in exportProjectFile filename = " + fd.gcsName);
+                                if (fatalError) {
+                                    throw new IOException("FATAL Error reading file from GCS filename = " + fd.gcsName);
+                                }
+                            }
+                        }
+                    } catch (IOException e) {
+                        throw CrashReport.createAndLogError(LOG, null,
+                                collectProjectErrorInfo(userId, projectId, fileName), e);
+                    }
+                } else {
+                    data = fd.content;
+                }
+                if (data == null) {     // This happens if file creation is interrupted
+                    data = new byte[0];
+                }
+                if (fileName.startsWith("assets/")) {
+                    out.putNextEntry(new ZipEntry(fileName));
+                }
+                else {
+                    out.putNextEntry(new ZipEntry(StorageUtil.basename(fileName)));
+                }
+                out.write(data, 0, data.length);
+                out.closeEntry();
+                fileCount.t++;
+            }
+        } catch (ObjectifyException e) {
+            CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
+            throw new IOException("Reflecting exception for userid " + userId +
+                    " projectId " + projectId + ", original exception " + e.getMessage());
+        } catch (RuntimeException e) {
+            CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName), e);
+            throw new IOException("Reflecting exception for userid " + userId +
+                    " projectId " + projectId + ", original exception " + e.getMessage());
+        }
+
+        if (fileCount.t == 0) {
+            // can't close out since will get a ZipException due to the lack of files
+            throw new IllegalArgumentException("No files to download");
+        }
+        out.close();
+
+        if (zipName == null) {
+            zipName = projectName.t + ".zip";
+        }
+        ProjectWebOutputZip projectWebOutputZip =
+                new ProjectWebOutputZip(zipName, zipFile.toByteArray(), fileCount.t);
+        projectWebOutputZip.setMetadata(projectName.t);
+        return projectWebOutputZip;
+    }
+
 
   /*
    *  Creates and returns a new FileData object with the specified fields.

@@ -283,6 +283,18 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
+    /**
+     * Imitates the method geYail but calls the javascript generator instead.
+     * Last Edit: Feb-27-2015
+     * Last Edit By: rayjl@uw.edu (Raymond Li)
+     */
+    public FileDescriptorWithContent getJavaScript() throws YailGenerationException {
+        return new FileDescriptorWithContent(getProjectId(), yailFileName(),
+                blocksArea.getJavaScript(myFormEditor.encodeFormAsJsonString(),
+                        packageNameFromPath(getFileId())));
+    }
+
+
   private void unloadBlocksEditor() {
     // TODO(sharon): do something about form change listener?
 
@@ -321,7 +333,18 @@ public final class YaBlocksEditor extends FileEditor
     }
   }
 
-  private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
+    // Live Web App Methods Start
+
+
+    public void initWebApp(long projectId){
+        blocksArea.initWebApp(projectId);
+    }
+
+    // Live Web App Methods End
+
+
+
+    private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[3];
     items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree();
     items[1] = form.buildComponentsTree();
@@ -367,6 +390,20 @@ public final class YaBlocksEditor extends FileEditor
   public void onSave() {
     // Nothing to do after blocks are saved.
   }
+
+    protected void sendComponentPropertyChanged(String componentInfo,
+                                                String propertyName, String propertyValue) {
+        blocksArea.doSendComponentPropertyChanged(componentInfo, propertyName, propertyValue);
+    }
+
+    protected void sendComponentAdded(String componentInfo) {
+        blocksArea.doSendComponentAdded(componentInfo);
+    }
+
+    protected void sendComponentRemoved(String componentInfo) {
+        blocksArea.doSendComponentRemoved(componentInfo);
+    }
+
 
   public static String getComponentInfo(String typeName) {
     return COMPONENT_DATABASE.getTypeDescription(typeName);

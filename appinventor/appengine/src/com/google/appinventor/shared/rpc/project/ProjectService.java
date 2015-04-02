@@ -252,7 +252,20 @@ public interface ProjectService extends RemoteService {
   public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException,
       BlocksTruncatedException;
 
-  /**
+
+    /**
+     * Invokes a download html command for the project on the back-end.
+     *
+     * @param projectId  project ID
+     * @param nonce used to access the built project -- random string
+     * @param target  The build target (= web or LiveWebApp)
+     *
+     * @return  results of invoking the command
+     */
+    RpcResult buildDemo(long projectId, String nonce, String target);
+
+
+    /**
    * Invokes a build command for the project on the back-end.
    *
    * @param projectId  project ID

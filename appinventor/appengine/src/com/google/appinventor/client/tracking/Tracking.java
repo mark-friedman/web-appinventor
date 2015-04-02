@@ -31,6 +31,8 @@ public class Tracking {
       "BuildBarcode-YA";
   public static final String PROJECT_ACTION_BUILD_DOWNLOAD_YA = PROJECT_ACTION_PREFIX +
       "BuildDownload-YA";
+  public static final String PROJECT_ACTION_LAUNCH_LIVE_WEB_APP = PROJECT_ACTION_PREFIX +
+      "LaunchLiveWebApp";
   public static final String PROJECT_ACTION_BUILD_YAIL_YA = PROJECT_ACTION_PREFIX +
       "BuildYail-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA = PROJECT_ACTION_PREFIX +
@@ -51,6 +53,8 @@ public class Tracking {
       "RemoveForm-YA";
   public static final String PROJECT_SUBACTION_BUILD_YA = PROJECT_ACTION_PREFIX +
       "Build-Subcommand-YA";
+    public static final String PROJECT_ACTION_BUILD_HTML = PROJECT_ACTION_PREFIX +
+            "Build-WebApp-HTML";
 
   public static final String USER_EVENT = "User";
   public static final String USER_ACTION_PREFIX = "User_";

@@ -24,13 +24,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.NewProjectParameters;
-import com.google.appinventor.shared.rpc.project.Project;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
-import com.google.appinventor.shared.rpc.project.RawFile;
-import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.*;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
@@ -66,9 +60,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -756,5 +749,148 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     DecimalFormat formatter = new DecimalFormat("###.##");
     return formatter.format(input);
   }
+
+    /**
+     * Make a request to built the html files for a web project.
+     * The html files are stored to a target specific project output path;
+     * The client can download the output file by file or via a stored
+     * zip file.
+     *
+     * @param user the User that owns the {@code projectId}.
+     * @param projectId  project id to be built
+     * @param target The build target (= web or LiveWebApp)
+     *
+     * @return an RpcResult reflecting the result of the build
+     */
+    public RpcResult buildWebOutput(User user, long projectId, String target) {
+        boolean isLiveWebAppBuild = target.equalsIgnoreCase("LiveWebApp");
+        String userId = user.getUserId();
+        String projectName = storageIo.getProjectName(userId, projectId);
+        String outputFileDir = BUILD_FOLDER + "/" + target + "/";   // Note: forces a target
+
+        LOG.log(Level.FINE, "Building output, target = " + target);
+
+        // Search storage for project source.
+        // Find the Javascript and JSON files.
+        List<String> screenNames = new ArrayList<String>();
+        Map<String, String> screenJavaScriptFileIds = new HashMap<String, String>();
+        Map<String, String> screenComponentJSONFileIds = new HashMap<String, String>();
+
+        for (String srcFileId : storageIo.getProjectSourceFiles(userId, projectId)) {
+
+            LOG.log(Level.FINE, "Project source file id: " + srcFileId);
+
+            if (StorageUtil.isTextFile(srcFileId)) {
+                // Pare the file id down to just the file name - no path or extension
+                String fileBaseName = StorageUtil.basename(StorageUtil.trimOffExtension(srcFileId));
+                boolean isScreenSourceFile = false;
+
+                // Is this an scm file for a screen (= the component json)
+                if (srcFileId.endsWith(FORM_PROPERTIES_EXTENSION))
+                {
+                    screenComponentJSONFileIds.put(fileBaseName, srcFileId);
+                    isScreenSourceFile = true;
+                }
+                // Is this the generated javascript file (for now, named *.yail)
+                else if (srcFileId.endsWith(YAIL_FILE_EXTENSION))
+                {
+                    screenJavaScriptFileIds.put(fileBaseName, srcFileId);
+                    isScreenSourceFile = true;
+                }
+
+                // Build a list of screen names from the scm and yail files.
+                if (isScreenSourceFile)
+                {
+                    if (!screenNames.contains(fileBaseName))
+                    {
+                        LOG.log(Level.FINE, "...adding screen: " + fileBaseName);
+                        screenNames.add(fileBaseName);
+                    }
+                }
+            }
+        }
+
+        // Delete any previously built files for this target.
+        List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
+        for (String buildOutputFile : buildOutputFiles) {
+            LOG.log(Level.FINER, "...found previous output file = " + buildOutputFile);
+            if (buildOutputFile.contains(outputFileDir)) {
+                LOG.log(Level.FINER, "...removing previous output file = " + buildOutputFile);
+                storageIo.deleteFile(userId, projectId, buildOutputFile);
+            }
+        }
+
+        // For each screen, put the html file together from the component JSON and JavaScript
+        ArrayList<String> assetFileIds = new ArrayList<String>();
+        try {
+
+            for (String screenName : screenNames)
+            {
+                // Retrieve the file ids for this screen's source.
+                String screenJavaScriptFileId = screenJavaScriptFileIds.get(screenName);
+                String screenComponentJSONFileId = screenComponentJSONFileIds.get(screenName);
+
+                // Name the html output based on the screen nam (just like the source)
+                String builtHtmlFileId = outputFileDir + screenName + ".html";
+
+                // Get the javascript and json for this screen
+                String screenJavaScript = storageIo.downloadFile(userId, projectId, screenJavaScriptFileId, StorageUtil.DEFAULT_CHARSET);
+                LOG.log(Level.FINEST, screenJavaScriptFileId + ":  " + screenJavaScript);
+
+                String screenComponentJSON = storageIo.downloadFile(userId, projectId, screenComponentJSONFileId, StorageUtil.DEFAULT_CHARSET);
+                LOG.log(Level.FINEST, screenComponentJSONFileId + ":  " + screenComponentJSON);
+
+                // Build the html for this screen
+                StitchResult screenResult = Shell.stitchBuildHTML(projectName, screenName, screenJavaScript, screenComponentJSON, isLiveWebAppBuild, "assets/");
+                LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());
+                assetFileIds.addAll(screenResult.assetFiles);
+
+                LOG.log(Level.FINEST, "Built " + builtHtmlFileId + " : " + screenResult.html);
+
+                // Save built file (add the id as an output file, then add the contents for that id)
+                LOG.log(Level.FINE, "Storing web output as " + builtHtmlFileId);
+                storageIo.addOutputFilesToProject(userId, projectId, builtHtmlFileId);
+                storageIo.uploadFileForce(projectId, builtHtmlFileId, userId, screenResult.html, StorageUtil.DEFAULT_CHARSET);
+            }
+        } catch (JSONException e) {
+
+            // Could not turn component json into html - return error.
+            ///TODO
+            //CrashReport.createAndLogError(LOG, null, buildErrorMsg("", userId, projectId, target), e);
+            LOG.log(Level.FINE, "JSONException details:", e);
+
+            return new RpcResult(false, "", e.getMessage());
+        }
+
+        // Create zip file of html and associated asset files for the build.
+        // e.g. referenced image files.
+        if (!isLiveWebAppBuild) {
+            ProjectWebOutputZip zipFile = null;
+            try {
+                FileExporter fileExporter = new FileExporterImpl();
+                if (assetFileIds.size() > 0)
+                {
+                    LOG.log(Level.INFO, "..first asset file (out of " + assetFileIds.size() + ") = " + assetFileIds.get(0));
+                }
+                zipFile = fileExporter.exportProjectWebOutputZip(userId, projectId, assetFileIds, projectName + ".zip", true);
+
+                byte[] fileBytes = zipFile.getContent();
+
+                String filePath = outputFileDir + projectName + ".zip";
+                LOG.log(Level.FINE, "Saving build output file: " + filePath);
+                storageIo.addOutputFilesToProject(userId, projectId, filePath);
+                storageIo.uploadRawFileForce(projectId, filePath, userId, fileBytes);
+
+            } catch (IOException e) {
+                throw CrashReport.createAndLogError(LOG, null, "IOException when building web output zip file", e);
+            }
+        }
+
+        // Html files are built and stored - return to client.
+        // File can be retrieved via DownloadServlet
+        // Return success for build result
+        return new RpcResult(true, "Built web output for " + projectName, "");
+    }
+
 }
 

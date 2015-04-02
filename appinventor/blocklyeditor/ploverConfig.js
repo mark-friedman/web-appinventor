@@ -98,22 +98,54 @@
     './src/blocks/components.js',
 
     //generator files
-    "./src/generators/yail.js",
-    "./src/generators/yail/componentblock.js",
-    "./src/generators/yail/lists.js",
-    "./src/generators/yail/math.js",
-    "./src/generators/yail/control.js",
-    "./src/generators/yail/logic.js",
-    "./src/generators/yail/text.js",
-    "./src/generators/yail/colors.js",
-    "./src/generators/yail/variables.js",
-    "./src/generators/yail/procedures.js",
+//    "./src/generators/yail.js",
+//    "./src/generators/yail/componentblock.js",
+//    "./src/generators/yail/lists.js",
+//    "./src/generators/yail/math.js",
+//    "./src/generators/yail/control.js",
+//    "./src/generators/yail/logic.js",
+//    "./src/generators/yail/text.js",
+//    "./src/generators/yail/colors.js",
+//    "./src/generators/yail/variables.js",
+//    "./src/generators/yail/procedures.js",
+
+
+    // new javascript generator files
+    "./src/generators/javascript.js",
+    "./src/generators/javascript/componentblock.js",
+    "./src/generators/javascript/lists.js",
+    "./src/generators/javascript/math.js",
+    "./src/generators/javascript/control.js",
+    "./src/generators/javascript/logic.js",
+    "./src/generators/javascript/text.js",
+    "./src/generators/javascript/colors.js",
+    "./src/generators/javascript/variables.js",
+    "./src/generators/javascript/procedures.js",
+
 
     //versioning files
     "./src/versioning/017_blocksOverhaul.js",
 
     // Repl
-    "./src/replmgr.js"
+    "./src/replmgr.js",
+
+        // LiveWebApp
+    "./src/livewebapp/livewebapp-client.js",
+    "./src/livewebapp/generator/component-js-generator.js",
+    "./src/livewebapp/generator/components/button.js",
+      "./src/livewebapp/generator/components/checkBox.js",
+      "./src/livewebapp/generator/components/datePicker.js",
+      "./src/livewebapp/generator/components/label.js",
+      "./src/livewebapp/generator/components/listView.js",
+      "./src/livewebapp/generator/components/passwordBox.js",
+      "./src/livewebapp/generator/components/textBox.js",
+      "./src/livewebapp/generator/components/listPicker.js",
+      "./src/livewebapp/generator/components/timePicker.js",
+      "./src/livewebapp/generator/components/image.js",
+      "./src/livewebapp/generator/components/range.js",
+      "./src/livewebapp/generator/components/video.js",
+      "./src/livewebapp/generator/components/audio.js",
+      "./src/livewebapp/generator/components/imagePicker.js",
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library

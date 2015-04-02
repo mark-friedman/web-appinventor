@@ -294,4 +294,18 @@ public abstract class CommonProjectService {
    *           -1: Build is not yet done.
    */
   public abstract RpcResult getBuildResult(User user, long projectId, String target);
+
+    /**
+     * Gets the result of a web app build command for the project.
+     *
+     * @param user the User that owns the {@code projectId}.
+     * @param projectId  project id to be built
+     * @param target  build target (required, web or LiveWebApp)
+     * @return  build results.  The following values may be in RpcResult.result:
+     *            0: Build is done and was successful
+     *            1: Build is done and was unsuccessful
+     *           -1: Build is not yet done.
+     */
+    public abstract RpcResult buildWebOutput(User user, long projectId, String target);
+
 }

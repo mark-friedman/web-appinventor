@@ -387,6 +387,7 @@
       <jvmarg line="${XstartOnFirstThread}"/>
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
+      <arg value="-strict"/>
       <arg line="-logLevel INFO -style pretty"/>
       <arg value="com.google.appinventor.YaClient"/>
     </java>

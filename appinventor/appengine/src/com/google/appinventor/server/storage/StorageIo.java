@@ -11,10 +11,12 @@ import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.ProjectWebOutputZip;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -493,6 +495,23 @@ public interface StorageIo {
    * @return  motd
    */
   Motd getCurrentMotd();
+
+    /**
+     *  Exports project web files as a zip archive
+     * @param userId a user Id (the request is made on behalf of this user)
+     * @param projectId  project ID
+     * @param assetFileIds the asset file ids representing referenced files, e.g. image files.
+     * @param zipName  the name of the zip file, if a specific one is desired
+     * @param fatalError set true to cause missing GCS file to throw exception
+     *
+     * @return  project with the content as requested by params.
+     * @throws IOException if files cannot be written
+     */
+    ProjectWebOutputZip exportProjectWebOutputZip(String userId,
+                                                  long projectId,
+                                                  ArrayList<String> assetFileIds,
+                                                  String zipName,
+                                                  boolean fatalError) throws IOException;
 
   /**
    *  Exports project files as a zip archive

@@ -54,7 +54,12 @@ public interface OdeMessages extends Messages {
   @Description("Text on Toggle Warning Button")
   String showWarnings();
 
-  @DefaultMessage("Hide Warnings")
+    @DefaultMessage("Live Web App")
+    @Description("Live Web App option")
+    String webAppMenuItem();
+
+
+    @DefaultMessage("Hide Warnings")
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 

@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.shared.rpc.project.ProjectWebOutputZip;
 import com.google.common.base.Strings;
 import com.google.appinventor.server.storage.ObjectifyStorageIo;
 import com.google.appinventor.server.storage.StorageIo;
@@ -56,6 +57,59 @@ public final class FileExporterImpl implements FileExporter {
 
     throw new IllegalArgumentException("No files to download");
   }
+
+    /**
+     * Export a particular screen's built html
+     *
+     * @param userId the userId
+     * @param projectId the project id belonging to the userId
+     * @param target the output target platform, or null
+     * @param currentScreen the current screen
+     * @return RawFile with the name and content of the exported file
+     * @throws IllegalArgumentException if download request cannot be fulfilled
+     *         (either no output file or too many output files)
+     */
+    @Override
+    public RawFile exportProjectOutputFile(String userId, long projectId, String target, String currentScreen)
+            throws IOException {
+
+        String currentScreenHtmlFileId = "build/" + target + "/" + currentScreen;
+
+        byte[] content = storageIo.downloadRawFile(userId, projectId, currentScreenHtmlFileId);
+        return new RawFile(StorageUtil.basename(currentScreenHtmlFileId), content);
+    }
+
+
+
+    /**
+     * Exports project web output files as a zip.
+     *
+     * @param userId the userId
+     * @param projectId the project id belonging to the userId
+     * @param assetFileIds the asset file ids representing referenced files, e.g. image files.
+     * @param zipName the desired name for the zip
+     * @param fatalError set to true to cause missing GCS file to throw exception
+     * @return the zip file, which includes a count of the number of zipped files
+     *         and (indirectly) the name of the file and its contents
+     * @throws IllegalArgumentException if download request cannot be fulfilled
+     *         (no source files)
+     * @throws IOException if files cannot be written
+     */
+
+    @Override
+    public ProjectWebOutputZip exportProjectWebOutputZip(String userId,
+                                                         long projectId,
+                                                         ArrayList<String> assetFileIds,
+                                                         String zipName,
+                                                         boolean fatalError) throws IOException {
+        // bundle project output files as a zip
+        if (storageIo instanceof ObjectifyStorageIo) {
+            return ((ObjectifyStorageIo)storageIo).exportProjectWebOutputZip(userId, projectId, assetFileIds, zipName, fatalError);
+        } else {
+            throw new IllegalArgumentException("Objectify only");
+        }
+    }
+
 
   @Override
   public ProjectSourceZip exportProjectSourceZip(String userId, long projectId,

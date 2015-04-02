@@ -10,15 +10,7 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
-import com.google.appinventor.client.explorer.commands.BuildCommand;
-import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
-import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
-import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
-import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
-import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
-import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
+import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
@@ -90,6 +82,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
+  private static final String WIDGET_NAME_WEB_APP_BUTTON = "Live Web App";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
   private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_PROJECT = "Project";
@@ -171,6 +164,8 @@ public class TopToolbar extends Composite {
         MESSAGES.emulatorMenuItem(), new EmulatorAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),
         new UsbAction()));
+      connectItems.add(new DropDownItem(WIDGET_NAME_WEB_APP_BUTTON, MESSAGES.webAppMenuItem(),
+              new WebAppAction()));
     connectItems.add(null);
     connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnectionsMenuItem(),
         new ResetAction()));
@@ -549,6 +544,52 @@ public class TopToolbar extends Composite {
     }
   }
 
+    /**
+     *
+     * Build and download html for a web app project
+     *
+     */
+    public class HTMLOutputAction implements Command {
+        @Override
+        public void execute() {
+            ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+            if (projectRootNode != null) {
+                //String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+                String target = "web";    // TODO: We need a new type of project service and project node.
+                ChainableCommand cmd = new SaveAllEditorsCommand(
+                        new GenerateJavaScriptCommand(
+                                new BuildWebCommand(target,
+                                        new DownloadWebOutputCommand(target))));
+//	        updateBuildButton(true);
+                cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
+                        new Command() {
+                            @Override
+                            public void execute() {
+//	                updateBuildButton(false);
+                            }
+                        });
+            }
+        }
+    }
+
+
+    private class WebAppAction implements Command {
+
+        @Override
+        public void execute() {
+            final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+            if (projectRootNode != null) {
+
+                ChainableCommand cmd = new SaveAllEditorsCommand(
+                        new GenerateJavaScriptCommand(
+                                new BuildWebCommand("LiveWebApp",
+                                        new LaunchLiveWebAppCommand(null))));
+
+                cmd.startExecuteChain(Tracking.PROJECT_ACTION_LAUNCH_LIVE_WEB_APP, projectRootNode);
+            }
+        }
+    }
+
   private static class DownloadKeystoreAction implements Command {
     @Override
     public void execute() {
@@ -613,6 +654,30 @@ public class TopToolbar extends Composite {
           });
     }
   }
+
+    /**
+     * Implements the action to generate Javascript for the current project.
+     * The intention is that this will be helpful for debugging during development,
+     * and will most likely be disabled in the production system.
+     */
+    private class GenerateJavaScriptAction implements Command {
+        @Override
+        public void execute() {
+            ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+            if (projectRootNode != null) {
+                ChainableCommand cmd = new SaveAllEditorsCommand(new GenerateJavaScriptCommand(null));
+                //updateBuildButton(true);
+                cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_YAIL_YA, projectRootNode,
+                        new Command() {
+                            @Override
+                            public void execute() {
+                                //updateBuildButton(false);
+                            }
+                        });
+            }
+        }
+    }
+
 
   /**
    *  Made changes to the now Projects menu made name changes to the menu items

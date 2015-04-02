@@ -272,52 +272,77 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return formNode.isScreen1();
   }
 
-  // FormChangeListener implementation
 
-  @Override
-  public void onComponentPropertyChanged(MockComponent component,
-      String propertyName, String propertyValue) {
-    if (loadComplete) {
-      // If the property isn't actually persisted to the .scm file, we don't need to do anything.
-      if (component.isPropertyPersisted(propertyName)) {
-        Ode.getInstance().getEditorManager().scheduleAutoSave(this);
-        updatePhone();          // Push changes to the phone if it is connected
-      }
-    } else {
-      OdeLog.elog("onComponentPropertyChanged called when loadComplete is false");
+    // FormChangeListener publish methods
+    protected String encodeComponentAsJsonString(MockComponent component) {
+        StringBuilder sb = new StringBuilder();
+        encodeComponentProperties(component, sb);
+        return sb.toString();
     }
-  }
 
-  @Override
-  public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
-    if (loadComplete) {
-      if (permanentlyDeleted) {
-        onFormStructureChange();
-      }
-    } else {
-      OdeLog.elog("onComponentRemoved called when loadComplete is false");
+    protected YaBlocksEditor getBlocksEditor() {
+        YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+        return yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
     }
-  }
 
-  @Override
-  public void onComponentAdded(MockComponent component) {
-    if (loadComplete) {
-      onFormStructureChange();
-    } else {
-      OdeLog.elog("onComponentAdded called when loadComplete is false");
+    // FormChangeListener implementation
+    @Override
+    public void onComponentPropertyChanged(MockComponent component,
+                                           String propertyName, String propertyValue) {
+        if (loadComplete) {
+            String componentInfo = encodeComponentAsJsonString(component);
+            OdeLog.log("====== onComponentPropertyChanged, properties: " + componentInfo +
+                    " propertyName: " + propertyName + " propertyValue: " + propertyValue);
+            // If the property isn't actually persisted to the .scm file, we don't need to do anything.
+            if (component.isPropertyPersisted(propertyName)) {
+                Ode.getInstance().getEditorManager().scheduleAutoSave(this);
+                getBlocksEditor().sendComponentPropertyChanged(componentInfo, propertyName, propertyValue);
+                updatePhone();          // Push changes to the phone if it is connected
+            }
+        } else {
+            OdeLog.elog("onComponentPropertyChanged called when loadComplete is false");
+        }
     }
-  }
 
-  @Override
-  public void onComponentRenamed(MockComponent component, String oldName) {
-    if (loadComplete) {
-      onFormStructureChange();
-      updatePropertiesPanel(component);
-    } else {
-      OdeLog.elog("onComponentRenamed called when loadComplete is false");
+    @Override
+    public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
+        if (loadComplete) {
+            if (permanentlyDeleted) {
+                OdeLog.log("====== onComponentRemoved, properties: " + encodeComponentAsJsonString(component) +
+                        " permanentlyDeleted: " + permanentlyDeleted);
+                String componentInfo = encodeComponentAsJsonString(component);
+                getBlocksEditor().sendComponentRemoved(componentInfo);
+                onFormStructureChange();
+            }
+        } else {
+            OdeLog.elog("onComponentRemoved called when loadComplete is false");
+        }
     }
-  }
 
+    @Override
+    public void onComponentAdded(MockComponent component) {
+        if (loadComplete) {
+            String componentInfo = encodeComponentAsJsonString(component);
+            OdeLog.log("====== onComponentAdded, ComponentInfo: " + componentInfo);
+            getBlocksEditor().sendComponentAdded(componentInfo);
+            onFormStructureChange();
+        } else {
+            OdeLog.elog("onComponentAdded called when loadComplete is false");
+        }
+    }
+
+    @Override
+    public void onComponentRenamed(MockComponent component, String oldName) {
+        if (loadComplete) {
+            String componentInfo = encodeComponentAsJsonString(component);
+            OdeLog.log("====== onComponentRenamed, properties: " + componentInfo + " oldName: "
+                    + oldName);
+            onFormStructureChange();
+            updatePropertiesPanel(component);
+        } else {
+            OdeLog.elog("onComponentRenamed called when loadComplete is false");
+        }
+    }
   @Override
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     if (loadComplete) {

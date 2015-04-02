@@ -19,6 +19,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.YaVersion;
 
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.common.collect.Maps;
 
 import com.google.gwt.core.client.JavaScriptException;
@@ -144,6 +145,15 @@ public class BlocklyPanel extends HTMLPanel {
       addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
     }
   }
+
+    //live edit methods start
+
+    public void initWebApp(long projectId){
+        String[] formNameSections = formName.split("_");
+        initWebApp(formName, ServerLayout.genFullWebAppLaunchPath(projectId, formNameSections[1] + ".html"));
+    }
+
+    //live edit methods end
 
   /*
    * Initialize the blocks area so that it can be updated as components are
@@ -346,6 +356,24 @@ public class BlocklyPanel extends HTMLPanel {
           " and name " + oldName);
     }
   }
+
+
+    /**
+     * Imitates the method getYail but will call the native javascript generator method instead.
+     * The methods header is copied below for convenience.
+     * A new exception will need to be written to catch faulty generated code.
+     *
+     * Last Edit: Feb-27-2015
+     * Last Edit By: rayjl@uw.edu (Raymond Li)
+     *
+     * Get JavaScript code for current blocks workspace
+     *
+     * @return the javascript code as a String
+     */
+    public String getJavaScript(String formJson, String packageName) {
+        return doGetJavaScript(formName, formJson, packageName);
+    }
+
 
   /**
    * Show the drawer for component with the specified instance name
@@ -815,6 +843,46 @@ public class BlocklyPanel extends HTMLPanel {
                           // the iframe finishes loading
   }-*/;
 
+
+
+    /**
+     * Native javascript method written to generate javascript code from the blockly workspace.
+     * Last Edit: Feb-27-2015
+     * Last Edit By: rayjl@uw.edu (Raymond Li)
+     */
+    public static native String doGetJavaScript(String formName, String formJson, String packageName) /*-{
+    var code = $wnd.Blocklies[formName].JavaScript.getFormJavaScript(formJson, packageName);
+    return code;
+  }-*/;
+
+
+
+    // LiveWebApp methods start
+
+    public static native void initWebApp(String formName,String url) /*-{
+    $wnd.console.log("about to init live WebApp");
+    $wnd.liveWebAppClient.initLiveWebApp(url);
+    $wnd.console.log("completed init live WebApp");
+  }-*/;
+    public static native void doSendComponentPropertyChanged(String componentInfo, String propertyName,
+                                                             String propertyValue) /*-{
+    $wnd.liveWebAppClient.updateLiveWebAppComponent(componentInfo, propertyName, propertyValue);
+  }-*/;
+
+    public static native void doSendComponentAdded(String componentInfo) /*-{
+    $wnd.liveWebAppClient.addLiveWebAppComponent(componentInfo);
+  }-*/;
+
+    public static native void doSendComponentRemoved(String componentInfo) /*-{
+    $wnd.liveWebAppClient.removeLiveWebAppComponent(componentInfo);
+  }-*/;
+    public static native boolean checkLiveEditWindowOpen()/*-{
+		  return $wnd.liveWebAppClient.checkLiveEditOpen();
+		}-*/;
+    // LiveWebApp methods end
+
+
+
   private static native void doAddComponent(String formName, String typeDescription,
                                             String instanceName, String uid) /*-{
     $wnd.Blocklies[formName].Component.add(instanceName, uid);
@@ -876,6 +944,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doSendJson(String formName, String formJson, String packageName) /*-{
     $wnd.Blocklies[formName].ReplMgr.sendFormData(formJson, packageName);
+    $wnd.liveWebAppClient.sendDesignerData(formJson);
   }-*/;
 
   public static native void doResetYail(String formName) /*-{

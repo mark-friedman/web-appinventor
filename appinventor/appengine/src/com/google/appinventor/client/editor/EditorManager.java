@@ -11,11 +11,15 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
+import com.google.appinventor.client.explorer.commands.BuildWebCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.project.ProjectSettings;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
@@ -45,6 +49,9 @@ public final class EditorManager {
   private static final int AUTO_SAVE_IDLE_TIMEOUT = 5000;
   // Currently set to 5 seconds. Note: the GWT code as a ClosingHandler
   // that will perform a save when the user closes the window.
+
+    // target for building live webapp
+    private static final String TARGET_LIVE_WEBAPP = "LiveWebApp";
 
   // Timeout (in ms) after which changed content is auto-saved even if the user
   // continued typing.
@@ -118,6 +125,69 @@ public final class EditorManager {
     }
     return projectEditor;
   }
+
+
+    /**
+     * Imitates generateYailForBlocksEditor but will call the JavaScript generator instead.
+     * Header is copied for convenience.
+     *
+     * For each block editor (screen) in the current project, generate and save javascript code for the
+     * blocks.
+     *
+     * Last Edit: Feb-27-2015
+     * Last Edit By: rayjl@uw.edu (Raymond Li)
+     *
+     * @param successCommand  optional command to be executed if yail generation and saving succeeds.
+     * @param failureCommand  optional command to be executed if yail generation and saving fails.
+     */
+    public void generateJavaScriptForBlocksEditors(final Command successCommand,
+                                                   final Command failureCommand) {
+        List<FileDescriptorWithContent> JSFiles =  new ArrayList<FileDescriptorWithContent>();
+        long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+        for (long projectId : openProjectEditors.keySet()) {
+            if (projectId == currentProjectId) {
+                // Generate yail for each blocks editor in this project and add it to the list of
+                // yail files. If an error occurs we stop the generation process, report the error,
+                // and return without executing nextCommand.
+                ProjectEditor projectEditor = openProjectEditors.get(projectId);
+                for (FileEditor fileEditor : projectEditor.getOpenFileEditors()) {
+                    if (fileEditor instanceof YaBlocksEditor) {
+                        YaBlocksEditor yaBlocksEditor = (YaBlocksEditor) fileEditor;
+                        try {
+                            JSFiles.add(yaBlocksEditor.getJavaScript());
+                        } catch (YailGenerationException e) {
+                            ErrorReporter.reportInfo(MESSAGES.yailGenerationError(e.getFormName(),
+                                    e.getMessage()));
+                            if (failureCommand != null) {
+                                failureCommand.execute();
+                            }
+                            return;
+                        }
+                    }
+                }
+                break;
+            }
+        }
+        Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+                JSFiles,
+                new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
+                    @Override
+                    public void onSuccess(Long date) {
+                        if (successCommand != null) {
+                            successCommand.execute();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable caught) {
+                        super.onFailure(caught);
+                        if (failureCommand != null) {
+                            failureCommand.execute();
+                        }
+                    }
+                });
+    }
+
 
   /**
    * Gets the open project editor of the given project ID.
@@ -279,8 +349,25 @@ public final class EditorManager {
     for (ProjectSettings projectSettings : projectSettingsToSave) {
       projectSettings.saveSettings(callAfterSavingCommand);
     }
+      if(BlocklyPanel.checkLiveEditWindowOpen()){
+          buildHTML();
+      }
   }
-  
+    /**
+     * Saving files related to Live Web App.
+     * This method build HTML files after every incremental change.
+     */
+    public void buildHTML(){
+        Command SaveCommand = new Command() {    public void execute() {
+            final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+            if (projectRootNode != null) {
+                ChainableCommand cmd = new BuildWebCommand(TARGET_LIVE_WEBAPP,null);
+                cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
+            }
+        }
+        };
+        SaveCommand.execute();
+    }
   /**
    * For each block editor (screen) in the current project, generate and save yail code for the 
    * blocks.

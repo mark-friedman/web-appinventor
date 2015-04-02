@@ -480,6 +480,24 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return date;
   }
 
+    /**
+     * Invokes a download html command for the project on the back-end.
+     *
+     * @param projectId  project ID
+     * @param nonce used to access the built project -- random string
+     * @param target  The build target (= web or LiveWebApp)
+     *
+     * @return  results of invoking the command
+     */
+    @Override
+    public RpcResult buildDemo(long projectId, String nonce, String target){
+        // Dispatch
+        final String userId = userInfoProvider.getUserId();
+        return getProjectRpcImpl(userId, projectId).buildWebOutput(
+                userInfoProvider.getUser(), projectId, target);
+    }
+
+
   /**
    * Invokes a build command for the project on the back-end.
    *
