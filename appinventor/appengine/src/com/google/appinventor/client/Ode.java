@@ -122,6 +122,7 @@ public class Ode implements EntryPoint {
   // I18n messages
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
+
   /**
    * The base URL for App Inventor documentation.
    */

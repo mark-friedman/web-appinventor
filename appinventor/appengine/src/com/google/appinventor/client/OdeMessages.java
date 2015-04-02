@@ -18,6 +18,15 @@ import com.google.gwt.i18n.client.Messages;
 public interface OdeMessages extends Messages {
   // Used in multiple files
 
+    @DefaultMessage("Generate JavaScript")
+    @Description("Label of the cascade item for generating JavaScript for a project")
+    String toJavaScript();
+
+    //Build
+    @DefaultMessage("Build HTML Output")
+    @Description("Build HTML output files")
+    String buildHTMLOutputMenuItem();
+
   @DefaultMessage("Cancel")
   @Description("Text on \"Cancel\" button.")
   String cancelButton();
