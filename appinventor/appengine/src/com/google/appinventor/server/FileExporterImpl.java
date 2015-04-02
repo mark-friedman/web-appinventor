@@ -48,12 +48,21 @@ public final class FileExporterImpl implements FileExporter {
     //   build/Android/build.err
     // There should never be more than one .apk file.
 
-    for (String fileName : files) {
-      if (fileName.endsWith(".apk")) {
-        byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
-        return new RawFile(StorageUtil.basename(fileName), content);
+
+      for (String fileName : files) {
+
+          // Output zip for a web project, apk otherwise
+          if (target.equalsIgnoreCase("web") && fileName.endsWith(".zip"))
+          {
+              byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
+              return new RawFile(StorageUtil.basename(fileName), content);
+          }
+          else if (fileName.endsWith(".apk")) {
+              byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
+              return new RawFile(StorageUtil.basename(fileName), content);
+          }
       }
-    }
+
 
     throw new IllegalArgumentException("No files to download");
   }
