@@ -18,15 +18,9 @@ import com.google.gwt.i18n.client.Messages;
 public interface OdeMessages extends Messages {
   // Used in multiple files
 
-    @DefaultMessage("Generate JavaScript")
-    @Description("Label of the cascade item for generating JavaScript for a project")
-    String toJavaScript();
-
-    //Build
-    
-    @DefaultMessage("Build")
-    @Description("Build HTML output files")
-    String buildHTMLOutputMenuItem();
+  @DefaultMessage("Generate JavaScript")
+  @Description("Label of the cascade item for generating JavaScript for a project")
+  String toJavaScript();
 
   @DefaultMessage("Cancel")
   @Description("Text on \"Cancel\" button.")
