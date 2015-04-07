@@ -365,7 +365,7 @@ public class TopToolbar extends Composite {
         String target = "web";
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateJavaScriptCommand(
-                new BuildWebCommand(target, ShowBarcodeCommand(target))));
+                new BuildWebCommand(target, new ShowBarcodeCommand(target))));
 //        updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
