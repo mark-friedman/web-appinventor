@@ -37,44 +37,60 @@ Blockly.CheckBoxJsGenerator.setProperties = function(component, propName, propVa
     switch(propName) {
         case "FontBold":
             if(propValue == "False"){
-                return "document.getElementById(\"" + component.$Name + "\").style.innerHTML.fontWeight = \"normal\";";
+                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontWeight = \"normal\";";
             }else{
-                return "document.getElementById(\"" + component.$Name + "\").style.innerHTML.fontWeight = \"bold\";";
+                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontWeight = \"bold\";";
             }
         case "FontItalic":
             if(propValue == "False"){
-                return "document.getElementById(\"" + component.$Name + "\").style.fontStyle = \"normal\";";
+                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontStyle = \"normal\";";
             }else{
-                return "document.getElementById(\"" + component.$Name + "\").style.fontStyle = \"italic\";";
+                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontStyle = \"italic\";";
             }
         case "FontSize":
-            return "document.getElementById(\"" + component.$Name + "\").style.fontSize = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontSize = \"" +
                 Math.round(propValue) +"pt\";";
         case "FontTypeface":
-            return "document.getElementById(\"" + component.$Name + "\").style.fontFamily = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontFamily = \"" +
                 this.getFontType(propValue) + "\";";
         case "Text":
-            return "";
-            //return "document.getElementById(\"" + component.$Name + "\").innerHTML = \"" + propValue + "\";";
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.textContent=\""
+                + propValue + "\";";
         case "TextColor":
-            return "document.getElementById(\"" + component.$Name + "\").innerHTML.style.color = \"#" +
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.color = \"#" +
                 propValue.substring(4) + "\";";
         case "Width":
-            return "document.getElementById(\"" + component.$Name + "\").style.width = \"" + propValue + "px\";";
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.width = \""
+                + this.getSizeVal(propValue) + "\";";
         case "Height":
-            return "document.getElementById(\"" + component.$Name + "\").style.height = \"" + propValue + "px\";";
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.height = \""
+                + this.getSizeVal(propValue) + "\";";
         case "Visible":
-            return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.visibility = \"" +
+                this.getVisibility(propValue) + "\";"+
+                "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                 this.getVisibility(propValue) + "\";";
         case "Enabled":
-            return "document.getElementById(\"" + component.$Name + "\").style.disabled = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").disabled = \"" +
                 this.getEnabled(propValue) + "\";";
         case "Checked":
-            return "document.getElementById(\"" + component.$Name + "\").style.checked = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").checked = \"" +
                 this.getChecked(propValue) + "\";";
+        case "BackgroundColor":
+            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.backgroundColor = \"#" +
+                propValue.substring(4) + "\";";
         default:
             return "";
     }
+};
+
+Blockly.CheckBoxJsGenerator.getSizeVal = function(index) {
+    if(index == "Automatic")
+        return "auto";
+    else if(index == "Fill Parent")
+        return "100%";
+    else
+        return index+"px";
 };
 
 Blockly.CheckBoxJsGenerator.getColor = function(index) {
@@ -109,8 +125,8 @@ Blockly.CheckBoxJsGenerator.getFontType = function(index) {
 
 Blockly.CheckBoxJsGenerator.getChecked = function(index) {
     if (index == "True") {
-        return "alse";
-    } else {
         return "true";
+    } else {
+        return "false";
     }
 };

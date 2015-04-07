@@ -9,11 +9,15 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.TextBoxJsGenerator.generateJSForAddingComponent = function(component){
-                                  return      "var div = document.createElement(\"div\");" +
-                                      "var txt = document.createElement(\"input\");" +
-                                      "txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
+                                    var txtBox ="var div = document.createElement(\"div\");" ;
+                                      if(component["MultiLine"]=="True")
+                                          txtBox=txtBox+"var txt = document.createElement(\"textarea\");";
+                                      else
+                                          txtBox=txtBox+"var txt = document.createElement(\"input\");";
+                                      txtBox=txtBox+"txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
                                       "div.appendChild(txt);" +
                                       "document.body.appendChild(div);";
+                                    return txtBox
                               };
 
 
@@ -61,19 +65,33 @@ Blockly.TextBoxJsGenerator.setProperties = function(component, propName, propVal
              return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \"" + propValue + "px\";";
+             return "document.getElementById(\"" + component.$Name + "\").style.width = \""
+                 + this.getSizeVal(propValue) + "\";";
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").style.height = \"" + propValue + "px\";";
+             return "document.getElementById(\"" + component.$Name + "\").style.height = \""
+                 + this.getSizeVal(propValue) + "\";";
          case "Hint":
              return "document.getElementById(\"" + component.$Name + "\").style.title = \"" + propValue + "\";";
-         case "MultiLine":
-             if(propValue.equals("True"))
-             return "document.getElementById(\"" + component.$Name + "\").style.rows = \"4\";"
-                 + "document.getElementById(\"" + component.$Name + "\").style.cols = \" +50\";";
+         //case "MultiLine":
+         //    if(propValue=="True")
+         //    return "document.getElementById(\"" + component.$Name + "\").style.rows = \"4\";"
+         //        + "document.getElementById(\"" + component.$Name + "\").style.cols = \" +50\";";
+         case "BackgroundColor":
+             return "document.getElementById(\"" + component.$Name + "\").style.backgroundColor = \"#" +
+                 propValue.substring(4) + "\";";
          default:
              return "";
      }
     };
+
+Blockly.TextBoxJsGenerator.getSizeVal = function(index) {
+    if(index == "Automatic")
+        return "auto";
+    else if(index == "Fill Parent")
+        return "100%";
+    else
+        return index+"px";
+};
 
 Blockly.TextBoxJsGenerator.getFontType = function(index) {
         switch(index) {

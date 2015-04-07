@@ -39,57 +39,70 @@ Blockly.DatePickerJsGenerator.setProperties = function(component, propName, prop
      switch(propName) {
          case "FontBold":
              if(propValue == "False"){
-               return "document.getElementById(\"" + component.$Name + "\").style.fontWeight = \"normal\";";
+               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontWeight = \"normal\";";
              }else{
-               return "document.getElementById(\"" + component.$Name + "\").style.fontWeight = \"bold\";";
+               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontWeight = \"bold\";";
              }
          case "FontItalic":
              if(propValue == "False"){
-               return "document.getElementById(\"" + component.$Name + "\").style.fontStyle = \"normal\";";
+               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontStyle = \"normal\";";
              }else{
-               return "document.getElementById(\"" + component.$Name + "\").style.fontStyle = \"italic\";";
+               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontStyle = \"italic\";";
              }
          case "FontSize":
-             return "document.getElementById(\"" + component.$Name + "\").style.fontSize = \"" +
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontSize = \"" +
              Math.round(propValue) +"pt\";";
          case "FontTypeface":
-             return "document.getElementById(\"" + component.$Name + "\").style.fontFamily = \"" +
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontFamily = \"" +
                     this.getFontType(propValue) + "\";";
          case "Text":
-             return "";
-             //return "document.getElementById(\"" + component.$Name + "\").innerHTML = \"" + propValue + "\";";
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.textContent=\""
+                 + propValue + "\";";
          case "TextColor":
-             return "document.getElementById(\"" + component.$Name + "\").style.color = \"#" +
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.color = \"#" +
                     propValue.substring(4) + "\";";
          case "TextAlignment":
-             return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \"" + propValue + "px\";";
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.width = \""
+                 + this.getSizeVal(propValue) + "\";";
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").style.height = \"" + propValue + "px\";";
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.height = \""
+                 + this.getSizeVal(propValue) + "\";";
          case "BackgroundColor":
-             return "document.getElementById(\"" + component.$Name + "\").style.backgroundColor = \"" +
-                 this.getColor(propValue) + "\";";
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.backgroundColor = \"#" +
+                 propValue.substring(4) + "\";";
          case "Image":
-             return "document.getElementById(\"" + component.$Name + "\").style.backgroundImage = \"" + propValue + "\";";
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.backgroundImage = \"" + propValue + "\";";
          case "Shape":
-             return "document.getElementById(\"" + component.$Name + "\").style.Shape = \"" +
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.Shape = \"" +
                  this.getShape(propValue) + "\";";
          case "Visible":
-             return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.visibility = \"" +
+                 this.getVisibility(propValue) + "\";"+
+              "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";";
          case "Enabled":
-             return "document.getElementById(\"" + component.$Name + "\").style.disabled = \"" +
+             return "document.getElementById(\"" + component.$Name + "\").disabled = \"" +
                  this.getEnabled(propValue) + "\";";
+         case "Image":
+             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.backgroundImage = \"url(assets/" +
+                 (propValue) + ")\";";
          default:
              return "";
      }
     };
 
-Blockly.DatePickerJsGenerator.getColor = function(index) {
-    return index.replace(0, 4, "#");
+Blockly.DatePickerJsGenerator.getSizeVal = function(index) {
+    if(index == "Automatic")
+        return "auto";
+    else if(index == "Fill Parent")
+        return "100%";
+    else
+        return index+"px";
 };
+
 
 Blockly.DatePickerJsGenerator.getVisibility = function(index) {
     if (index == "True") {

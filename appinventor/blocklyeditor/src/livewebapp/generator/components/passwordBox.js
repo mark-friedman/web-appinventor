@@ -63,15 +63,26 @@ Blockly.PasswordBoxJsGenerator.setProperties = function(component, propName, pro
              return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \"" + propValue + "px\";";
+             return "document.getElementById(\"" + component.$Name + "\").style.width = \""
+                 + this.getSizeVal(propValue) + "\";";
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").style.height = \"" + propValue + "px\";";
+             return "document.getElementById(\"" + component.$Name + "\").style.height = \""
+                 + this.getSizeVal(propValue) + "\";";
          case "Hint":
              return "document.getElementById(\"" + component.$Name + "\").style.title = \"" + propValue + "\";";
          default:
              return "";
      }
     };
+
+Blockly.PasswordBoxJsGenerator.getSizeVal = function(index) {
+    if(index == "Automatic")
+        return "auto";
+    else if(index == "Fill Parent")
+        return "100%";
+    else
+        return index+"px";
+};
 
 Blockly.PasswordBoxJsGenerator.getFontType = function(index) {
         switch(index) {

@@ -13,6 +13,8 @@ Blockly.AudioJsGenerator.generateJSForAddingComponent = function(component){
                 "var audio = document.createElement(\"audio\");" +
                 "audio.setAttribute(\"id\",\"" + component.$Name + "\");" +
                 "audio.setAttribute(\"controls\",\"controls\");"+
+                "audio.setAttribute(\"hidden\", \"hidden\");"+
+                "audio.setAttribute(\"autoplay\", \"autoplay\");"+
                 "div.appendChild(audio);"+
                 "document.body.appendChild(div);";
 
@@ -40,7 +42,7 @@ Blockly.AudioJsGenerator.setProperties = function(component, propName, propValue
             return "document.getElementById(\"" +component.$Name + "\").volume=\"" +
                 parseFloat(propValue/100) + "\";";
         case "Loop":
-            return "var audio=document.getElementById(\""+componentID+"\");"+
+            return "var audio=document.getElementById(\""+component.$Name+"\");"+
                     "audio.setAttribute(\"loop\",\"loop\");";
         case "Source":
             return this.getAudioSourceJS(component.$Name, propValue);
