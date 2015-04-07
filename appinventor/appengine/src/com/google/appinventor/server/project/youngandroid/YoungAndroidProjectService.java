@@ -495,138 +495,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
   }
 
-  /**
-   * Make a request to the Build Server to build a project.  The Build Server will asynchronously
-   * post the results of the build via the {@link com.google.appinventor.server.ReceiveBuildServlet}
-   * A later call will need to be made by the client in order to get those results.
-   *
-   * @param user the User that owns the {@code projectId}.
-   * @param projectId  project id to be built
-   * @param nonce random string used to find resulting APK from unauth context
-   * @param target  build target (optional, implementation dependent)
-   *
-   * @return an RpcResult reflecting the call to the Build Server
-   */
-  @Override
-  public RpcResult build(User user, long projectId, String nonce, String target) {
-    String userId = user.getUserId();
-    String projectName = storageIo.getProjectName(userId, projectId);
-    String outputFileDir = BUILD_FOLDER + '/' + target;
-
-    // Store the userId and projectId based on the nonce
-
-    storageIo.storeNonce(nonce, userId, projectId);
-
-    // Delete the existing build output files, if any, so that future attempts to get it won't get
-    // old versions.
-    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
-    for (String buildOutputFile : buildOutputFiles) {
-      storageIo.deleteFile(userId, projectId, buildOutputFile);
-    }
-    URL buildServerUrl = null;
-    ProjectSourceZip zipFile = null;
-    try {
-      buildServerUrl = new URL(getBuildServerUrlStr(
-          user.getUserEmail(),
-          userId,
-          projectId,
-          outputFileDir));
-      HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
-      connection.setDoOutput(true);
-      connection.setRequestMethod("POST");
-
-      BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
-      FileExporter fileExporter = new FileExporterImpl();
-      zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
-          /* includeAndroidKeystore */ true,
-          projectName + ".aia", true);
-      bufferedOutputStream.write(zipFile.getContent());
-      bufferedOutputStream.flush();
-      bufferedOutputStream.close();
-
-      int responseCode = 0;
-      responseCode = connection.getResponseCode();
-      if (responseCode != HttpURLConnection.HTTP_OK) {
-        // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
-        // can provide an appropriate error message to the user.
-        // NOTE(lizlooney) - There is some weird bug/problem with HttpURLConnection. When the
-        // responseCode is 503, connection.getResponseMessage() returns "OK", but it should return
-        // "Service Unavailable". If I make the request with curl and look at the headers, they
-        // have the expected error message.
-        // For now, the moral of the story is: don't use connection.getResponseMessage().
-        String error = "Build server responded with response code " + responseCode + ".";
-        try {
-          String content = readContent(connection.getInputStream());
-          if (content != null && !content.isEmpty()) {
-            error += "\n" + content;
-          }
-        } catch (IOException e) {
-          // No content. That's ok.
-        }
-        try {
-          String errorContent = readContent(connection.getErrorStream());
-          if (errorContent != null && !errorContent.isEmpty()) {
-            error += "\n" + errorContent;
-          }
-        } catch (IOException e) {
-          // No error content. That's ok.
-        }
-        if (responseCode == HttpURLConnection.HTTP_CONFLICT) {
-          // The build server is not compatible with this App Inventor instance. Log this as severe
-          // so the owner of the app engine instance will know about it.
-          LOG.severe(error);
-        }
-
-        return new RpcResult(responseCode, "", StringUtils.escape(error));
-      }
-    } catch (MalformedURLException e) {
-      CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("MalformedURLException", buildServerUrl, userId, projectId), e);
-      return new RpcResult(false, "", e.getMessage());
-    } catch (IOException e) {
-      // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
-      Throwable wrappedException = e;
-      int zipFileLength = zipFile.getContent().length;
-      if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
-        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
-        wrappedException = new IllegalArgumentException(
-          "Sorry, can't package projects larger than 5MB."
-          + " Yours is " + lengthMbs + "MB.", e);
-      }
-      CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("IOException", buildServerUrl, userId, projectId), wrappedException);
-      return new RpcResult(false, "", wrappedException.getMessage());
-    } catch (EncryptionException e) {
-      CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
-      return new RpcResult(false, "", e.getMessage());
-    } catch (RuntimeException e) {
-      // In particular, we often see RequestTooLargeException (if the zip is too
-      // big) and ApiProxyException. There may be others.
-      Throwable wrappedException = e;
-      if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
-        int zipFileLength = zipFile.getContent().length;
-        if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
-          String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
-          wrappedException = new IllegalArgumentException(
-              "Sorry, can't package projects larger than 5MB."
-              + " Yours is " + lengthMbs + "MB.", e);
-        } else {
-          wrappedException = new IllegalArgumentException(
-              "Sorry, project was too large to package (" + zipFileLength + " bytes)");
-        }
-      }
-      CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
-      return new RpcResult(false, "", wrappedException.getMessage());
-    }
-    return new RpcResult(true, "Building " + projectName, "");
-  }
-
-  private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
+  private String buildErrorMsg(String exceptionName, String userId, long projectId, String target) {
     return "Request to build failed with " + exceptionName + ", user=" + userId
-        + ", project=" + projectId + ", build URL is " + buildURL
-        + " [" + buildURL.toString().length() + "]";
+        + ", project=" + projectId + ", target=" + target;
   }
 
   // Note that this is a function rather than just a constant because we assume it will get
@@ -673,44 +544,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       }
     }
     return null;
-  }
-
-  /**
-   * Check if there are any build results available for the given user's project
-   *
-   * @param user the User that owns the {@code projectId}.
-   * @param projectId  project id to be built
-   * @param target  build target (optional, implementation dependent)
-   * @return an RpcResult reflecting the call to the Build Server. The following values may be in
-   *         RpcResult.result:
-   *            0:  Build is done and was successful
-   *            1:  Build is done and was unsuccessful
-   *            2:  Yail generation failed
-   *           -1:  Build is not yet done.
-   */
-  @Override
-  public RpcResult getBuildResult(User user, long projectId, String target) {
-    String userId = user.getUserId();
-    String buildOutputFileName = BUILD_FOLDER + '/' + target + '/' + "build.out";
-    List<String> outputFiles = storageIo.getProjectOutputFiles(userId, projectId);
-    updateCurrentProgress(user, projectId, target);
-    RpcResult buildResult = new RpcResult(-1, ""+currentProgress, ""); // Build not finished
-    for (String outputFile : outputFiles) {
-      if (buildOutputFileName.equals(outputFile)) {
-        String outputStr = storageIo.downloadFile(userId, projectId, outputFile, "UTF-8");
-        try {
-          JSONObject buildResultJsonObj = new JSONObject(outputStr);
-          buildResult = new RpcResult(buildResultJsonObj.getInt("result"),
-                                      buildResultJsonObj.getString("output"),
-                                      buildResultJsonObj.getString("error"),
-                                      outputStr);
-        } catch (JSONException e) {
-          buildResult = new RpcResult(1, "", "");
-        }
-        break;
-      }
-    }
-    return buildResult;
   }
 
   /**
@@ -771,11 +604,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
      *
      * @param user the User that owns the {@code projectId}.
      * @param projectId  project id to be built
+     * @param nonce random string used to find resulting build from unauth context
      * @param target The build target (= web or LiveWebApp)
      *
      * @return an RpcResult reflecting the result of the build
      */
-    public RpcResult buildWebOutput(User user, long projectId, String target) {
+    public RpcResult build(User user, long projectId, String nonce, String target) {
         boolean isLiveWebAppBuild = target.equalsIgnoreCase("LiveWebApp");
         String userId = user.getUserId();
         String projectName = storageIo.getProjectName(userId, projectId);
@@ -783,6 +617,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
         LOG.log(Level.FINE, "Building output, target = " + target);
 
+        // Store the userId and projectId based on the nonce
+        // Note: not used currently, but could be useful for LiveWebApp?
+        storageIo.storeNonce(nonce, userId, projectId);
+    
         // Search storage for project source.
         // Find the Javascript and JSON files.
         List<String> screenNames = new ArrayList<String>();

@@ -104,6 +104,12 @@ public class StorageUtil {
    * Returns the content type for the given filePath.
    */
   public static String getContentTypeForFilePath(String filePath) {
+    // Consider using this instead of adding file types one by one?
+    // Does the input filePath always work with these methods?
+    // Would need to carefully test filepath formats used as input today
+    //FileNameMap fileNameMap = URLConnection.getFileNameMap();
+    //String contentType = fileNameMap.getContentTypeFor(filePath);     
+    
     filePath = filePath.toLowerCase();
 
     if (filePath.endsWith(".gif")) {

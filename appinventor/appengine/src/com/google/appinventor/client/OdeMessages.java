@@ -23,7 +23,8 @@ public interface OdeMessages extends Messages {
     String toJavaScript();
 
     //Build
-    @DefaultMessage("Build HTML Output")
+    
+    @DefaultMessage("Build")
     @Description("Build HTML output files")
     String buildHTMLOutputMenuItem();
 
@@ -539,11 +540,16 @@ public interface OdeMessages extends Messages {
   String hardResetConnectionsMenuItem();
 
   //Build
+  
   @DefaultMessage("Build")
   @Description("Label of the button leading to build related cascade items")
   String buildTabName();
 
-  @DefaultMessage("App ( provide QR code for .apk )")
+  @DefaultMessage("Export (save .zip to my computer)")
+  @Description("Label of the button that builds and exports HTML output files as zip")
+  String buildHTMLOutputMenuItem();
+  
+  @DefaultMessage("App ( provide QR code for web app )")
   @Description("Label of item for building a project and show barcode")
   String showBarcodeMenuItem();
 

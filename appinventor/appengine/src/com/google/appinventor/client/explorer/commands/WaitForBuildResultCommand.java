@@ -131,7 +131,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
       }
     };
 
-    ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
+    /*ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);*/
   }
 
   private static YoungAndroidBlocksNode findBlocksNode(YoungAndroidProjectNode projectRootNode,

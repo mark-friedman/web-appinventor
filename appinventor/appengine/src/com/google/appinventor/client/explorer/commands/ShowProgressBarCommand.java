@@ -104,7 +104,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
         super.onFailure(caught);
         executionFailedOrCanceled();}
     };
-    ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
+    /*ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);*/
   }
 
   class ProgressBarDialogBox extends DialogBox{

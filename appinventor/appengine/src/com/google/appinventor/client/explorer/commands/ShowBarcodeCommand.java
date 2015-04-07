@@ -6,10 +6,12 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -52,9 +54,11 @@ public class ShowBarcodeCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    // Display a barcode for an url pointing at our server's download servlet
+    String screen = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
+    
+    // Display a barcode for an url pointing at our server's built web app servlet
     String barcodeUrl = GWT.getHostPageBaseURL()
-      + "b/" + Ode.getInstance().getNonce();
+      + "b/" + Ode.getInstance().getNonce() + "/" + screen + ".html";
     OdeLog.log("Barcode url is: " + barcodeUrl);
     new BarcodeDialogBox(node.getName(), barcodeUrl).center();
   }
@@ -77,7 +81,9 @@ public class ShowBarcodeCommand extends ChainableCommand {
       cancelButton.addClickHandler(buttonHandler);
       Button okButton = new Button(MESSAGES.okButton());
       okButton.addClickHandler(buttonHandler);
+      HTML link = new HTML("<center><a href=\"" + appInstallUrl + "\" target=\"_blank\">" + appInstallUrl + "</a></center>");
       HTML barcodeQrcode = new HTML("<center>" + BlocklyPanel.getQRCode(appInstallUrl) + "</center>");
+      
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
@@ -98,6 +104,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       buttonPanel.setSize("100%", "24px");
       VerticalPanel contentPanel = new VerticalPanel();
       contentPanel.add(barcodeQrcode);
+      contentPanel.add(link);
       contentPanel.add(buttonPanel);
       contentPanel.add(warningPanel);
 //      contentPanel.setSize("320px", "100%");

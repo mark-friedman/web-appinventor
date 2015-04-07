@@ -481,7 +481,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
     /**
-     * Invokes a download html command for the project on the back-end.
+     * Invokes a build-to-zip command for the project on the back-end.
      *
      * @param projectId  project ID
      * @param nonce used to access the built project -- random string
@@ -490,49 +490,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
      * @return  results of invoking the command
      */
     @Override
-    public RpcResult buildDemo(long projectId, String nonce, String target){
+    public RpcResult build(long projectId, String nonce, String target){
         // Dispatch
-        final String userId = userInfoProvider.getUserId();
-        return getProjectRpcImpl(userId, projectId).buildWebOutput(
-                userInfoProvider.getUser(), projectId, target);
-    }
-
-
-  /**
-   * Invokes a build command for the project on the back-end.
-   *
-   * @param projectId  project ID
-   * @param target  build target (optional, implementation dependent)
-   *
-   * @return  results of build
-   */
-  @Override
-  public RpcResult build(long projectId, String nonce, String target) {
-    // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
       userInfoProvider.getUser(), projectId, nonce, target);
   }
-
-  /**
-   * Gets the result of a build command for the project.
-   *
-   * @param projectId  project ID
-   * @param target  build target (optional, implementation dependent)
-   *
-   * @return  results of build. The following values may be in RpcResult.result:
-   *            0: Build is done and was successful
-   *            1: Build is done and was unsuccessful
-   *           -1: Build is not yet done.
-   */
-  @Override
-  public RpcResult getBuildResult(long projectId, String target) {
-    // Dispatch
-    final String userId = userInfoProvider.getUserId();
-    return getProjectRpcImpl(userId, projectId).getBuildResult(
-        userInfoProvider.getUser(), projectId, target);
-  }
-
+  
   /*
    * Write the serialized response out to stdout. This is a very unusual thing
    * to do, but it allows us to create a static file version of the response

@@ -75,7 +75,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
   private static final String WIDGET_NAME_MY_PROJECTS = "MyProjects";
-  private static final String WIDGET_NAME_BUILD_HTML_OUTPUT = "HTMLOutput";
+  private static final String WIDGET_NAME_BUILD_TO_ZIP_OUTPUT = "BuildToZipOutput";
   private static final String WIDGET_NAME_BUILD = "Build";
   private static final String WIDGET_NAME_BUILD_BARCODE = "Barcode";
   private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
@@ -178,8 +178,8 @@ public class TopToolbar extends Composite {
 
       // Build -> {Build HTML; Show Barcode; Download to Computer;
       // Generate YAIL only when logged in as an admin; Generate JavaScript}
-      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_HTML_OUTPUT, MESSAGES.buildHTMLOutputMenuItem(),
-              new HTMLOutputAction()));
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_TO_ZIP_OUTPUT, MESSAGES.buildHTMLOutputMenuItem(),
+              new BuildToZipAction()));
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
               new BarcodeAction()));
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
@@ -362,13 +362,10 @@ public class TopToolbar extends Composite {
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+        String target = "web";
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new GenerateYailCommand(
-                new BuildCommand(target,
-                    new ShowProgressBarCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new ShowBarcodeCommand(target)), "BarcodeAction"))));
+            new GenerateJavaScriptCommand(
+                new BuildWebCommand(target, ShowBarcodeCommand(target))));
 //        updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -381,6 +378,11 @@ public class TopToolbar extends Composite {
     }
   }
 
+  /**
+   * 
+   * Build and download an apk file (DELETE THIS)
+   *
+   */
   private class DownloadAction implements Command {
     @Override
     public void execute() {
@@ -563,7 +565,7 @@ public class TopToolbar extends Composite {
      * Build and download html for a web app project
      *
      */
-    public class HTMLOutputAction implements Command {
+    public class BuildToZipAction implements Command {
         @Override
         public void execute() {
             ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
