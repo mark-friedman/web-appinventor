@@ -123,7 +123,7 @@ public class DatePicker extends Component{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#"+"label"+this.getName()+"\n");
+    sb.append("label[for="+this.getName()+"]\n");
     sb.append("{\n");
 
     sb.append(" background : "+this.getBackgroundColor()+";\n");
@@ -149,7 +149,7 @@ public class DatePicker extends Component{
     StringBuilder sb = new StringBuilder();
 
     sb.append("<label");
-    sb.append(" id = "+"\""+"label"+this.getName()+"\"");
+    sb.append(" for = "+"\""+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label> ");

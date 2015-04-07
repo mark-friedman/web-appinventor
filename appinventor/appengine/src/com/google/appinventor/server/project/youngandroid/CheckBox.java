@@ -118,7 +118,7 @@ public class CheckBox extends Component{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#"+"Label"+this.getName()+"\n");
+    sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
 
     if(!this.getBackgroundColor().equals(""))
@@ -135,6 +135,27 @@ public class CheckBox extends Component{
     sb.append(" height : "+this.getHeight()+";\n");
 
     sb.append("}\n");
+    
+    sb.append("label[for="+this.getName()+"]\n");
+    sb.append("{\n");
+
+    if(!this.getBackgroundColor().equals(""))
+    {
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
+    }
+     
+    sb.append(" font-size : "+this.getFontSize()+"px;\n");
+    sb.append(" font-weight : "+this.getFontBold()+";\n");
+    sb.append(" font-style : "+this.getFontItalic()+";\n");
+    sb.append(" font-family : "+this.getFontTypeface()+";\n");
+    sb.append(" color : "+this.getTextColor()+";\n");
+    sb.append(" width : "+this.getWidth()+";\n");
+    sb.append(" height : "+this.getHeight()+";\n");
+
+    sb.append("}\n");
+    
+    
+    
 
     // System.out.println(sb.toString().valueOf(sb));
 
@@ -144,7 +165,6 @@ public class CheckBox extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<span>");
     sb.append("<input"); 
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = \"checkbox\"");
@@ -159,12 +179,12 @@ public class CheckBox extends Component{
     sb.append(">");
     
     sb.append("<label");
-    sb.append(" id="+"\"Label"+this.getName()+"\"");
+    sb.append(" for=\""+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label>");
     sb.append("</input>"); 
-    sb.append("</span>");
+    
     return sb.toString().valueOf(sb);
   }
 

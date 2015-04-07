@@ -172,7 +172,7 @@ public class ImagePicker extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
     sb.append("<label");
-    sb.append(" id = "+"\""+"Label"+this.getName()+"\"");
+    sb.append(" for = "+"\""+"Label"+this.getName()+"\"");
    
     if(this.getVisible().equals("False"))
       sb.append(" hidden");

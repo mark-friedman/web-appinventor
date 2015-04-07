@@ -41,7 +41,7 @@ Blockly.RangeJsGenerator.setProperties = function(component, propName, propValue
              return "document.getElementById(\"" + component.$Name + "\").value = \"" + propValue + "\";";
          case "Width":
              return "document.getElementById(\"" + component.$Name + "\").style.width = \"" +
-                 this.getWidth(propValue) + "\";";
+                 this.getSizeVal(propValue) + "\";";
          case "Visible":
              return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";";
@@ -54,7 +54,7 @@ Blockly.RangeJsGenerator.setProperties = function(component, propName, propValue
     };
 
 
-Blockly.RangeJsGenerator.getWidth = function(index) {
+Blockly.RangeJsGenerator.getSizeVal = function(index) {
     if(index == "Automatic")
         return "auto";
     else if(index == "Fill Parent")
