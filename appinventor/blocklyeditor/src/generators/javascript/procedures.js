@@ -40,7 +40,7 @@ Blockly.JavaScript['procedures_defreturn'] = function() {
   var code = procName + ' = ' +
     'function(' + args + ') { ' +
       'return ' + returnVal + ';' + 
-    '}';
+    '};';
 
   return code;
 };
@@ -60,7 +60,7 @@ Blockly.JavaScript['procedures_defnoreturn'] = function() {
   var code = procName + ' = ' +
     'function(' + args + ') { ' +
       body + 
-    '}';
+    '};';
 
   return code;
 };
