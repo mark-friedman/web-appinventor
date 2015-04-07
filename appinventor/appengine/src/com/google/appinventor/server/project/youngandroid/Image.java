@@ -79,7 +79,7 @@ public class Image extends ImageComponent{
 
     sb.append("<img");
     sb.append(" id = "+"\""+this.getName()+"\"");
-    sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
+    sb.append(" src = "+"\"url("+this.getPrefixedSrc(this.getSource())+")\"");
 
 
     if(this.getVisible().equals("False"))

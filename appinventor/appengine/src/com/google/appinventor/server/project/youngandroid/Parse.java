@@ -99,7 +99,7 @@ public class Parse {
           break;
 
         case "TimePicker":
-          componentTypeObj = new Image();
+          componentTypeObj = new TimePicker();
           ((TimePicker)componentTypeObj).setImageSrcPrefix(assetSrcPrefix);
           break;
           
@@ -126,6 +126,15 @@ public class Parse {
           componentTypeObj =  new ImagePicker();
           ((ImagePicker)componentTypeObj).setImageSrcPrefix(assetSrcPrefix);
           break;
+          
+        case "Notifier":
+          break;
+        
+        case "HorizontalArrangement":
+          break;
+        
+        case "VerticalArrangement":
+          break;
         
         default: 
           System.out.println("Component type "+str+" not available!");
@@ -151,7 +160,6 @@ public class Parse {
   {
     try
     {
-
 
       String jsonData="#|\n"
       + "$JSON\n"
