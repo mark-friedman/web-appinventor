@@ -54,4 +54,30 @@ public abstract class VisibleComponent implements Component {
    */
   @SimpleProperty
   public abstract void Height(int height);
+
+    /**
+     * Height property setter method.
+     *
+     * This version takes a percentage of the parent
+     * component's height as its input.
+     *
+     * @param hPercent width as a percent of the height of its parent
+     *
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public abstract void HeightPercent(int hPercent);
+
+    /**
+     * Width property setter method.
+     *
+     * This version takes a percentage of the parent
+     * component's width as its input.
+     *
+     * @param wPercent width as a percent of its parent
+     *
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE)
+    public abstract void WidthPercent(int wPercent);
 }

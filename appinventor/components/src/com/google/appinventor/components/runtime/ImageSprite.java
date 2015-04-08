@@ -190,12 +190,17 @@ public class ImageSprite extends Sprite {
   @Override
   @SimpleProperty
   public int Height() {
-    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
+  if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT || heightHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
       return drawable == null ? 0 : drawable.getBitmap().getHeight();
     }
     return heightHint;
   }
+
+    @Override
+      public void HeightPercent(int pCent) {
+            // Ignore
+                  }
 
   @Override
   @SimpleProperty
@@ -204,10 +209,14 @@ public class ImageSprite extends Sprite {
     registerChange();
   }
 
+    @Override
+      public void WidthPercent(int pCent) {
+            // Ignore
+                  }
   @Override
   @SimpleProperty
   public int Width() {
-    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
+      if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT || widthHint <= LENGTH_PERCENT_TAG) {
       // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
       return drawable == null ? 0 : drawable.getBitmap().getWidth();
     }

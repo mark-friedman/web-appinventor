@@ -89,6 +89,15 @@ public final class Ball extends Sprite {
     // ignored
   }
 
+    @Override
+    public void HeightPercent(int pCent) {
+            // ignored
+    }
+
+    @Override
+    public void WidthPercent(int pCent) {
+            // ignored
+                  }
   @Override
   public boolean containsPoint(double qx, double qy) {
     double xCenter = xLeft + radius;

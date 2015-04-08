@@ -16,6 +16,31 @@ import com.google.gwt.i18n.client.Messages;
 //@LocalizableResource.DefaultLocale("en")
 
 public interface OdeMessages extends Messages {
+  // JEFFS DESIGNER CHANGES
+
+    @DefaultMessage("percent")
+    @Description("Caption for percent label")
+    String percentCaption();
+
+    @DefaultMessage("{0} percent")
+    @Description("Summary for length in percent")
+    String percentSummary(String percent);
+
+    @DefaultMessage("Percentage input values should be between 1 and 100")
+    @Description("Error shown after validation of percentage input fields.")
+    String nonvalidPercentValue();
+
+
+    @DefaultMessage("HeightPercent")
+    @Description("")
+    String HeightPercentProperties();
+
+    @DefaultMessage("WidthPercent")
+    @Description("")
+    String WidthPercentProperties();
+
+ // JEFFS DESIGNER CHANGES
+
   // Used in multiple files
 
   @DefaultMessage("Generate JavaScript")

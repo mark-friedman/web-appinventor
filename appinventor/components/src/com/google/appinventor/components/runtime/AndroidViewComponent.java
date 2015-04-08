@@ -15,6 +15,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import android.view.View;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 /**
  * Underlying base class for all components with views; not accessible to Simple programmers.
@@ -29,11 +30,13 @@ public abstract class AndroidViewComponent extends VisibleComponent {
 
   private int lastSetWidth = LENGTH_UNKNOWN;
   private int lastSetHeight = LENGTH_UNKNOWN;
+  private int percentWidthHolder = LENGTH_UNKNOWN;
+  private int percentHeightHolder = LENGTH_UNKNOWN;
 
   private int column = ComponentConstants.DEFAULT_ROW_COLUMN;
   private int row = ComponentConstants.DEFAULT_ROW_COLUMN;
 
-  /**
+    /**
    * Creates a new AndroidViewComponent.
    *
    * @param container  container, component will be placed in
@@ -80,7 +83,9 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   @Override
   @SimpleProperty
   public int Width() {
-    return getView().getWidth();
+      int zWidth = (int)(getView().getWidth() / container.$form().deviceDensity());
+      //    System.err.println("AndroidViewComponent: Width() Called, returning " + zWidth);
+                  return zWidth;
   }
 
   /**
@@ -93,7 +98,58 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Width(int width) {
     container.setChildWidth(this, width);
     lastSetWidth = width;
-  }
+
+          if (width <= Component.LENGTH_PERCENT_TAG)
+                container.$form().registerPercentLength(this, width, Form.PercentStorageRecord.Dim.WIDTH);
+        }
+
+
+    /**
+     * Specifies the component's horizontal width as a percentage
+     * of the Width of its parent Component.
+     *
+     * @param pCent in percent
+     */
+              @Override
+      @SimpleProperty
+      public void WidthPercent(int pCent) {
+            if (pCent < 0 || pCent > 100) {
+                  container.$form().dispatchErrorOccurredEvent(this, "WidthPercent",
+                            ErrorMessages.ERROR_BAD_PERCENT, pCent);
+                  return;
+                }
+            int v = -pCent + Component.LENGTH_PERCENT_TAG;
+            Width(v);
+          }
+
+              public void setLastWidth(int width) {
+        //    System.err.println(this + " percentWidthHolder being set to " + width);
+                    percentWidthHolder = width;
+          }
+
+              public int getSetWidth() {
+        //    System.err.println(this + " getSetWidth() percentWidthHolder = " + percentWidthHolder);
+                    if (percentWidthHolder == LENGTH_UNKNOWN) {
+                  return Width();           // best guess...
+                } else {
+                  return percentWidthHolder;
+                }
+          }
+
+              public void setLastHeight(int height) {
+        //   System.err.println(this + " percentHeightHolder being set to " + height);
+                    percentHeightHolder = height;
+          }
+
+              public int getSetHeight() {
+                  //    System.err.println(this + " getSetHeight() percentHeightHolder = " + percentHeightHolder);
+                  if (percentHeightHolder == LENGTH_UNKNOWN) {
+                      return Height();           // best guess...
+                  } else {
+                      return percentHeightHolder;
+                  }
+
+              }
 
   /**
    * Copy the width from another component to this one.  Note that we don't use
@@ -130,6 +186,27 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   public void Height(int height) {
     container.setChildHeight(this, height);
     lastSetHeight = height;
+      if (height <= Component.LENGTH_PERCENT_TAG)
+                container.$form().registerPercentLength(this, height, Form.PercentStorageRecord.Dim.HEIGHT);
+        }
+
+              /**
+        * Specifies the component's vertical height as a percentage
+        * of the height of its parent Component.
+        *
+        * @param height in percent
+        */
+
+              @Override
+      @SimpleProperty
+      public void HeightPercent(int pCent) {
+            if (pCent < 0 || pCent > 100) {
+                  container.$form().dispatchErrorOccurredEvent(this, "HeightPercent",
+                            ErrorMessages.ERROR_BAD_PERCENT, pCent);
+                  return;
+                }
+            int v = -pCent + Component.LENGTH_PERCENT_TAG;
+            Height(v);
   }
 
   /**

@@ -110,16 +110,57 @@ public class TableArrangement extends AndroidViewComponent
     viewLayout.add(component);
   }
 
-  @Override
-  public void setChildWidth(AndroidViewComponent component, int width) {
-    ViewUtil.setChildWidthForTableLayout(component.getView(), width);
-  }
+    @Override
+    public void setChildWidth(AndroidViewComponent component, int width) {
 
-  @Override
-  public void setChildHeight(AndroidViewComponent component, int height) {
-    ViewUtil.setChildHeightForTableLayout(component.getView(), height);
-  }
+        System.err.println("TableArrangment.setChildWidth: width = " + width + " component = " + component);
+        if (width <= LENGTH_PERCENT_TAG) {
 
+            int cWidth;
+            if (Form.useScreenSize) {
+                cWidth = container.$form().Width();
+            } else {
+                cWidth = getSetWidth();
+            }
+
+            if ((cWidth > LENGTH_PERCENT_TAG) && (cWidth <= 0)) {
+                // FILL_PARENT OR LENGTH_PREFERRED
+                width = LENGTH_PREFERRED;
+            } else {
+                System.err.println("%%TableArrangement.setChildWidth(): width = " + width + " parent Width = " + cWidth + " child = " + component);
+                width = cWidth * (- (width - LENGTH_PERCENT_TAG)) / 100;
+            }
+        }
+
+        component.setLastWidth(width);
+
+        ViewUtil.setChildWidthForTableLayout(component.getView(), width);
+    }
+
+
+    @Override
+    public void setChildHeight(AndroidViewComponent component, int height) {
+        if (height <= LENGTH_PERCENT_TAG) {
+            int cHeight;
+            if (Form.useScreenSize) {
+                cHeight = container.$form().Height();
+            } else {
+                cHeight = getSetHeight();
+            }
+
+            if ((cHeight > LENGTH_PERCENT_TAG) && (cHeight <= 0)) {
+                // FILL_PARENT OR LENGTH_PREFERRED
+                height = LENGTH_PREFERRED;
+            } else {
+                height = cHeight * (- (height - LENGTH_PERCENT_TAG)) / 100;
+            }
+        }
+
+        component.setLastHeight(height);
+
+        ViewUtil.setChildHeightForTableLayout(component.getView(), height);
+
+    }
   // AndroidViewComponent implementation
 
   @Override
