@@ -112,7 +112,7 @@ var liveWebApp = (function(){
 				 if(javascript.indexOf("document.location.href") > -1){ 									
 				 return buildJSONResponceToChangeTheScreen(javascript,"OK");
 				 }else{
-					 var retVal = eval(javascript);					 					 
+					 var retVal = eval(javascript).toString();					 					 
 				 return buildJSONResponce(blockId,"OK",retVal);
 				 }
                  
