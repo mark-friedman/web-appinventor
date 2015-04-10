@@ -16,6 +16,9 @@ goog.provide('Blockly.BlocklyEditor');
 
 goog.require('Blockly.Drawer');
 goog.require('Blockly.TypeBlock');
+goog.require('Blockly.Generator');
+goog.require('Blockly.ComponentJSGenerator');
+goog.require('Blockly.LiveWebAppClient');
 
 Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   var typeblock_config = {
@@ -140,6 +143,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
       function() {
         if (window.parent.BlocklyPanel_blocklyWorkspaceChanged){
+        console.log("++++++ stuff changed!!!!");
           window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName);
         }
         // [lyn 12/31/2103] Check for duplicate component event handlers before
@@ -147,6 +151,8 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
         Blockly.WarningHandler.determineDuplicateComponentEventHandlers();
   });
 };
+
+
 
 Blockly.BlocklyEditor.render = function() {
   var start = new Date().getTime();
@@ -190,24 +196,25 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     var yailText;
     //Blockly.Yail.blockToCode1 returns a string if the block is a statement
     //and an array if the block is a value
-    var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
-    var dialog;
-    if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
-      dialog = new goog.ui.Dialog(null, true);
-      dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
-      dialog.setContent(Blockly.Msg.CONNECT_TO_DO_IT);
-      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
-        addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
-          false, true));
-      dialog.setVisible(true);
-    } else {
-      if(yailTextOrArray instanceof Array){
-        yailText = yailTextOrArray[0];
-      } else {
-        yailText = yailTextOrArray;
-      }
-      Blockly.ReplMgr.putYail(yailText, myBlock);
-    }
+    //var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
+//    var dialog;
+//    if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED && false) {
+//      dialog = new goog.ui.Dialog(null, true);
+//      dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
+//      dialog.setContent(Blockly.Msg.CONNECT_TO_DO_IT);
+//      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+//        addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+//          false, true));
+//      dialog.setVisible(true);
+//    } else {
+//      if(yailTextOrArray instanceof Array){
+//        yailText = yailTextOrArray[0];
+//      } else {
+//        yailText = yailTextOrArray;
+//      }
+      Blockly.liveWebAppClient.doItAction(myBlock);
+      //Blockly.ReplMgr.putYail(yailText, myBlock);
+   // }
   };
   options.push(doitOption);
   if(myBlock.procCustomContextMenu){

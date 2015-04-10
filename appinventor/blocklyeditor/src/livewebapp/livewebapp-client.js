@@ -280,8 +280,8 @@ Blockly.liveWebAppClient = (function(){
     }
   }
 
-  sendMessage = function(data,messageType){
-      message = generateMessageForType(data,messageType)
+  sendMessage = function(data,messageType,blockId){
+      message = generateMessageForType(data,messageType,blockId)
       var sMessage = data
       if(JSON_MESSAGE){
         sMessage  = JSON.stringify(message)
@@ -289,7 +289,7 @@ Blockly.liveWebAppClient = (function(){
       sendMessageRaw(sMessage)
   }
 
-  generateMessageForType = function(data,messageType){
+  generateMessageForType = function(data,messageType,blockId){
       var message = {}
       var TYPE = "type";
       var BLOCK_ID = "blockId";
@@ -306,7 +306,10 @@ Blockly.liveWebAppClient = (function(){
             message[JS] = data;
             return message;
         case MSG_DO_IT:
-            throw "live-webapp cannot generate message for type DO-IT";
+            message[TYPE] = messageType;
+            message[BLOCK_ID] = blockId;
+            message[JS] = data;
+            return message;
         default:
             throw "live-webapp cannot generate message for given messageType : "+messageType;
 
@@ -330,7 +333,19 @@ Blockly.liveWebAppClient = (function(){
 	        }	
 	        return msg;
 	    }
-  
+
+  doItAction = function(block) {
+     var js  = Blockly.JavaScript.blockToCode1(block);
+
+     console.log(" myBlock: " + block + " JS: " +
+        js + " block id: " + block.id);
+
+     if(Array.isArray(js)){
+        js = js[0];
+     }
+     sendMessage(js,MSG_DO_IT,block.id);
+  }
+
   return self;
 
 })();
