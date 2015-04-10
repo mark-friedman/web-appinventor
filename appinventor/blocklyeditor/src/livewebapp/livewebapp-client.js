@@ -185,7 +185,7 @@ Blockly.liveWebAppClient = (function(){
 //    }
 
     if(JSON_MESSAGE){
-        js = blocksToBeSent
+        js += blocksToBeSent.join("");
     }else{
         js += blocksToBeSent.join("");
     }
@@ -295,7 +295,7 @@ Blockly.liveWebAppClient = (function(){
       var BLOCK_ID = "blockId";
       var DEFAULT_BLOCK_ID = -1;
       var JS = "js";
-		data = data.replace(/"/g, "\'");
+    data = data.replace(/"/g, "\'");
       switch(messageType){
         case MSG_COMPONENT_ADD :
         case MSG_COMPONENT_REMOVE :
