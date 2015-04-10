@@ -174,6 +174,8 @@ public final class ErrorMessages {
   // WebViewer errors
   public static final int ERROR_WEBVIEW_SSL_ERROR = 2501;
 
+  public static final int ERROR_BAD_PERCENT = 2502;
+
   //FusiontablesControl errors
   public static final int FUSION_TABLES_QUERY_ERROR = 2601;
 
@@ -452,6 +454,7 @@ public final class ErrorMessages {
     // TextToSpeech errors
     errorMessages.put(ERROR_TTS_NOT_READY,
        "TextToSpeech is not yet ready to perform this operation");
+    errorMessages.put(ERROR_BAD_PERCENT, "Percent values should be between 0 and 100.");
   }
 
   private ErrorMessages() {

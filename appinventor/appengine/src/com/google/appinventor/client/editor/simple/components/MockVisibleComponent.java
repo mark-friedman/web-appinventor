@@ -47,6 +47,9 @@ public abstract class MockVisibleComponent extends MockComponent {
   // A value >= 0 specifies an explicit size.
   public static final int LENGTH_PREFERRED = -1;
   public static final int LENGTH_FILL_PARENT = -2;
+      // If the length is <= -1000 then add 1000 and change the sign to
+              // get the length is percent of Screen1
+              public static final int LENGTH_PERCENT_TAG = -1000;
 
   // Useful colors
   protected static final String COLOR_NONE = "00FFFFFF";

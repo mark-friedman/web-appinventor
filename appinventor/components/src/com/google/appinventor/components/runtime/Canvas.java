@@ -832,7 +832,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
  /**
   * Set the canvas width
-  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent).
+    *
+    * The width can only be set to >0 or -1 (automatic) or -2 (fill parent)
+    * or to a value less then or equal to LENGTH_PERCENT_TAG (which is later
+    * converted to pixels.
   *
   * @param width
   */
@@ -840,18 +843,22 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the width is set to 0
   public void Width(int width) {
-    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED)) {
-       super.Width(width);
+      if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED) ||
+                      (width <= LENGTH_PERCENT_TAG)) {
+                super.Width(width);
     }
     else {
-       container.$form().dispatchErrorOccurredEvent(this, "Width",
-            ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
+          container.$form().dispatchErrorOccurredEvent(this, "Width",
+                            ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
     }
   }
 
   /**
    * Set the canvas height
-   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent)
+   *
+      * The height can only be set to >0 or -1 (automatic) or -2 (fill parent) or
+      * to a value less then or equal to LENGTH_PERCENT_TAG (which is later
+      * converted to pixels.
    *
    * @param height
    */
@@ -859,8 +866,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the height is set to 0
    public void Height(int height) {
-     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED)) {
-       super.Height(height);
+     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED) ||
+                      (height <= LENGTH_PERCENT_TAG)) {
+         super.Height(height);
      }
      else {
        container.$form().dispatchErrorOccurredEvent(this, "Height",

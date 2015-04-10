@@ -35,6 +35,8 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
   private final RadioButton fillParentRadioButton;
   private final RadioButton customLengthRadioButton;
   private final TextBox customLengthField;
+  private final RadioButton percentfillRadioButton;
+  private final TextBox percentLengthField;
 
   /**
    * Creates a new length property editor.
@@ -49,6 +51,10 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     customLengthField = new TextBox();
     customLengthField.setVisibleLength(4);
     customLengthField.setMaxLength(4);
+    percentfillRadioButton = new RadioButton(radioButtonGroup);
+      percentLengthField = new TextBox();
+      percentLengthField.setVisibleLength(4);
+      percentLengthField.setMaxLength(4);
 
     Panel customRow = new HorizontalPanel();
     customRow.add(customLengthRadioButton);
@@ -57,23 +63,33 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     pixels.setStylePrimaryName("ode-PixelsLabel");
     customRow.add(pixels);
 
+      Panel percentRow = new HorizontalPanel();
+      percentRow.add(percentfillRadioButton);
+      percentRow.add(percentLengthField);
+      Label percent = new Label(MESSAGES.percentCaption());
+      percent.setStylePrimaryName("ode-PixelsLabel"); // recycle css definition
+      percentRow.add(percent);
+
     Panel panel = new VerticalPanel();
     panel.add(automaticRadioButton);
     panel.add(fillParentRadioButton);
     panel.add(customRow);
+      panel.add(percentRow);
+
+
 
     automaticRadioButton.addValueChangeHandler(new ValueChangeHandler() {
       @Override
       public void onValueChange(ValueChangeEvent event) {
-        // Clear the custom length field.
-        customLengthField.setText("");
+          // Clear the custom and percent length fields.
+          percentLengthField.setText("");
       }
     });
     fillParentRadioButton.addValueChangeHandler(new ValueChangeHandler() {
       @Override
       public void onValueChange(ValueChangeEvent event) {
-        // Clear the custom length field.
-        customLengthField.setText("");
+          // Clear the custom and percent length fields.
+          percentLengthField.setText("");
       }
     });
     customLengthField.addClickHandler(new ClickHandler() {
@@ -81,9 +97,21 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
       public void onClick(ClickEvent event) {
         // If the user clicks on the custom length field, but the radio button for a custom length
         // is not checked, check it.
-        if (!customLengthRadioButton.isChecked()) {
-          customLengthRadioButton.setChecked(true);
-        }
+          if (!customLengthRadioButton.isChecked()) {
+              percentLengthField.setText("");
+          }
+      }
+    });
+
+      percentLengthField.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+              // If the user clicks on the percent length field, but the radio button for a custom length
+              // is not checked, check it.
+              if (!percentfillRadioButton.isChecked()) {
+                  percentfillRadioButton.setChecked(true);
+                  customLengthField.setText("");
+              }
       }
     });
 
@@ -100,8 +128,15 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     } else if (propertyValue.equals(CONST_FILL_PARENT)) {
       fillParentRadioButton.setChecked(true);
     } else {
-      customLengthRadioButton.setChecked(true);
-      customLengthField.setText(propertyValue);
+        int v = Integer.parseInt(propertyValue);
+          if (v <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+                v = (-v) + MockVisibleComponent.LENGTH_PERCENT_TAG;
+                percentfillRadioButton.setChecked(true);
+                percentLengthField.setText("" + v);
+              } else {
+                customLengthRadioButton.setChecked(true);
+                customLengthField.setText(propertyValue);
+              }
     }
   }
 
@@ -113,7 +148,13 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     } else if (lengthHint.equals(CONST_FILL_PARENT)) {
       return MESSAGES.fillParentCaption();
     } else {
-      return MESSAGES.pixelsSummary(lengthHint);
+        int v = Integer.parseInt(lengthHint);
+              if (v <= MockVisibleComponent.LENGTH_PERCENT_TAG) {
+                    v = (-v) + MockVisibleComponent.LENGTH_PERCENT_TAG;
+                    return MESSAGES.percentSummary("" + v);
+                  } else {
+                    return MESSAGES.pixelsSummary(lengthHint);
+                  }
     }
   }
 
@@ -123,7 +164,7 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
       property.setValue(CONST_AUTOMATIC);
     } else if (fillParentRadioButton.isChecked()) {
       property.setValue(CONST_FILL_PARENT);
-    } else {
+    } else  if (customLengthRadioButton.isChecked()) {
       // Custom length
       String text = customLengthField.getText();
       // Make sure it's a non-negative number.  It is important
@@ -142,6 +183,22 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
         return false;
       }
       property.setValue(text);
+    } else {                    // Percent field!
+        String text = percentLengthField.getText();
+        boolean success = false;
+        try {
+            int v = Integer.parseInt(text);
+            if (v > 0 && v <= 100) {
+                success = true;
+                property.setValue("" + (-v + MockVisibleComponent.LENGTH_PERCENT_TAG));
+            }
+        } catch (NumberFormatException e) {
+            // fall through with success == false
+        }
+        if (!success) {
+            Window.alert(MESSAGES.nonvalidPercentValue());
+            return false;
+        }
     }
     return true;
   }
