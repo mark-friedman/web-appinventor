@@ -38,7 +38,7 @@ Blockly.liveWebAppClient = (function(){
   var MSG_COMPONENT_PROP = 1;
   var MSG_DO_IT = 3;
 
-  var JSON_MESSAGE = false;
+  var JSON_MESSAGE = true;
 
   executor = function(event){
     console.log(event.data + " via client executor");
@@ -251,7 +251,7 @@ Blockly.liveWebAppClient = (function(){
 //
 //
 //  }
-
+	
   onBlocksAreaChange = function (screenNameWithProjectId){
     if(checkLiveEditOpen()){
         screenName = screenNameWithProjectId.split("_")[1];
@@ -295,7 +295,7 @@ Blockly.liveWebAppClient = (function(){
       var BLOCK_ID = "blockId";
       var DEFAULT_BLOCK_ID = -1;
       var JS = "js";
-
+		data = data.replace(/"/g, "\'");
       switch(messageType){
         case MSG_COMPONENT_ADD :
         case MSG_COMPONENT_REMOVE :
