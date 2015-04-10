@@ -19,7 +19,7 @@ goog.require('Blockly.ComponentJSGenerator');
 
 Blockly.liveWebAppClient = (function(){
 
-  var DBG = true;
+  var DBG = false;
   // string identifier for live editor window
   var liveWebAppWindowIdentifier = "liveWebApp";
   //url for live editor webpage
@@ -28,7 +28,17 @@ Blockly.liveWebAppClient = (function(){
   var liveWebAppWindow = null;
   //object reference to live editor listener function
   var liveWebAppListener = null;
+  // screen to blocks map
+  var blocksMap = {};
 
+
+  var MSG_BLOCKLY = 2;
+  var MSG_COMPONENT_ADD = 1;
+  var MSG_COMPONENT_REMOVE = 1;
+  var MSG_COMPONENT_PROP = 1;
+  var MSG_DO_IT = 3;
+
+  var JSON_MESSAGE = false;
 
   executor = function(event){
     console.log(event.data + " via client executor");
@@ -72,24 +82,28 @@ Blockly.liveWebAppClient = (function(){
   }
 
   updateLiveWebAppComponent = function(componentInfo, propertyName, propertyValue) {
-    /*console.log("------ updateLiveWebAppComponent : " + componentInfo +
-    " propName: " + propertyName + " propVal: " + propertyValue);
-    var component = JSON.parse(componentInfo);
-    var js = Blockly.ComponentJSGenerator.generateJSForPropertyChange(component, propertyName, propertyValue);
-    console.log("------ JS: " + js + " string length: " + js.length);
-    if(js.length > 0){
-        sendMessage(js);
-    }*/
+    if(checkLiveEditOpen()){
+        console.log("------ updateLiveWebAppComponent : " + componentInfo +
+        " propName: " + propertyName + " propVal: " + propertyValue);
+        var component = JSON.parse(componentInfo);
+        var js = Blockly.ComponentJSGenerator.generateJSForPropertyChange(component, propertyName, propertyValue);
+        console.log("------ JS: " + js + " string length: " + js.length);
+        if(js.length > 0){
+            sendMessage(js,MSG_COMPONENT_PROP);
+        }
+    }
   }
 
   addLiveWebAppComponent = function(componentInfo) {
-    /*console.log("------ addLiveWebAppComponent: " + componentInfo);
-    var component = JSON.parse(componentInfo);
-    var js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(component);
-    console.log("####### JS: " + js);
-    if(js.length > 0){
-        sendMessage(js);
-    }*/
+    if(checkLiveEditOpen()){
+        console.log("------ addLiveWebAppComponent: " + componentInfo);
+        var component = JSON.parse(componentInfo);
+        var js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(component);
+        console.log("####### JS: " + js);
+        if(js.length > 0){
+            sendMessage(js,MSG_COMPONENT_ADD);
+        }
+    }
   }
     // next screen Name is just the name it does not have .html appended to it
   updateLiveWebAppUrl = function(nextScreenName){
@@ -113,12 +127,21 @@ Blockly.liveWebAppClient = (function(){
 
   }
 
+
   sendBlocklyData = function(js,screenName) {
 
     projectId = Object.keys(window.parent.Blocklies).pop().split("_")[0];
     blockly = window.parent.Blocklies[projectId + "_" + screenName];
     var block, blocks = blockly.mainWorkspace.getTopBlocks(true);
     if(DBG) console.log("Blocks: " + blocks);
+    var allBlocks = [];
+    var addedBlocks = [];
+    var blocksToBeSent = [];
+    var diff = [];
+
+    if(blocksMap[screenName] === undefined){
+      blocksMap[screenName] = [];
+    }
 
     for (var x = 0; (block = blocks[x]); x++) {
         if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
@@ -133,75 +156,172 @@ Blockly.liveWebAppClient = (function(){
             block.type != "procedures_defreturn")
             continue;
 
-        js += Blockly.JavaScript.blockToCode(block);
+        var blockJs = Blockly.JavaScript.blockToCode(block);
+        if(!checkIfBlockExists(blockJs,screenName)){
+            //blocksMap[screenName].push(blockJs);
+            addedBlocks.push(js);
+        }
+        allBlocks.push(blockJs)
     }
-    if(DBG) console.log("======= Designer and Blocks JS: " + js);
+
+    if(allBlocks.length >= blocksMap[screenName].length && blocksMap[screenName].length != 0){
+        diff = minus(allBlocks,blocksMap[screenName]);
+        blocksToBeSent = diff;
+    }else{
+        //blocks have been removed
+        blocksToBeSent = allBlocks;
+    }
+
+    blocksMap[screenName] = allBlocks;
+
+//    var diff = minus(blocksMap[screenName],allBlocks);
+//
+//    if(diff.length > 0){
+//        //blocks have been removed
+//        blocksMap[screenName] = allBlocks;
+//        blockToBeSent = allBlocks;
+//    }else{
+//        blockToBeSent = addedBlocks;
+//    }
+
+    if(JSON_MESSAGE){
+        js = blocksToBeSent
+    }else{
+        js += blocksToBeSent.join("");
+    }
+
+    console.log("======= Designer and Blocks JS: " + js);
+
     if(js.length > 0){
-       sendMessage(js);
+       sendMessage(js,MSG_BLOCKLY);
     }
   }
+
+
+  checkIfBlockExists = function(js,screenName){
+      return blocksMap[screenName].some(function (v,i,a){ return v == js });
+  }
+
+  var minus = function ( a, b ) {
+      return a.filter(function ( v,i ,a ) {
+          return b.indexOf(v) === -1;
+      });
+  };
+
+
 
   removeLiveWebAppComponents = function() {
     var js = "document.body.innerHTML = ''";
     sendMessage(js);
   }
 
-  sendDesignerData = function(formJson) {
-    removeLiveWebAppComponents();
-    var jsonObject = JSON.parse(formJson);
-    var properties = jsonObject.Properties;
-    var screenName = properties.$Name;
+//  sendDesignerData = function(formJson) {
+//    removeLiveWebAppComponents();
+//    var jsonObject = JSON.parse(formJson);
+//    var properties = jsonObject.Properties;
+//    var screenName = properties.$Name;
+//
+//    if(updateLiveWebAppUrl(screenName)){
+//        //if url is updated we need to send message to change location
+//        liveWebAppWindow.location.assign(location.origin + liveWebAppUrl);
+//        return;
+//    }else{
+//     if(properties) {
+//          var components = properties.$Components;
+//            var js;
+//            for(var i = 0; i < components.length; i++) {
+//            if(DBG) console.log("Component: " + JSON.stringify(components[i]));
+//                if(js == undefined)
+//                    js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
+//                else
+//                    js += Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
+//            if(DBG) console.log("Adding Component JS: " + js);
+//
+//            // generate javascript for all the set properties
+//            for(var key in components[i]) {
+//              js += Blockly.ComponentJSGenerator.generateJSForPropertyChange(components[i], key, components[i][key]);
+//              if(DBG) console.log("Property Change JS: " + js);
+//            }
+//          }
+//          //Send blockly changes to the web app
+//          sendBlocklyData(js,screenName);
+//        }
+//
+//    }
+//
+//
+//  }
 
-    if(updateLiveWebAppUrl(screenName)){
-        //if url is updated we need to send message to change location
-        liveWebAppWindow.location.assign(location.origin + liveWebAppUrl);
-        return;
-    }else{
-     if(properties) {
-          var components = properties.$Components;
-            var js;
-            for(var i = 0; i < components.length; i++) {
-            if(DBG) console.log("Component: " + JSON.stringify(components[i]));
-                if(js == undefined)
-                    js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
-                else
-                    js += Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
-            if(DBG) console.log("Adding Component JS: " + js);
-
-            // generate javascript for all the set properties
-            for(var key in components[i]) {
-              js += Blockly.ComponentJSGenerator.generateJSForPropertyChange(components[i], key, components[i][key]);
-              if(DBG) console.log("Property Change JS: " + js);
-            }
-          }
-          //Send blockly changes to the web app
-          sendBlocklyData(js,screenName);
+  onBlocksAreaChange = function (screenNameWithProjectId){
+    if(checkLiveEditOpen()){
+        screenName = screenNameWithProjectId.split("_")[1];
+        if(updateLiveWebAppUrl(screenName)){
+          //if url is updated we need to send message to change location
+          liveWebAppWindow.location.assign(location.origin + liveWebAppUrl);
+          return;
+        }else{
+            sendBlocklyData("",screenName);
         }
-
     }
 
-
   }
+
 
 
   removeLiveWebAppComponent = function(componentInfo) {
-    /*console.log("------ removeLiveWebAppComponent: " + componentInfo);
-    var component = JSON.parse(componentInfo);
-    var js = Blockly.ComponentJSGenerator.generateJSForRemovingComponent(component);
-    console.log("####### JS: " + js);
-    if(js.length > 0){
-        sendMessage(js);
-    }*/
+    if(checkLiveEditOpen()){
+        console.log("------ removeLiveWebAppComponent: " + componentInfo);
+        var component = JSON.parse(componentInfo);
+        var js = Blockly.ComponentJSGenerator.generateJSForRemovingComponent(component);
+        console.log("####### JS: " + js);
+        if(js.length > 0){
+            sendMessage(js,MSG_COMPONENT_REMOVE);
+        }
+    }
   }
 
-  sendMessage = function(data){
+  sendMessage = function(data,messageType){
+      message = generateMessageForType(data,messageType)
+      var sMessage = data
+      if(JSON_MESSAGE){
+        sMessage  = JSON.stringify(message)
+      }
+      sendMessageRaw(sMessage)
+  }
+
+  generateMessageForType = function(data,messageType){
+      var message = {}
+      var TYPE = "type";
+      var BLOCK_ID = "blockId";
+      var DEFAULT_BLOCK_ID = -1;
+      var JS = "js";
+
+      switch(messageType){
+        case MSG_COMPONENT_ADD :
+        case MSG_COMPONENT_REMOVE :
+        case MSG_COMPONENT_PROP:
+        case MSG_BLOCKLY:
+            message[TYPE] = messageType;
+            message[BLOCK_ID] = DEFAULT_BLOCK_ID;
+            message[JS] = data;
+            return message;
+        case MSG_DO_IT:
+            throw "live-webapp cannot generate message for type DO-IT";
+        default:
+            throw "live-webapp cannot generate message for given messageType : "+messageType;
+
+
+      }
+  }
+
+  sendMessageRaw = function(data){
     if(DBG) console.log("window location: " + window.location);
     if(liveWebAppWindow !=null){
         liveWebAppWindow.postMessage(data,location.origin + liveWebAppUrl);
     }
   }
 
-   checkLiveEditOpen = function checkWin() {
+   checkLiveEditOpen = function() {
 	   var msg ;
 	        if (!liveWebAppWindow || liveWebAppWindow.closed) {
 	            msg = false;
