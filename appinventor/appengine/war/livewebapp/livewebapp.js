@@ -104,10 +104,54 @@ var liveWebApp = (function(){
                 }
             }
     }
-    function createJsonResponceForDoIt() {
+    function createJsonResponceForDoIt(javascript, blockId) {
 
+	
+	 try {
+
+				 if(javascript.indexOf("document.location.href") > -1){ 									
+				 return buildJSONResponceToChangeTheScreen(javascript,"OK");
+				 }else{
+					 var retVal = eval(javascript);					 					 
+				 return buildJSONResponce(blockId,"OK",retVal);
+				 }
+                 
+            }
+            catch (e) {
+                if (e instanceof SyntaxError) {
+                    console.log("ERROR WHEN USING EVAL FOR BLOCKLY PART==>" + e.message);
+					return	buildErrorResponce(e.message);					
+                } else {
+                    console.log("ERROR WHEN USING EVAL FOR BLOCKLY PART==>" + e);
+					return	buildErrorResponce(e.message);					
+                }
+            }
+	
+	
 
     }
+	function buildJSONResponceToChangeTheScreen(javascript,status){
+		//this.response{"status":"OK","values":[{"type":"pushScreen","screen":"Screen2","status":"OK"}]}
+		 var res = javascript.split("\"");
+		 var screenName = res[1].replace('.html','') ;
+             console.log(screenName);			
+		
+		 var jsonData = {};
+        var fullData = {};        
+        jsonData["type"] = "pushScreen";
+        jsonData["screen"] = screenName;
+        jsonData["status"] = status;
+        fullData["status"] = status;
+        fullData["values"] = jsonData;
+        console.log(jsonData);
+        console.log(fullData);
+        var stringJSON = JSON.stringify(jsonData);
+        console.log(stringJSON);
+        stringJSON = JSON.stringify(fullData);
+        console.log(stringJSON);
+		return stringJSON;
+		
+	}
     function buildJSONResponce(blockId, status, value) {
         var jsonData = {};
         var fullData = {};
@@ -115,7 +159,7 @@ var liveWebApp = (function(){
         jsonData["type"] = "return";
         jsonData["blockid"] = blockId;
         jsonData["status"] = status;
-        fullData["status"] = "OK";
+        fullData["status"] = status;
         fullData["values"] = jsonData;
         console.log(jsonData);
         console.log(fullData);
@@ -136,7 +180,24 @@ var liveWebApp = (function(){
 		return errorJSON;
 		
 	}
-		
+	 function buildDOITResponce(blockId, status, value) {
+        var jsonData = {};
+        var fullData = {};
+        jsonData["value"] = value;
+        jsonData["type"] = "return";
+        jsonData["blockid"] = blockId;
+        jsonData["status"] = status;
+        fullData["status"] = "OK";
+        fullData["values"] = jsonData;
+        console.log(jsonData);
+        console.log(fullData);
+        var stringJSON = JSON.stringify(jsonData);
+        console.log(stringJSON);
+        stringJSON = JSON.stringify(fullData);
+        console.log(stringJSON);
+		return stringJSON;
+
+    }
 
   return self;
 })();
