@@ -120,10 +120,10 @@ var liveWebApp = (function(){
             catch (e) {
                 if (e instanceof SyntaxError) {
                     console.log("ERROR WHEN USING EVAL FOR BLOCKLY PART==>" + e.message);
-					return	buildErrorResponce(e.message);					
+					return	buildDOITErrorResponce(e.message,blockId,"BAD");					
                 } else {
                     console.log("ERROR WHEN USING EVAL FOR BLOCKLY PART==>" + e);
-					return	buildErrorResponce(e.message);					
+					return	buildDOITErrorResponce(e.message,blockId,"BAD");					
                 }
             }
 	
@@ -180,7 +180,7 @@ var liveWebApp = (function(){
 		return errorJSON;
 		
 	}
-	 function buildDOITResponce(blockId, status, value) {
+	 function buildDOITErrorResponce(value, blockId ,status) {
         var jsonData = {};
         var fullData = {};
         jsonData["value"] = value;

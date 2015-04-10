@@ -97,7 +97,7 @@ var json = goog.json.parse(event.data);
 					console.log("json"+json);
                     if (json.status == 'OK') {
 						console.log("json.values"+json.values);                        
-						Blockly.ReplMgr.processRetvals(json.values);
+						Blockly.ReplMgr.processRetvals([json.values]);
                     }else if(json.status == 'BAD'){
 					console.log("json.values"+json.values);   
 					}
