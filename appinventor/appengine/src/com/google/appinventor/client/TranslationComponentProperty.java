@@ -41,6 +41,12 @@ public class TranslationComponentProperty {
   public static HashMap<String, String> map() {
     HashMap<String, String> map = new HashMap<String, String>();
     // Properties
+    //JEFFS DESIGNER CHANGES START
+
+    map.put("HeightPercent", MESSAGES.HeightPercentProperties());
+    map.put("WidthPercent", MESSAGES.WidthPercentProperties());
+
+    //JEFFS DESIGNER CHANGES END
     map.put("DirectMessages", MESSAGES.DirectMessagesProperties());
     map.put("ContactName", MESSAGES.ContactNameProperties());
     map.put("CurrentAddress", MESSAGES.CurrentAddressProperties());

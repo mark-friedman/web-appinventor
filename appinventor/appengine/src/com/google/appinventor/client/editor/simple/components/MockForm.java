@@ -125,15 +125,17 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_VNAME = "VersionName";
   private static final String PROPERTY_NAME_ANAME = "AppName";
 
+  public static final String PROPERTY_NAME_USESCREENSIZE = "UseScreenSize"; // needs to be public
+
   // Form UI components
   AbsolutePanel formWidget;
   ScrollPanel scrollPanel;
   private TitleBar titleBar;
   private MockComponent selectedComponent;
 
-  private int screenWidth;
+  int screenWidth;
   private int screenHeight;
-  private int usableScreenHeight;
+  int usableScreenHeight;
 
   // Set of listeners for any changes of the form
   final HashSet<FormChangeListener> formChangeListeners = new HashSet<FormChangeListener>();
@@ -342,7 +344,13 @@ public final class MockForm extends MockContainer {
       return editor.isScreen1();
     }
 
-    return super.isPropertyVisible(propertyName);
+
+  if (propertyName.equals(PROPERTY_NAME_USESCREENSIZE)) {
+      // UseScreenSize is application wide, so is only visible on Screen1
+      return editor.isScreen1();
+  }
+
+      return super.isPropertyVisible(propertyName);
   }
 
   /*
@@ -640,9 +648,14 @@ public final class MockForm extends MockContainer {
       myLayout.setHAlignmentFlags(newValue);
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
-    myLayout.setVAlignmentFlags(newValue);
-    refreshForm();
+        myLayout.setVAlignmentFlags(newValue);
+        refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_USESCREENSIZE)) {
+        refreshForm();
     }
+
+
+
   }
   
   // enableAndDisable It should not be called until the component is initialized.
