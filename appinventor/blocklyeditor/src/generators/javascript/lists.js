@@ -24,12 +24,13 @@ Blockly.JavaScript['lists_create_with'] = function() {
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "make-yail-list" + Blockly.JavaScript.YAIL_SPACER;
   // code += Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+
   var itemsAdded = 0;
   var code = "[";
-  for(var i=0;i<this.itemCount_;i++) {
+  for (var i = 0; i < this.itemCount_; i++) {
     var argument = Blockly.JavaScript.valueToCode(this, 'ADD' + i, Blockly.JavaScript.ORDER_NONE) || null;
-    if(argument != null){
-      if (itemsAdded + 1 == this.itemCount_ ){
+    if (argument != null) {
+      if (itemsAdded + 1 == this.itemCount_ ) {
         code += argument;
       } else {
         code += argument + ",";
@@ -38,6 +39,7 @@ Blockly.JavaScript['lists_create_with'] = function() {
     }
   }
   code += "]";
+
   // code += Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
   // for(var i=0;i<itemsAdded;i++) {
   //   code += "any" + Blockly.JavaScript.YAIL_SPACER;
@@ -45,7 +47,6 @@ Blockly.JavaScript['lists_create_with'] = function() {
   // code += Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
   // code += Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
-
 };
 
 Blockly.JavaScript['lists_select_item'] = function() {
@@ -53,7 +54,7 @@ Blockly.JavaScript['lists_select_item'] = function() {
 
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
   var argument1 = Blockly.JavaScript.valueToCode(this, 'NUM', Blockly.JavaScript.ORDER_NONE) || 0;
-  
+
   var substring = argument0.substring(1, argument0.length - 1);
   var array = substring.split(",");
 
@@ -78,7 +79,7 @@ Blockly.JavaScript['lists_replace_item'] = function() {
 
   if (argument0[1] == "$"){
     code = argument0 + "[" + argument1 + "]= " + argument2 + ";";
-  } 
+  }
   else {
     // assuming it is an array represented as a list
 
@@ -86,8 +87,8 @@ Blockly.JavaScript['lists_replace_item'] = function() {
     code +=  "array[" + argument1 +"] = " + argument2 + ";"
   }
 
-  
-  
+
+
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-set-item!" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
   // code = code + argument0 + Blockly.JavaScript.YAIL_SPACER + argument1
@@ -102,7 +103,7 @@ Blockly.JavaScript['lists_remove_item'] = function() {
   // Remove Item in list.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
   var argument1 = Blockly.JavaScript.valueToCode(this, 'INDEX', Blockly.JavaScript.ORDER_NONE) || 1;
-  
+
   var code = "var list = " + argument0 + ";\n" + "list.splice(" + argument1 + ", 1);";
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-remove-item!" + Blockly.JavaScript.YAIL_SPACER;
@@ -149,13 +150,13 @@ Blockly.JavaScript['lists_length'] = function() {
   var code = "";
 
 
-  
+
   if (argument0[1] == "$"){
     code = argument0 + ".length;";
   } else if (argument0 == "[]"){
     code = 0;
   } else {
-    code = (argument0.match(/,/g) || []).length + 1;  
+    code = (argument0.match(/,/g) || []).length + 1;
   }
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-length" + Blockly.JavaScript.YAIL_SPACER;
@@ -207,7 +208,7 @@ Blockly.JavaScript['lists_add_items'] = function() {
       var argument = Blockly.JavaScript.valueToCode(this, 'ITEM' + i, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
       code += argument0 + ".push(" + argument + ");\n";
     }
-  } 
+  }
   // a generic list is passed
   else {
     var code = argument0.substring(0,argument0.length -1);
@@ -294,14 +295,14 @@ Blockly.JavaScript['lists_position_in'] = function() {
 Blockly.JavaScript['lists_pick_random_item'] = function() {
   // Pick random item
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-  
+
   // gets length of array
-  var len = (argument0.match(/,/g) || []).length + 1;  
+  var len = (argument0.match(/,/g) || []).length + 1;
 
   // makes the string of the list into an array
   var substring = argument0.substring(1, argument0.length - 1);
   var array = substring.split(",");
-  
+
   // gets a random number to pick from the list
   var index = Math.floor((Math.random() * len) + 1);
   var code = array[index];
@@ -320,8 +321,8 @@ Blockly.JavaScript['lists_is_empty'] = function() {
   // Is the list empty?.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
 
-  var code = (argument0.match(/,/g) || []).length > 0;
-
+  // var code = (argument0.match(/,/g) || []).length > 0;
+  var code = (argument0.length == 0);
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-empty?" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
   // code = code + argument0;
@@ -368,8 +369,19 @@ Blockly.JavaScript['lists_is_list'] = function() {
 Blockly.JavaScript['lists_to_csv_row'] = function() {
   // Make a csv row from list.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-  
-  var code = "[" + argument0 + "];";
+
+  // declare the code variable to be returned
+  var code;
+
+  // empty list
+  if (argument0.length == 0) {
+    code = "";
+
+  // argument0 is a procedure || variable || lambda function || non empty list represented as a string
+  // the result of the 3 types of cases from above should evaluate to a list
+  } else {
+    code = Blockly.JavaScript.lists_to_csv_row_helper(argument0);
+  }
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-to-csv-row" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
@@ -378,58 +390,150 @@ Blockly.JavaScript['lists_to_csv_row'] = function() {
   // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
   // code = code + "list" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list to csv row" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  // code should be a string representing a CSV row
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
 
 Blockly.JavaScript['lists_to_csv_table'] = function() {
   // Make a csv table from list
+  // the expected eval of argument0 should be a list where each element is also a
+  // list representing a row in the CSV table
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-  var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-to-csv-table" + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-  code = code + argument0;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-  code = code + "list" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list to csv table" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  // declare the code variable to be returned
+  var code = "";
+
+  // empty list
+  if (argument0.length == 0) {
+    code = "";
+
+  // argument0 is a procedure || variable || lambda function || 'lists' - string representation of a list
+  // the result of the 3 types of cases from above should evaluate to a list of lists
+  } else {
+    code = Blockly.JavaScript.lists_to_csv_table_helper(argument0);
+  }
+
+  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-to-csv-table" + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + argument0;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
+  // code = code + "list" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list to csv table" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  // code should be a string representing a CSV table
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
 
 Blockly.JavaScript['lists_from_csv_row'] = function() {
   // Make list from csv row.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "\"\"";
-  var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-row" + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-  code = code + argument0;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-  code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list from csv row" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  var code = '(function() { ' +
+    'var result = ' + argument0 + '; ' +
+    'var result = result.replace(/\"/g, \"\"); ' +
+    'result = result.split(\',\'); ' +
+    'return result; ' +
+    '})()';
+
+  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-row" + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + argument0;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
+  // code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list from csv row" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  // code should be a list that is being returned
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
 
-Blockly.JavaScript['lists_from_csv_table'] = function() {
-  // Make list from csv table.
-  var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "\"\"";
-  var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-table" + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-  code = code + argument0;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-  code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list from csv table" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
-};
+// Blockly.JavaScript['lists_from_csv_table'] = function() {
+//   // Make list from csv table.
+//   var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "\"\"";
+//   var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-table" + Blockly.JavaScript.YAIL_SPACER;
+//   code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+//   code = code + argument0;
+//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
+//   code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+//   code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list from csv table" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+//   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
+// };
 
- Blockly.JavaScript['lists_lookup_in_pairs'] = function() {
-   // Lookup in pairs in list of lists (key, value).
-   var argument0 = Blockly.JavaScript.valueToCode(this, 'KEY', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
-   var argument1 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-   var argument2 = Blockly.JavaScript.valueToCode(this, 'NOTFOUND', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_NULL;
-   var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-alist-lookup" + Blockly.JavaScript.YAIL_SPACER;
-   code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-   code = code + argument0 + Blockly.JavaScript.YAIL_SPACER + argument1 + Blockly.JavaScript.YAIL_SPACER + argument2 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-   code = code + "any list any" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "lookup in pairs" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
- };
+//  Blockly.JavaScript['lists_lookup_in_pairs'] = function() {
+//    // Lookup in pairs in list of lists (key, value).
+//    var argument0 = Blockly.JavaScript.valueToCode(this, 'KEY', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
+//    var argument1 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
+//    var argument2 = Blockly.JavaScript.valueToCode(this, 'NOTFOUND', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_NULL;
+//    var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-alist-lookup" + Blockly.JavaScript.YAIL_SPACER;
+//    code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+//    code = code + argument0 + Blockly.JavaScript.YAIL_SPACER + argument1 + Blockly.JavaScript.YAIL_SPACER + argument2 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+//    code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
+//    code = code + "any list any" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+//    code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "lookup in pairs" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+//    return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
+//  };
+
+
+/* Helper function to convert a row-list to a csv text
+ * Each element in the list will be double quoted in the text
+ *
+ * @param   {any} argument0   : a procedure || variable || lambda function || string of a list
+ * @return  {string} code     : csv text string lambda function of the list
+ *                              evaluated from argument0
+ */
+Blockly.JavaScript.lists_to_csv_row_helper = function(argument0) {
+  var code = '(function() { ' +
+    'var argResult = ' + argument0 + '; ' +
+    // Check if the result is empty after evaluating
+    'if (argResult.length == 0) { ' +
+    ' return \"\"; ' +
+    '} ' +
+    'argResult = argResult.map(function(val) { return val.toString(); }); ' +
+    'var result = \'\"\' + argResult + \'\"\'; ' +
+    'result = result.replace(/,/g , \'\",\"\'); ' +
+    'return result; ' +
+  '})()';
+  return code;
+}
+
+/* Helper function to convert a list of lists to a csv text
+ * Each row-list element will be double quoted in the text
+ * Each row will be separated by '\r\n'
+ *
+ * @param   {any} argument0   : a procedure || variable || lambda function || string of a list of lists
+ * @return  {string} code     : csv text string lambda function of the list
+ *                              evaluated from argument0
+ */
+Blockly.JavaScript.lists_to_csv_table_helper = function(argument0) {
+  var code = '(function() { ' +
+    'var finalResult = ""; ' +
+    'var argResult = ' + argument0 + '; ' +
+    // Check if the result is empty after evaluating
+    'if (argResult.length == 0) { ' +
+    ' return \"\"; ' +
+    '} ' +
+    // Iterate through the resulting lists of lists
+    'for (var i = 0; i < argResult.length; i++) { ' +
+    ' var rowList = argResult[i]; ' +
+    // Use lists_to_csv_row_helper logic to evaluate for this row-list
+    // Can't just call the helper function because it will not exist in the html source
+    ' if (rowList.length == 0) { ' +
+    '   finalResult += \"\"; ' +
+    ' } else { ' +
+    '   rowList = rowList.map(function(val) { return val.toString(); }); ' +
+    '   rowList = \'\"\' + rowList + \'\"\'; ' +
+    '   rowList = rowList.replace(/,/g , \'\",\"\'); ' +
+    '   finalResult += rowList; ' +
+    ' } ' +
+    // Check if there is an additional row after this
+    ' if (i != argResult.length-1) { ' +
+    '   finalResult += \"\\r\\n\"; ' +
+    ' } ' +
+    '} ' +
+    'return finalResult; ' +
+  '})()';
+  return code;
+}
