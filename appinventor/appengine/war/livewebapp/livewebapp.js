@@ -180,7 +180,7 @@ var liveWebApp = (function(){
 		return errorJSON;
 		
 	}
-	 function buildDOITErrorResponce(value, blockId ,status) {
+	 function buildDOITErrorResponce(value , blockId , status) {
         var jsonData = {};
         var fullData = {};
         jsonData["value"] = value;
