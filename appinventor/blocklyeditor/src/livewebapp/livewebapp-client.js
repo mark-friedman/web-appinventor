@@ -147,7 +147,6 @@ Blockly.liveWebAppClient = (function(){
   }
 
     sendDesignerData = function(formJson) {
-      console.log(formJson);
     removeLiveWebAppComponents();
     var jsonObject = JSON.parse(formJson);
     var properties = jsonObject.Properties;
@@ -214,7 +213,8 @@ Blockly.liveWebAppClient = (function(){
        }
    }
 
-    getHorizontalAlign= function(propVal){
+    
+	getHorizontalAlign= function(propVal){
         if(propVal==1){
             return "Left";
         }else if(propVal==2){
