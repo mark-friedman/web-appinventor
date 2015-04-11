@@ -909,9 +909,15 @@ public class BlocklyPanel extends HTMLPanel {
     public static native void doSendComponentRemoved(String componentInfo) /*-{
     $wnd.liveWebAppClient.removeLiveWebAppComponent(componentInfo);
   }-*/;
+
     public static native boolean checkLiveEditWindowOpen()/*-{
-		  return $wnd.liveWebAppClient.checkLiveEditOpen();
-		}-*/;
+    return $wnd.liveWebAppClient.checkLiveEditOpen();
+  }-*/;
+
+    public static native void doSendBlocksAreaChange(String formName) /*-{
+    $wnd.liveWebAppClient.onBlocksAreaChange(formName);
+  }-*/;
+
     // LiveWebApp methods end
 
 
@@ -978,7 +984,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doSendJson(String formName, String formJson, String packageName) /*-{
     $wnd.Blocklies[formName].ReplMgr.sendFormData(formJson, packageName);
-    $wnd.liveWebAppClient.sendDesignerData(formJson);
+    //$wnd.liveWebAppClient.sendDesignerData(formJson);
   }-*/;
 
   public static native void doResetYail(String formName) /*-{
