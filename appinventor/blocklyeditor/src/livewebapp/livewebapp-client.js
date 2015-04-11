@@ -146,7 +146,8 @@ Blockly.liveWebAppClient = (function(){
     sendMessage(js);
   }
 
-  sendDesignerData = function(formJson) {
+    sendDesignerData = function(formJson) {
+      console.log(formJson);
     removeLiveWebAppComponents();
     var jsonObject = JSON.parse(formJson);
     var properties = jsonObject.Properties;
@@ -157,11 +158,10 @@ Blockly.liveWebAppClient = (function(){
         liveWebAppWindow.location.assign(location.origin + liveWebAppUrl);
         return;
     }else{
+        var js = this.setScreenProperties(properties);
      if(properties) {
           var components = properties.$Components;
-            var js;
             for(var i = 0; i < components.length; i++) {
-            if(DBG) console.log("Component: " + JSON.stringify(components[i]));
                 if(js == undefined)
                     js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
                 else
@@ -179,11 +179,50 @@ Blockly.liveWebAppClient = (function(){
         }
 
     }
-
-
   }
 
+  setScreenProperties = function(screenInfo) {
+      var screenProps="";
+      if (screenInfo.hasOwnProperty('BackgroundColor')) {
+          var propValue = screenInfo["BackgroundColor"];
+          screenProps += "document.body.style.backgroundColor =\"#" +
+            propValue.substring(4) + "\";";
+      }if (screenInfo.hasOwnProperty('AlignVertical')) {
+          var propValue = screenInfo["AlignVertical"];
+          screenProps += "document.body.style.verticalAlign =\"" + this.getVerticalAlign(propValue)+ "\";";
+      }if (screenInfo.hasOwnProperty('AlignHorizontal')) {
+          var propValue = screenInfo["AlignHorizontal"];
+          screenProps += "document.body.style.horizontalAlign =\"" +this.getHorizontalAlign(propValue)+ "\";";
+      }if (screenInfo.hasOwnProperty('Title')) {
+          var propValue = screenInfo["Title"];
+          screenProps += "document.title =\"" +propValue+ "\";";
+      }if (screenInfo.hasOwnProperty('Image')) {
+          var propValue = screenInfo["Image"];
+          screenProps += "document.body.style.backgroundImage = \"url(assets/" +
+          (propValue) + ")\";";
+      }
+        return screenProps;
+  }
 
+   getVerticalAlign = function(propVal){
+       if(propVal==1){
+          return "Top";
+       }else if(propVal==2){
+          return "center";
+       }else{
+          return "Bottom";
+       }
+   }
+
+    getHorizontalAlign= function(propVal){
+        if(propVal==1){
+            return "Left";
+        }else if(propVal==2){
+            return "center";
+        }else{
+            return "Right";
+        }
+    }
   removeLiveWebAppComponent = function(componentInfo) {
     /*console.log("------ removeLiveWebAppComponent: " + componentInfo);
     var component = JSON.parse(componentInfo);
@@ -205,7 +244,7 @@ Blockly.liveWebAppClient = (function(){
 	   var msg ;
 	        if (!liveWebAppWindow || liveWebAppWindow.closed) {
 	            msg = false;
-	        } else { 	            
+	        } else {
 	            msg = true;	            	       
 	        }	
 	        return msg;
