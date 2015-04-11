@@ -55,10 +55,14 @@ Blockly.JavaScript['lists_select_item'] = function() {
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
   var argument1 = Blockly.JavaScript.valueToCode(this, 'NUM', Blockly.JavaScript.ORDER_NONE) || 0;
 
-  var substring = argument0.substring(1, argument0.length - 1);
-  var array = substring.split(",");
+  // NOTE change eval at runtime
 
-  var code = array[argument1];
+  var code = argument0 + "[" + argument1 + "]";
+
+  // var substring = argument0.substring(1, argument0.length - 1);
+  // var array = substring.split(",");
+
+  // var code = array[argument1];
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-get-item" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
@@ -82,7 +86,6 @@ Blockly.JavaScript['lists_replace_item'] = function() {
   }
   else {
     // assuming it is an array represented as a list
-
     code =  "var array = " + argument0 + ";\n";
     code +=  "array[" + argument1 +"] = " + argument2 + ";"
   }
@@ -121,17 +124,17 @@ Blockly.JavaScript['lists_insert_item'] = function() {
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
   var argument1 = Blockly.JavaScript.valueToCode(this, 'INDEX', Blockly.JavaScript.ORDER_NONE) || 1;
   var argument2 = Blockly.JavaScript.valueToCode(this, 'ITEM', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
-  var code = "";
+  var code = argument0 + ".splice(" + argument1 + ", 0, " + argument2+ ");";
 
 
-  if (argument0 == "[]"){
-    // can't insert into a new element in an empty list
-  }
-  else if (argument0[1] == "$"){
-    code = argument0 + ".splice(" + argument1 + ", 0, " + argument2+ ");";
-  } else {
-    code = "var list = " + argument0 + ";\n" + "list.splice(" + argument1 + ", 0, " + argument2+ ");";
-  }
+  // if (argument0 == "[]"){
+  //   // can't insert into a new element in an empty list
+  // }
+  // else if (argument0[1] == "$"){
+  //   code = argument0 + ".splice(" + argument1 + ", 0, " + argument2+ ");";
+  // } else {
+  //   code = "var list = " + argument0 + ";\n" + "list.splice(" + argument1 + ", 0, " + argument2+ ");";
+  // }
 
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-insert-item!" + Blockly.JavaScript.YAIL_SPACER;
@@ -147,17 +150,17 @@ Blockly.JavaScript['lists_insert_item'] = function() {
 Blockly.JavaScript['lists_length'] = function() {
   // Length of list.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-  var code = "";
+  var code = argument0 + ".length";
 
 
 
-  if (argument0[1] == "$"){
-    code = argument0 + ".length;";
-  } else if (argument0 == "[]"){
-    code = 0;
-  } else {
-    code = (argument0.match(/,/g) || []).length + 1;
-  }
+  // if (argument0[1] == "$"){
+  //   code = argument0 + ".length;";
+  // } else if (argument0 == "[]"){
+  //   code = 0;
+  // } else {
+  //   code = (argument0.match(/,/g) || []).length + 1;
+  // }
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-length" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
@@ -196,34 +199,39 @@ Blockly.JavaScript['lists_add_items'] = function() {
   var itemsAdded;
   var code = "";
 
-  // handles empty list
-  if (argument0 == "[]"){
-    code = Blockly.JavaScript.valueToCode(this, 'ITEM' + 0, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
-    code = "["+ code +"]";
+  for(var i=0;i<this.itemCount_; i++){
+    var argument = Blockly.JavaScript.valueToCode(this, 'ITEM' + i, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
+    code += argument0 + ".push(" + argument + ");\n";
   }
 
-  // handles variables
-  else if (argument0[1] == "$"){
-    for(var i=0;i<this.itemCount_; i++){
-      var argument = Blockly.JavaScript.valueToCode(this, 'ITEM' + i, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
-      code += argument0 + ".push(" + argument + ");\n";
-    }
-  }
-  // a generic list is passed
-  else {
-    var code = argument0.substring(0,argument0.length -1);
+  // // handles empty list
+  // if (argument0 == "[]"){
+  //   code = Blockly.JavaScript.valueToCode(this, 'ITEM' + 0, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
+  //   code = "["+ code +"]";
+  // }
 
-    for(var i=0;i<this.itemCount_; i++){
-      var argument = Blockly.JavaScript.valueToCode(this, 'ITEM' + i, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
-      if (itemsAdded + 1 == this.itemCount_ ){
-          code += argument;
-      } else {
-          code += "," + argument;
-      }
-      itemsAdded++;
-    }
-    code += "]";
-  }
+  // // handles variables
+  // else if (argument0[1] == "$"){
+  //   for(var i=0;i<this.itemCount_; i++){
+  //     var argument = Blockly.JavaScript.valueToCode(this, 'ITEM' + i, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
+  //     code += argument0 + ".push(" + argument + ");\n";
+  //   }
+  // }
+  // // a generic list is passed
+  // else {
+  //   var code = argument0.substring(0,argument0.length -1);
+
+  //   for(var i=0;i<this.itemCount_; i++){
+  //     var argument = Blockly.JavaScript.valueToCode(this, 'ITEM' + i, Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
+  //     if (itemsAdded + 1 == this.itemCount_ ){
+  //         code += argument;
+  //     } else {
+  //         code += "," + argument;
+  //     }
+  //     itemsAdded++;
+  //   }
+  //   code += "]";
+  // }
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-add-to-list!" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
@@ -269,19 +277,22 @@ Blockly.JavaScript['lists_position_in'] = function() {
   // Postion of item in list.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'ITEM', Blockly.JavaScript.ORDER_NONE) || 1;
   var argument1 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-  var code = "";
+  var code = argument1 + ".indexOf(" + argument0 + ")";
 
-  // list is a variable
-  if(argument0[1] == "$"){
-    code = argument0 + ".indexOf(" + argument1 + ");";
-  } else {
 
-    // makes the string of the list into an array
-    var substring = argument0.substring(1, argument0.length - 1);
-    var array = substring.split(",");
 
-    code = array.indexOf(argument1);
-  }
+
+  // // list is a variable
+  // if(argument0[1] == "$"){
+  //   code = argument0 + ".indexOf(" + argument1 + ");";
+  // } else {
+
+  //   // makes the string of the list into an array
+  //   var substring = argument0.substring(1, argument0.length - 1);
+  //   var array = substring.split(",");
+
+  //   code = array.indexOf(argument1);
+  // }
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-index" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
   // code = code + argument0;
@@ -296,16 +307,24 @@ Blockly.JavaScript['lists_pick_random_item'] = function() {
   // Pick random item
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
 
-  // gets length of array
-  var len = (argument0.match(/,/g) || []).length + 1;
+  // // gets length of array
+  // var len = (argument0.match(/,/g) || []).length + 1;
 
-  // makes the string of the list into an array
-  var substring = argument0.substring(1, argument0.length - 1);
-  var array = substring.split(",");
+  // // makes the string of the list into an array
+  // var substring = argument0.substring(1, argument0.length - 1);
+  // var array = substring.split(",");
 
-  // gets a random number to pick from the list
-  var index = Math.floor((Math.random() * len) + 1);
-  var code = array[index];
+  // // gets a random number to pick from the list
+  // var index = Math.floor((Math.random() * len) + 1);
+  // var code = array[index];
+
+  var code ="(function() { "  +
+              "var length = " +  argument0 + ".length;\n" +
+              "var index = Math.floor(Math.random() * length);\n" +
+              "return " + argument0 +"[index];" +
+            "})()";
+
+
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-pick-random" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
@@ -322,7 +341,7 @@ Blockly.JavaScript['lists_is_empty'] = function() {
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
 
   // var code = (argument0.match(/,/g) || []).length > 0;
-  var code = (argument0.length == 0);
+  var code = "(" + argument0 + ".length == 0)";
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-empty?" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
   // code = code + argument0;
