@@ -193,7 +193,21 @@ Blockly.Block.prototype.customContextMenu = function(options) {
   }
   doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
+
+     if(!Blockly.liveWebAppClient.checkLiveEditOpen()){
+           var dialog;
+           dialog = new goog.ui.Dialog(null, true);
+           dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
+           dialog.setContent(Blockly.Msg.CONNECT_TO_DO_IT);
+           dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+             addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+               false, true));
+           dialog.setVisible(true);
+
+     }else{
         Blockly.liveWebAppClient.doItAction(myBlock);
+     }
+
   };
   options.push(doitOption);
   if(myBlock.procCustomContextMenu){
