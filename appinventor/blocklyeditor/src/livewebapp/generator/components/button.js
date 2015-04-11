@@ -9,13 +9,18 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.ButtonJsGenerator.generateJSForAddingComponent = function(component){
-    return     "var div = document.createElement(\"div\");" +
-        "var btn = document.createElement(\"Button\");" +
-        "btn.setAttribute(\"id\",\"" + component.$Name + "\");" +
-        "var txt = document.createTextNode(\"" + component.Text + "\");" +
-        "btn.appendChild(txt);" +
-        "div.appendChild(btn);" +
-        "document.body.appendChild(div);";
+    return "var element =  document.getElementById(\""+component.$Name+"\");"+
+    "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload(true);" +
+        "}else {"+
+         "var div = document.createElement(\"div\");" +
+            "var btn = document.createElement(\"Button\");" +
+            "btn.setAttribute(\"id\",\"" + component.$Name + "\");" +
+            "var txt = document.createTextNode(\"" + component.Text + "\");" +
+            "btn.appendChild(txt);" +
+            "div.appendChild(btn);" +
+            "document.body.appendChild(div);"+
+        "}";
 };
 
 
@@ -93,8 +98,10 @@ Blockly.ButtonJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 

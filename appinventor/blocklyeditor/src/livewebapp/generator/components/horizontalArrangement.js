@@ -11,38 +11,43 @@ goog.require('Blockly.LiveWebAppClient');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.HorizontalArrangement.generateJSForAddingComponent = function(component){
-    var horizontal ="";
-    if (component.hasOwnProperty('$Components')) {
-        horizontal += "var div_arrangement = document.createElement(\"div\");";
-        horizontal += "div_arrangement.id=\""+component.$Name+"\";";
-        horizontal += "div_arrangement.className = \"row\";";
-        var components = component.$Components;
-        var span = 1;
-        if (components > 0)
-            span = 12 / components.length;
-        for (var i = 0; i < components.length; i++) {
-            var js = "";
-            horizontal += "var div" + i + " = document.createElement(\"div\");";
-            horizontal += "div" + i + ".className = \"col-md-" + span + "\";";
-            if (js == undefined)
-                js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
-            else
-                js += Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
-            console.log("Adding Component JS: " + js);
+     var layout= "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {";
+        var horizontal = "";
+        if (component.hasOwnProperty('$Components')) {
+            horizontal += "var div_arrangement = document.createElement(\"div\");";
+            horizontal += "div_arrangement.id=\"" + component.$Name + "\";";
+            horizontal += "div_arrangement.className = \"row\";";
+            var components = component.$Components;
+            var span = 1;
+            if (components > 0)
+                span = 12 / components.length;
+            for (var i = 0; i < components.length; i++) {
+                var js = "";
+                horizontal += "var div" + i + " = document.createElement(\"div\");";
+                horizontal += "div" + i + ".className = \"col-md-" + span + "\";";
+                if (js == undefined)
+                    js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
+                else
+                    js += Blockly.ComponentJSGenerator.generateJSForAddingComponent(components[i]);
+                console.log("Adding Component JS: " + js);
 
-            // generate javascript for all the set properties
-            for (var key in components[i]) {
-                var propValue = Blockly.ComponentJSGenerator.generateJSForPropertyChange(components[i], key, components[i][key]);
-                if(propValue!="")
-                    js +=propValue;
+                // generate javascript for all the set properties
+                for (var key in components[i]) {
+                    var propValue = Blockly.ComponentJSGenerator.generateJSForPropertyChange(components[i], key, components[i][key]);
+                    if (propValue != "")
+                        js += propValue;
+                }
+                horizontal += js;
+                horizontal += "div" + i + ".appendChild(div);";
+                horizontal += "div_arrangement.appendChild(div" + i + ");";
             }
-            horizontal += js;
-            horizontal += "div" + i + ".appendChild(div);";
-            horizontal += "div_arrangement.appendChild(div" + i + ");";
+            horizontal += "document.body.appendChild(div_arrangement);";
         }
-        horizontal += "document.body.appendChild(div_arrangement);";
-    }
-    return horizontal;
+    layout+=horizontal+"}";
+        return layout;
 };
 
 
@@ -82,6 +87,8 @@ Blockly.ButtonJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };

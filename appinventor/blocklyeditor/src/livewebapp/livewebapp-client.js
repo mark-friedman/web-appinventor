@@ -281,7 +281,7 @@ Blockly.liveWebAppClient = (function(){
   }
 
   sendMessage = function(data,messageType,blockId){
-      message = generateMessageForType(data,messageType,blockId)
+      var message = generateMessageForType(data,messageType,blockId)
       var sMessage = data
       if(JSON_MESSAGE){
         sMessage  = JSON.stringify(message)

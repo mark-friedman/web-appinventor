@@ -9,7 +9,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.FormJsGenerator.generateJSForAddingComponent = function(component){
-    return     "";
+    return  "";
 };
 
 
@@ -32,7 +32,7 @@ Blockly.FormJsGenerator.setProperties = function(component, propName, propValue)
                 propValue.substring(4) + "\";";
         case "Title":
             return "document.title =\"" +propValue+ "\";";
-        case "Image":
+        case "BackgroundImage":
             return "document.body.style.backgroundImage = \"url(assets/" +
                 (propValue) + ")\";";
         default:
@@ -45,8 +45,10 @@ Blockly.FormJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 

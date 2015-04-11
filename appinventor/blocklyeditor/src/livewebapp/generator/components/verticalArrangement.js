@@ -11,6 +11,10 @@ goog.require('Blockly.LiveWebAppClient');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.VerticalArrangement.generateJSForAddingComponent = function(component){
+    var layout= "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {";
     var vertical ="";
     if (component.hasOwnProperty('$Components')) {
         vertical += "var div_arrangement = document.createElement(\"div\");";
@@ -41,7 +45,8 @@ Blockly.VerticalArrangement.generateJSForAddingComponent = function(component){
         }
         vertical += "document.body.appendChild(div_arrangement);";
     }
-    return vertical;
+    layout+=vertical+"}";
+    return layout;
 };
 
 
@@ -81,7 +86,9 @@ Blockly.ButtonJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 

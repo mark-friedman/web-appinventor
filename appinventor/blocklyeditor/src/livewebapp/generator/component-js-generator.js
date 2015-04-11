@@ -75,6 +75,10 @@ Blockly.ComponentJSGenerator.getComponentType = function(type) {
              case "VideoPlayer" : return "video";
              case "Player" : return "audio";
              case "ImagePicker" : return "imagePicker";
+             case "HorizontalArrangement":
+                 return "horizontalArrangement";
+             case "VerticalArrangement":
+                 return "verticalArrangement";
              case "Form" : return "form";
             default: return "";
          }
