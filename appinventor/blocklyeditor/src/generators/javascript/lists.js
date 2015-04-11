@@ -432,10 +432,10 @@ Blockly.JavaScript['lists_from_csv_row'] = function() {
 
   var code = '(function() { ' +
     'var result = ' + argument0 + '; ' +
-    'var result = result.replace(/\"/g, \"\"); ' +
+    'result = result.replace(/\"/g, \"\"); ' +
     'result = result.split(\',\'); ' +
     'return result; ' +
-    '})()';
+  '})()';
 
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-row" + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
@@ -449,32 +449,64 @@ Blockly.JavaScript['lists_from_csv_row'] = function() {
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
 
-// Blockly.JavaScript['lists_from_csv_table'] = function() {
-//   // Make list from csv table.
-//   var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "\"\"";
-//   var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-table" + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + argument0;
-//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-//   code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list from csv table" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
-// };
+Blockly.JavaScript['lists_from_csv_table'] = function() {
+  // Make list from csv table.
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT', Blockly.JavaScript.ORDER_NONE) || "\"\"";
 
-//  Blockly.JavaScript['lists_lookup_in_pairs'] = function() {
-//    // Lookup in pairs in list of lists (key, value).
-//    var argument0 = Blockly.JavaScript.valueToCode(this, 'KEY', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
-//    var argument1 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
-//    var argument2 = Blockly.JavaScript.valueToCode(this, 'NOTFOUND', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_NULL;
-//    var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-alist-lookup" + Blockly.JavaScript.YAIL_SPACER;
-//    code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-//    code = code + argument0 + Blockly.JavaScript.YAIL_SPACER + argument1 + Blockly.JavaScript.YAIL_SPACER + argument2 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//    code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-//    code = code + "any list any" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-//    code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "lookup in pairs" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//    return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
-//  };
+  var code = '(function() { ' +
+    'var result = ' + argument0 + '; ' +
+    'result = result.replace(/\"/g, \"\"); ' +
+    'result = result.split(\'\\n\'); ' +
+    'for (var i = 0; i < result.length; i++) { ' +
+    ' result[i] = result[i].split(\',\'); ' +
+    '} ' +
+    'return result; ' +
+  '})()';
+
+  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-list-from-csv-table" + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + argument0;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
+  // code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "list from csv table" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  // cod should be a list of lists that is being returned
+  return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
+};
+
+ Blockly.JavaScript['lists_lookup_in_pairs'] = function() {
+   // Lookup in pairs in list of lists (key, value).
+   var argument0 = Blockly.JavaScript.valueToCode(this, 'KEY', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
+   var argument1 = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.emptyListCode;
+   var argument2 = Blockly.JavaScript.valueToCode(this, 'NOTFOUND', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_NULL;
+
+   var code = '(function() { ' +
+    'var key = ' + argument0 + '; ' +
+    'var list = ' + argument1 + '; ' +
+    'var notFound = ' + argument2 + '; ' +
+    // Iterate through the key value pairs; elements in the list
+    'for (var i = 0; i < list.length; i++) { ' +
+    ' currKeyVal = list[i]; ' +
+    // Check if the current key value pair has the same key
+    ' if (currKeyVal[0] == key) { ' +
+    '   return currKeyVal[1]; ' +
+    ' } ' +
+    '} ' +
+    // List exhausted with no matching key found
+    'return notFound; ' +
+  '})()';
+
+   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "yail-alist-lookup" + Blockly.JavaScript.YAIL_SPACER;
+   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
+   // code = code + argument0 + Blockly.JavaScript.YAIL_SPACER + argument1 + Blockly.JavaScript.YAIL_SPACER + argument2 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+   // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
+   // code = code + "any list any" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+   // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "lookup in pairs" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+   // Returns the value associated with the key in the list of pairs
+   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
+ };
 
 
 /* Helper function to convert a row-list to a csv text
