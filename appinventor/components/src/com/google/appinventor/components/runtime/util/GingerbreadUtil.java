@@ -18,7 +18,7 @@ import android.nfc.tech.NdefFormatable;
 import android.os.Parcelable;
 import android.util.Log;
 
-import com.google.appinventor.components.runtime.NearField;
+//import com.google.appinventor.components.runtime.NearField;
 
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -95,7 +95,8 @@ public class GingerbreadUtil {
     return record;
   }
 
-  public static void resolveNFCIntent(Intent intent, NearField nfc){
+  // TODO Method and class may not be required in the future.  Check and remove as appropriate.
+/*  public static void resolveNFCIntent(Intent intent, NearField nfc){
     String action = intent.getAction();
     //activity.setIntent(new Intent()); // Consume this intent.  Is this the right thing?
     if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
@@ -142,7 +143,7 @@ public class GingerbreadUtil {
     } else {
       Log.e("nearfield", "Unknown intent " + intent);
     }
-  }
+  }*/
 
   /*
   * Writes an NdefMessage to a NFC tag

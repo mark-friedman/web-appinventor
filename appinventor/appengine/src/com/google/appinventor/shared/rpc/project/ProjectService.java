@@ -275,13 +275,13 @@ public interface ProjectService extends RemoteService {
   /**
    * creates a new project from a gallery app
    * @param appName name of the app to open
-   * @param aiaPath the url of the aia file in cloud
+   * @param waiPath the url of the wai file in cloud
    * @param attributionId id of the gallery app that is being remixed
    *
    * @return {@link UserProject} info for new project
    */
 
-  UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
+  UserProject newProjectFromGallery(String appName, String waiPath, long attributionId);
 
   /**
    * Log a string to the server log, always log with

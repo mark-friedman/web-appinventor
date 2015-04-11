@@ -16,30 +16,30 @@ import com.google.gwt.i18n.client.Messages;
 //@LocalizableResource.DefaultLocale("en")
 
 public interface OdeMessages extends Messages {
-  // JEFFS DESIGNER CHANGES
+  // JEFF'S DESIGNER CHANGES
 
-    @DefaultMessage("percent")
-    @Description("Caption for percent label")
-    String percentCaption();
+	@DefaultMessage("percent")
+	@Description("Caption for percent label")
+	String percentCaption();
 
-    @DefaultMessage("{0} percent")
-    @Description("Summary for length in percent")
-    String percentSummary(String percent);
+	@DefaultMessage("{0} percent")
+	@Description("Summary for length in percent")
+	String percentSummary(String percent);
 
-    @DefaultMessage("Percentage input values should be between 1 and 100")
-    @Description("Error shown after validation of percentage input fields.")
-    String nonvalidPercentValue();
+	@DefaultMessage("Percentage input values should be between 1 and 100")
+	@Description("Error shown after validation of percentage input fields.")
+	String nonvalidPercentValue();
 
 
-    @DefaultMessage("HeightPercent")
-    @Description("")
-    String HeightPercentProperties();
+	@DefaultMessage("HeightPercent")
+	@Description("")
+	String HeightPercentProperties();
 
-    @DefaultMessage("WidthPercent")
-    @Description("")
-    String WidthPercentProperties();
+	@DefaultMessage("WidthPercent")
+	@Description("")
+	String WidthPercentProperties();
 
- // JEFFS DESIGNER CHANGES
+ // JEFF'S DESIGNER CHANGES
 
   // Used in multiple files
 
@@ -83,10 +83,9 @@ public interface OdeMessages extends Messages {
   @Description("Text on Toggle Warning Button")
   String showWarnings();
 
-    @DefaultMessage("Live Web App")
-    @Description("Live Web App option")
-    String webAppMenuItem();
-
+  @DefaultMessage("Live Edit of Web App")
+  @Description("Live Web App option")
+  String webAppMenuItem();
 
     @DefaultMessage("Hide Warnings")
   @Description("Text on Toggle Warning Button")
@@ -370,7 +369,7 @@ public interface OdeMessages extends Messages {
   // Used in Ode.java
 
   // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("MIT App Inventor 2")
+  @DefaultMessage("MIT Web App Inventor")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
@@ -457,15 +456,15 @@ public interface OdeMessages extends Messages {
   @Description("Name of Projects tab")
   String projectsTabName();
 
-  @DefaultMessage("My projects")
+  @DefaultMessage("My Projects")
   @Description("Name of My projects menuitem")
   String projectMenuItem();
 
-  @DefaultMessage("Start new project")
+  @DefaultMessage("Start New Project")
   @Description("Label of the menu item for creating a new project")
   String newProjectMenuItem();
 
-  @DefaultMessage("Import project (.aia) from my computer ...")
+  @DefaultMessage("Import Project (.wai) From My Computer ...")
   @Description("Name of Import Project menuitem")
   String importProjectMenuItem();
 
@@ -473,11 +472,11 @@ public interface OdeMessages extends Messages {
   @Description("Name of Delete project menuitem")
   String deleteProjectMenuItem();
 
-  @DefaultMessage("Save project")
+  @DefaultMessage("Save Project")
   @Description("Name of Save menuitem")
   String saveMenuItem();
 
-  @DefaultMessage("Save project as ...")
+  @DefaultMessage("Save Project As ...")
   @Description("Name of Save as ... menuitem")
   String saveAsMenuItem();
 
@@ -485,15 +484,15 @@ public interface OdeMessages extends Messages {
   @Description("Name of Checkpoint menuitem")
   String checkpointMenuItem();
 
-  @DefaultMessage("Import project (.aia) from a repository ...")
+  @DefaultMessage("Import Project (.wai) From A Repository ...")
   @Description("Name of Import Template menuitem")
   String importTemplateButton();
 
-  @DefaultMessage("Export selected project (.aia) to my computer")
+  @DefaultMessage("Export project (.wai) to my computer")
   @Description("Name of Export Project menuitem")
   String exportProjectMenuItem();
 
-  @DefaultMessage("Export all projects")
+  @DefaultMessage("Export All Projects")
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsMenuItem();
 
@@ -558,17 +557,17 @@ public interface OdeMessages extends Messages {
   @Description("Hard Reset the Emulator.")
   String hardResetConnectionsMenuItem();
 
-  //Build
+  //View
   
-  @DefaultMessage("Build")
+  @DefaultMessage("View")
   @Description("Label of the button leading to build related cascade items")
   String buildTabName();
 
-  @DefaultMessage("Export (save .zip to my computer)")
+  @DefaultMessage("Download Web App (save .zip to my computer)")
   @Description("Label of the button that builds and exports HTML output files as zip")
   String buildHTMLOutputMenuItem();
   
-  @DefaultMessage("App ( provide QR code for web app )")
+  @DefaultMessage("Hosted Web App (provide QR code)")
   @Description("Label of item for building a project and show barcode")
   String showBarcodeMenuItem();
 
@@ -1796,7 +1795,7 @@ public interface OdeMessages extends Messages {
   String projectUploadError();
 
   @DefaultMessage("The selected project is not a project source file!\n" +
-      "Project source files are aia files.")
+      "Project source files are wai files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 
@@ -5129,19 +5128,15 @@ public interface OdeMessages extends Messages {
 
 
   //Ode.java messages
-  @DefaultMessage("Welcome to App Inventor 2!")
+  @DefaultMessage("Welcome to Web App Inventor!")
   @Description("")
   String createNoProjectsDialogText();
 
-  @DefaultMessage("<p>You don\"t have any projects in App Inventor 2 yet. " +
-      "To learn how to use App Inventor, click the \"Guide\" " +
+  @DefaultMessage("<p>You don\"t have any projects in Web App Inventor yet. " +
+      "To learn how to use Web App Inventor, click the \"Guide\" " +
       "link at the upper right of the window; or to start your first project, " +
-      "click the \"New\" button at the upper left of the window.</p>\n<p>" +
-      "<strong>Where did my projects go?</strong> " +
-      "If you had projects but now they\"re missing, " +
-      "you are probably looking for App Inventor version 1. " +
-      "It\"s still available here: " +
-      "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n")
+      "click the \"New\" button at the upper left of the window.</p>\n<p>"
+)
   @Description("")
   String createNoProjectsDialogMessage1();
 

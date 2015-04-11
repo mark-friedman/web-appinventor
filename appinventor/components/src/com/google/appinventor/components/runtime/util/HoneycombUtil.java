@@ -5,7 +5,8 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
-import com.google.appinventor.components.runtime.WebViewer;
+// TODO Import and class may not be required in the future.  Check and remove as appropriate.
+//import com.google.appinventor.components.runtime.WebViewer;
 
 import android.app.Activity;
 import android.content.ContentResolver;

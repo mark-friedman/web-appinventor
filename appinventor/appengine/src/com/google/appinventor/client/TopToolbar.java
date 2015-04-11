@@ -7,33 +7,26 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.ProjectListBox;
-import com.google.appinventor.client.boxes.ViewerBox;
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
-import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
-import com.google.appinventor.client.wizards.TemplateUploadWizard;
+// TODO Add the standard template option to the "Projects" drop-down to match
+// App Inventor 2. // Refer to TODOs later in this file.
+//import com.google.appinventor.client.wizards.TemplateUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
-import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.Window.Location;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
@@ -54,12 +47,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
 public class TopToolbar extends Composite {
-  private static final String KNOWN_ISSUES_LINK_URL =
-      Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
   private static final String RELEASE_NOTES_LINK_URL =
       Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
-  private static final String KNOWN_ISSUES_LINK_AND_TEXT =
-      "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
       "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
   private static final String termsOfServiceText =
@@ -67,10 +56,6 @@ public class TopToolbar extends Composite {
           " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
 
   private static final String WIDGET_NAME_NEW = "New";
-  private static final String WIDGET_NAME_DELETE = "Delete";
-  private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
-  private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
-  private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
@@ -78,15 +63,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_BUILD_TO_ZIP_OUTPUT = "BuildToZipOutput";
   private static final String WIDGET_NAME_BUILD = "Build";
   private static final String WIDGET_NAME_BUILD_BARCODE = "Barcode";
-  private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
-  private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
-  private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
-  private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
-  private static final String WIDGET_NAME_USB_BUTTON = "Usb";
   private static final String WIDGET_NAME_WEB_APP_BUTTON = "Live Web App";
-  private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
-  private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
@@ -95,10 +73,11 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
-  private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
-  private static final String WIDGET_NAME_COMPANIONINFO = "CompanionInformation";
+  private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";;
   private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
-  private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
+  // TODO Bring the import template function back when an app is available.
+  // Refer to TODOs later in this file.
+//private static final String WIDGET_NAME_IMPORTTEMPLATE = "ImportTemplate";
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
   private static final String WIDGET_NAME_GENERATE_JAVASCRIPT = "GenerateJavaScript";
@@ -128,7 +107,8 @@ public class TopToolbar extends Composite {
     List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
 
-    // File -> {New Project; Save; Save As; Checkpoint; |; Delete this Project; My Projects;}
+    // Projects -> {My projects; Start new project; Import project (.wai) From my computer; |;
+    // Save; Save As; Checkpoint; |; Import Project (.wai) To My Computer; Export all projects;}
     fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.projectMenuItem(),
         new SwitchToProjectAction()));
     fileItems.add(null);
@@ -136,10 +116,12 @@ public class TopToolbar extends Composite {
         new NewAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),
         new ImportProjectAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
-        new ImportTemplateAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
-        new DeleteAction()));
+    // TODO Add the standard template option to the "Projects" drop-down to match App Inventor 2,
+    // which, at the time of writing, has a "HelloPurr.aia" template app.  The code for including
+    // the HellPurr.aia template can be found by searching for ".aia".  Web App Inventor now uses
+    // a .wai project extension.  The next two lines will display the relevant drop-down option.
+//    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTTEMPLATE, MESSAGES.importTemplateButton(),
+//        new ImportTemplateAction()));
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
         new SaveAction()));
@@ -152,45 +134,21 @@ public class TopToolbar extends Composite {
         new ExportProjectAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),
         new ExportAllProjectsAction()));
-    fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),
-        new UploadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreMenuItem(),
-        new DownloadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
-        new DeleteKeystoreAction()));
 
-    // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
-    connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
-        MESSAGES.AICompanionMenuItem(), new WirelessAction()));
-    connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
-        MESSAGES.emulatorMenuItem(), new EmulatorAction()));
-    connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),
-        new UsbAction()));
-      connectItems.add(new DropDownItem(WIDGET_NAME_WEB_APP_BUTTON, MESSAGES.webAppMenuItem(),
+
+      // View -> {Live edit of web app; Download Web App; Hosted Web App;
+      // Generate JavaScript only when logged in as an admin}
+      buildItems.add(new DropDownItem(WIDGET_NAME_WEB_APP_BUTTON, MESSAGES.webAppMenuItem(),
               new WebAppAction()));
-    connectItems.add(null);
-    connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnectionsMenuItem(),
-        new ResetAction()));
-    connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),
-        new HardResetAction()));
-
-
-      // Build -> {Build HTML; Show Barcode; Download to Computer;
-      // Generate YAIL only when logged in as an admin; Generate JavaScript}
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_TO_ZIP_OUTPUT, MESSAGES.buildHTMLOutputMenuItem(),
               new BuildToZipAction()));
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
               new BarcodeAction()));
-      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
-              new DownloadAction()));
       if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
           buildItems.add(null);
-          buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
-                  new GenerateYailAction()));
-      }
       buildItems.add(new DropDownItem(WIDGET_NAME_GENERATE_JAVASCRIPT, MESSAGES.toJavaScript(),
               new GenerateJavaScriptAction()));
+      }
 
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
@@ -209,9 +167,6 @@ public class TopToolbar extends Composite {
     helpItems.add(null);
     helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
         new FeedbackAction()));
-    helpItems.add(null);
-    helpItems.add(new DropDownItem(WIDGET_NAME_COMPANIONINFO, MESSAGES.companionInformation(),
-        new AboutCompanionAction()));
 
     // Create the TopToolbar drop down menus.
     fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
@@ -231,7 +186,6 @@ public class TopToolbar extends Composite {
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
-    toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
 
     // Commented out language switching until we have a clean Chinese translation. (AFM)
@@ -310,53 +264,6 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private class WirelessAction implements Command {
-    @Override
-    public void execute() {
-      if (Ode.getInstance().okToConnect()) {
-        startRepl(true, false, false); // false means we are
-                                       // *not* the emulator
-      }
-    }
-  }
-
-  private class EmulatorAction implements Command {
-    @Override
-    public void execute() {
-      if (Ode.getInstance().okToConnect()) {
-        startRepl(true, true, false); // true means we are the
-                                      // emulator
-      }
-    }
-  }
-
-  private class UsbAction implements Command {
-    @Override
-    public void execute() {
-      if (Ode.getInstance().okToConnect()) {
-        startRepl(true, false, true);
-      }
-    }
-  }
-
-  private class ResetAction implements Command {
-    @Override
-    public void execute() {
-      if (Ode.getInstance().okToConnect()) {
-        startRepl(false, false, false); // We are really stopping the repl here
-      }
-    }
-  }
-
-  private class HardResetAction implements Command {
-    @Override
-    public void execute() {
-      if (Ode.getInstance().okToConnect()) {
-        replHardReset();
-      }
-    }
-  }
-
   private class BarcodeAction implements Command {
     @Override
     public void execute() {
@@ -377,35 +284,7 @@ public class TopToolbar extends Composite {
       }
     }
   }
-
-  /**
-   * 
-   * Build and download an apk file (DELETE THIS)
-   *
-   */
-  private class DownloadAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new GenerateYailCommand(
-                new BuildCommand(target,
-                    new ShowProgressBarCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new DownloadProjectOutputCommand(target)), "DownloadAction"))));
-//        updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
-            new Command() {
-              @Override
-              public void execute() {
-//                updateBuildButton(false);
-              }
-            });
-      }
-    }
-  }
+  
   private static class ExportProjectAction implements Command {
     @Override
     public void execute() {
@@ -456,109 +335,14 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private static class ImportTemplateAction implements Command {
-    @Override
-    public void execute() {
-      new TemplateUploadWizard().center();
-    }
-  }
-
-  private static class DeleteAction implements Command {
-    @Override
-    public void execute() {
-      List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
-      if (selectedProjects.size() > 0) {
-        // Show one confirmation window for selected projects.
-        if (deleteConfirmation(selectedProjects)) {
-          for (Project project : selectedProjects) {
-            deleteProject(project);
-          }
-        }
-
-      } else {
-        // The user can select a project to resolve the
-        // error.
-        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
-      }
-    }
-
-    private boolean deleteConfirmation(List<Project> projects) {
-      String message;
-      GallerySettings gallerySettings = GalleryClient.getInstance().getGallerySettings();
-      if (projects.size() == 1) {
-        if (projects.get(0).isPublished())
-          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
-        else
-          message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
-      } else {
-        StringBuilder sb = new StringBuilder();
-        String separator = "";
-        for (Project project : projects) {
-          sb.append(separator).append(project.getProjectName());
-          separator = ", ";
-        }
-        String projectNames = sb.toString();
-        if(!gallerySettings.galleryEnabled()){
-          message = MESSAGES.confirmDeleteManyProjects(projectNames);
-        } else {
-          message = MESSAGES.confirmDeleteManyProjectsWithGalleryOn(projectNames);
-        }
-      }
-      return Window.confirm(message);
-    }
-
-    private void deleteProject(Project project) {
-      Tracking.trackEvent(Tracking.PROJECT_EVENT,
-          Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
-
-      final long projectId = project.getProjectId();
-
-      Ode ode = Ode.getInstance();
-      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
-      ode.getEditorManager().closeProjectEditor(projectId);
-      if (isCurrentProject) {
-        // If we're deleting the project that is currently open in the Designer we
-        // need to clear the ViewerBox first.
-        ViewerBox.getViewerBox().clear();
-      }
-      if (project.isPublished()) {
-        doDeleteGalleryApp(project.getGalleryId());
-        GalleryClient gallery = GalleryClient.getInstance();
-        gallery.appWasChanged();
-      }
-      // Make sure that we delete projects even if they are not open.
-      doDeleteProject(projectId);
-    }
-
-    private void doDeleteProject(final long projectId) {
-      Ode.getInstance().getProjectService().deleteProject(projectId,
-          new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.deleteProjectError()) {
-            @Override
-            public void onSuccess(Void result) {
-              Ode.getInstance().getProjectManager().removeProject(projectId);
-              // Show a welcome dialog in case there are no
-              // projects saved.
-              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                Ode.getInstance().createNoProjectsDialog(true);
-              }
-            }
-          });
-    }
-    private void doDeleteGalleryApp(final long galleryId) {
-      Ode.getInstance().getGalleryService().deleteApp(galleryId,
-          new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.galleryDeleteError()) {
-            @Override
-            public void onSuccess(Void result) {
-              // need to update gallery list
-            }
-          });
-    }
-  }
+  // TODO Add the standard template option to the "Projects" drop-down to match App Inventor 2.
+  // See details earlier in file.  These lines retained for that purpose.
+  //private static class ImportTemplateAction implements Command {
+    //@Override
+    //public void execute() {
+      //new TemplateUploadWizard().center();
+    //}
+  //}
 
     /**
      *
@@ -606,71 +390,6 @@ public class TopToolbar extends Composite {
         }
     }
 
-  private static class DownloadKeystoreAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
-          new OdeAsyncCallback<Boolean>(MESSAGES.downloadKeystoreError()) {
-            @Override
-            public void onSuccess(Boolean keystoreFileExists) {
-              if (keystoreFileExists) {
-                Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DOWNLOAD_KEYSTORE);
-                Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-                    ServerLayout.DOWNLOAD_USERFILE + "/" + StorageUtil.ANDROID_KEYSTORE_FILENAME);
-              } else {
-                Window.alert(MESSAGES.noKeystoreToDownload());
-              }
-            }
-          });
-    }
-  }
-
-  private class UploadKeystoreAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
-          new OdeAsyncCallback<Boolean>(MESSAGES.uploadKeystoreError()) {
-            @Override
-            public void onSuccess(Boolean keystoreFileExists) {
-              if (!keystoreFileExists || Window.confirm(MESSAGES.confirmOverwriteKeystore())) {
-                KeystoreUploadWizard wizard = new KeystoreUploadWizard(new Command() {
-                  @Override
-                  public void execute() {
-                    Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_UPLOAD_KEYSTORE);
-                    updateKeystoreFileMenuButtons();
-                  }
-                });
-                wizard.center();
-              }
-            }
-          });
-    }
-  }
-
-  private class DeleteKeystoreAction implements Command {
-    @Override
-    public void execute() {
-      final String errorMessage = MESSAGES.deleteKeystoreError();
-      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
-          new OdeAsyncCallback<Boolean>(errorMessage) {
-            @Override
-            public void onSuccess(Boolean keystoreFileExists) {
-              if (keystoreFileExists && Window.confirm(MESSAGES.confirmDeleteKeystore())) {
-                Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DELETE_KEYSTORE);
-                Ode.getInstance().getUserInfoService().deleteUserFile(
-                    StorageUtil.ANDROID_KEYSTORE_FILENAME,
-                    new OdeAsyncCallback<Void>(errorMessage) {
-                      @Override
-                      public void onSuccess(Void result) {
-                        updateKeystoreFileMenuButtons();
-                      }
-                    });
-              }
-            }
-          });
-    }
-  }
-
     /**
      * Implements the action to generate Javascript for the current project.
      * The intention is that this will be helpful for debugging during development,
@@ -694,37 +413,11 @@ public class TopToolbar extends Composite {
         }
     }
 
-
-  /**
-   *  Made changes to the now Projects menu made name changes to the menu items
-   * Implements the action to generate the ".yail" file for each screen in the current project.
-   * It does not build the entire project. The intention is that this will be helpful for
-   * debugging during development, and will most likely be disabled in the production system.
-   */
-  private class GenerateYailAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(new GenerateYailCommand(null));
-        //updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_YAIL_YA, projectRootNode,
-            new Command() {
-              @Override
-              public void execute() {
-                //updateBuildButton(false);
-              }
-            });
-      }
-    }
-  }
-
   private static class AboutAction implements Command {
     @Override
     public void execute() {
       final DialogBox db = new DialogBox(false, true);
-      db.setText("About MIT App Inventor");
+      db.setText("About MIT Web App Inventor");
       db.setStyleName("ode-DialogBox");
       db.setHeight("200px");
       db.setWidth("400px");
@@ -735,48 +428,9 @@ public class TopToolbar extends Composite {
       VerticalPanel DialogBoxContents = new VerticalPanel();
       HTML message = new HTML(
           MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-              "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
+ //             "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
               "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
               "<BR/><BR/>" + termsOfServiceText
-      );
-
-      SimplePanel holder = new SimplePanel();
-      Button ok = new Button("Close");
-      ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          db.hide();
-        }
-      });
-      holder.add(ok);
-      DialogBoxContents.add(message);
-      DialogBoxContents.add(holder);
-      db.setWidget(DialogBoxContents);
-      db.show();
-    }
-  }
-
-  private static class AboutCompanionAction implements Command {
-    @Override
-    public void execute() {
-      final DialogBox db = new DialogBox(false, true);
-      db.setText("About The Companion");
-      db.setStyleName("ode-DialogBox");
-      db.setHeight("200px");
-      db.setWidth("400px");
-      db.setGlassEnabled(true);
-      db.setAnimationEnabled(true);
-      db.center();
-
-      String downloadinfo = "";
-      if (!YaVersion.COMPANION_UPDATE_URL1.equals("")) {
-        String url = "http://" + Window.Location.getHost() + YaVersion.COMPANION_UPDATE_URL1;
-        downloadinfo = "<br/>\n<a href=" + url + ">Download URL: " + url + "</a><br/>\n";
-        downloadinfo += BlocklyPanel.getQRCode(url);
-      }
-
-      VerticalPanel DialogBoxContents = new VerticalPanel();
-      HTML message = new HTML(
-          "Companion Version " + BlocklyPanel.getCompVersion() + downloadinfo
       );
 
       SimplePanel holder = new SimplePanel();
@@ -856,51 +510,6 @@ public class TopToolbar extends Composite {
   public static void indicateDisconnect() {
     TopToolbar instance = Ode.getInstance().getTopToolbar();
     instance.updateConnectToDropDownButton(false, false, false);
-  }
-
-  /**
-   * startRepl -- Start/Stop the connection to the companion.
-   *
-   * @param start -- true to start the repl, false to stop it.
-   * @param forEmulator -- true if we are connecting to the emulator.
-   * @param forUsb -- true if this is a USB connection.
-   *
-   * If both forEmulator and forUsb are false, then we are connecting
-   * via Wireless.
-   */
-
-  private void startRepl(boolean start, boolean forEmulator, boolean forUsb) {
-    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
-    if (currentProject == null) {
-      OdeLog.wlog("DesignToolbar.currentProject is null. "
-            + "Ignoring attempt to start the repl.");
-      return;
-    }
-    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    screen.blocksEditor.startRepl(!start, forEmulator, forUsb);
-    if (start) {
-      if (forEmulator) {        // We are starting the emulator...
-        updateConnectToDropDownButton(true, false, false);
-      } else if (forUsb) {      // We are starting the usb connection
-        updateConnectToDropDownButton(false, false, true);
-      } else {                  // We are connecting via wifi to a Companion
-        updateConnectToDropDownButton(false, true, false);
-      }
-    } else {
-      updateConnectToDropDownButton(false, false, false);
-    }
-  }
-
-  private void replHardReset() {
-    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
-    if (currentProject == null) {
-      OdeLog.wlog("DesignToolbar.currentProject is null. "
-            + "Ignoring attempt to do hard reset.");
-      return;
-    }
-    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
-    ((YaBlocksEditor)screen.blocksEditor).hardReset();
-    updateConnectToDropDownButton(false, false, false);
   }
 
   /**

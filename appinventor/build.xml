@@ -18,7 +18,11 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <!-- The line below is commented out as it causes a build failure if there is no
+     Barcode Scanner component in the UI.  TODO Check is needed in the future and
+     delete as appropriate.
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+     -->
   </target>
 
   <target name="comps">

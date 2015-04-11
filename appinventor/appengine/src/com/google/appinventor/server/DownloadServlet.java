@@ -121,7 +121,7 @@ public class DownloadServlet extends OdeServlet {
             uriComponents[PROJECT_TITLE_INDEX] : null;
         final boolean includeProjectHistory = true;
         String zipName = (projectTitle == null) ? null :
-            StringUtils.normalizeForFilename(projectTitle) + ".aia";
+            StringUtils.normalizeForFilename(projectTitle) + ".wai";
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
             projectId, includeProjectHistory, false, zipName, false);
         downloadableFile = zipFile.getRawFile();
@@ -169,9 +169,9 @@ public class DownloadServlet extends OdeServlet {
         }
         String zipName;
         if (!projectName.isEmpty()) {
-          zipName = projectName + "_" + projectUserId + ".aia";
+          zipName = projectName + "_" + projectUserId + ".wai";
         } else {
-          zipName = "u" + projectUserId + "_p" + projectId + ".aia";
+          zipName = "u" + projectUserId + "_p" + projectId + ".wai";
         }
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
             projectId, /* include history*/ true, /* include keystore */ true, zipName, false);

@@ -41,7 +41,7 @@ public class DocumentationGenerator extends ComponentProcessor {
    * Returns string describing a given property.
    */
   private String getPropertyDefinition(String name, String description,
-      boolean isUserVisible, boolean isReadable, boolean isWritable) {
+                                       boolean isUserVisible, boolean isReadable, boolean isWritable) {
 
     if (!isUserVisible) {
       return String.format("  <dt><code>%s</code> (designer only)</dt>\n  <dd>%s</dd>\n",
@@ -60,7 +60,7 @@ public class DocumentationGenerator extends ComponentProcessor {
    */
   private String getEventDefinition(String name, String parameters, String description) {
     return String.format("  <dt><code>%s(%s)</code></dt>\n  <dd>%s</dd>\n",
-                         name, parameters, description);
+        name, parameters, description);
   }
 
   /**
@@ -68,10 +68,10 @@ public class DocumentationGenerator extends ComponentProcessor {
    * If the method is void, <code>returnType</code> will be the empty string.
    */
   private String getMethodDefinition(String name, String parameters, String returnType,
-      String description) {
+                                     String description) {
     return String.format("  <dt><code>%s%s%s(%s)</code></dt>\n  <dd>%s</dd>\n",
         returnType, returnType.isEmpty() ? "" : " ",
-        name, parameters, description);
+            name, parameters, description);
   }
 
   protected final void outputResults() throws IOException {
@@ -104,7 +104,7 @@ public class DocumentationGenerator extends ComponentProcessor {
   private void outputComponent(Writer writer, ComponentInfo component) throws IOException {
     // Output component name and description.
     writer.write(getComponentOutputString(component.name,
-                                          component.description));
+        component.description));
 
     // Output properties, events, and methods.
     outputProperties(writer, component);
@@ -119,29 +119,31 @@ public class DocumentationGenerator extends ComponentProcessor {
       throws java.io.IOException {
     // Output table header
     writer.write("<table style=\"border-color: rgb(136, 136, 136); border-width: 0px; " +
-                 "border-collapse: collapse;\" border=\"0\" bordercolor=\"#888888\" " +
-                 "cellpadding=\"5\" cellspacing=\"5\">\n");
+        "border-collapse: collapse;\" border=\"0\" bordercolor=\"#888888\" " +
+        "cellpadding=\"5\" cellspacing=\"5\">\n");
     writer.write("<tbody valign=\"top\">\n");
     writer.write("<tr>\n");
 
     // Specify which categories are in which output column.
     final ComponentCategory[][] categories = {
-      // Column one categories
-      {
-        ComponentCategory.USERINTERFACE,
-        ComponentCategory.LAYOUT,
-        ComponentCategory.MEDIA,
-        ComponentCategory.ANIMATION,
-        ComponentCategory.SOCIAL
-      },
-      // Column two categories
-      {
-        ComponentCategory.STORAGE,
-        ComponentCategory.CONNECTIVITY,
-        ComponentCategory.SENSORS,
-        ComponentCategory.LEGOMINDSTORMS,
-        //ComponentCategory.EXPERIMENTAL
-      }
+        // Column one categories
+        {
+          ComponentCategory.USERINTERFACE,
+          ComponentCategory.LAYOUT,
+          ComponentCategory.MEDIA,
+          // TODO Replace the commented categories as related components are introduced.
+          //ComponentCategory.ANIMATION,
+          //ComponentCategory.SOCIAL
+        },
+        // Column two categories
+        {
+          ComponentCategory.STORAGE,
+          // TODO Replace the commented categories as related components are introduced.
+          //ComponentCategory.CONNECTIVITY,
+          //ComponentCategory.SENSORS,
+          //ComponentCategory.LEGOMINDSTORMS,
+          //ComponentCategory.EXPERIMENTAL
+        }
     };
 
     // Output the body of the table.
@@ -151,7 +153,7 @@ public class DocumentationGenerator extends ComponentProcessor {
         // Output the category header.
         String categoryName = categories[column][row].getName();
         writer.write(String.format("<b><font size=\"5\">%s</font></b>\n<ul>\n",
-                                   categoryName));
+            categoryName));
         // Output the components with this category.  This algorithm for getting
         // components by category has poor complexity performance but is probably
         // more efficient in practice than maintaining a hash table mapping
@@ -160,7 +162,7 @@ public class DocumentationGenerator extends ComponentProcessor {
           ComponentInfo component = entry.getValue();
           if (categoryName.equals(component.getCategory())) {
             writer.write(String.format("  <li><a href=\"#%1$s\">%1$s</a></li>\n",
-                                       component.name));
+                component.name));
           }
         }
         writer.write("</ul>\n");
@@ -186,10 +188,10 @@ public class DocumentationGenerator extends ComponentProcessor {
           writer.write("<dl>\n");
         }
         writer.write(getPropertyDefinition(property.name,
-                                           property.getDescription(),
-                                           property.isUserVisible(),
-                                           property.isReadable(),
-                                           property.isWritable()));
+            property.getDescription(),
+            property.isUserVisible(),
+            property.isReadable(),
+            property.isWritable()));
         definitionWritten = true;
       }
     }
@@ -235,7 +237,7 @@ public class DocumentationGenerator extends ComponentProcessor {
         writer.write(getMethodDefinition(
             method.name, method.toParameterString(),
             returnType == null ? "" : javaTypeToYailType(returnType),
-            method.description));
+                method.description));
         definitionWritten = true;
       }
     }
