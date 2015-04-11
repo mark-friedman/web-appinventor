@@ -14,7 +14,7 @@ Blockly.HorizontalArrangement.generateJSForAddingComponent = function(component)
     var horizontal ="";
     if (component.hasOwnProperty('$Components')) {
         horizontal += "var div_arrangement = document.createElement(\"div\");";
-        horizontal += "div_arrangement.id=\"div-"+component.Uuid+"\";";
+        horizontal += "div_arrangement.id=\""+component.$Name+"\";";
         horizontal += "div_arrangement.className = \"row\";";
         var components = component.$Components;
         var span = 1;
@@ -47,7 +47,7 @@ Blockly.HorizontalArrangement.generateJSForAddingComponent = function(component)
 
 
 Blockly.HorizontalArrangement.generateJSForRemovingComponent = function(component){
-    return     "var node = document.getElementById(\"div-"+component.Uuid +"\");" +
+    return     "var node = document.getElementById(\""+component.$Name +"\");" +
         "if(node.parentNode){" +
         "  node.parentNode.removeChild(node);"+
         "}";
@@ -64,13 +64,13 @@ Blockly.HorizontalArrangement.generateJSForPropertyChange = function(component,p
 Blockly.HorizontalArrangement.setProperties = function(component, propName, propValue) {
     switch(propName) {
         case "Visible":
-            return "document.getElementById(\"" + component.Uuid + "\").style.visibility = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                 this.getVisibility(propValue) + "\";";
         case "Width":
-            return "document.getElementById(\"" + component.Uuid + "\").style.width = \""
+            return "document.getElementById(\"" + component.$Name + "\").style.width = \""
                 + this.getSizeVal(propValue) + "\";";
         case "Height":
-            return "document.getElementById(\"" + component.Uuid + "\").style.height = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").style.height = \"" +
                 this.getSizeVal(propValue) + "\";";
         default:
             return "";

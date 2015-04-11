@@ -18,7 +18,10 @@ public class HorizontalArrangement extends Component{
   {
  
     
-    String[] strArray=new String[3];
+    String[] strArray=new String[]{"","",""};
+    
+    if(properties.containsKey("$Components"))
+    {
     JSONArray componentsArray= properties.get("$Components").asArray();
     
     ArrayList<String[]> arrayList=new Parse().parseComponents(componentsArray);
@@ -39,7 +42,7 @@ public class HorizontalArrangement extends Component{
     strArray[0]=htmlBuffer.toString().valueOf(htmlBuffer);
     strArray[1]=cssBuffer.toString().valueOf(cssBuffer);
     strArray[2]=assetsBuffer.toString().valueOf(assetsBuffer);
-    
+    }
     return strArray;
     
   }  

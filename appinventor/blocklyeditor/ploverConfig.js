@@ -145,7 +145,8 @@
       "./src/livewebapp/generator/components/audio.js",
       "./src/livewebapp/generator/components/imagePicker.js",
       "./src/livewebapp/generator/components/horizontalArrangement.js",
-  "./src/livewebapp/generator/components/verticalArrangement.js"
+      "./src/livewebapp/generator/components/verticalArrangement.js",
+      "./src/livewebapp/generator/components/form.js"
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library

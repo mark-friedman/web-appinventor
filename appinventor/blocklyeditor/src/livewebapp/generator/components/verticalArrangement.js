@@ -15,7 +15,7 @@ Blockly.VerticalArrangement.generateJSForAddingComponent = function(component){
     if (component.hasOwnProperty('$Components')) {
         vertical += "var div_arrangement = document.createElement(\"div\");";
         var components = component.$Components;
-        vertical += "div_arrangement.id=\"div-"+component.Uuid+"\";";
+        vertical += "div_arrangement.id=\""+component.$Name+"\";";
         vertical += "div_arrangement.className = \"column\";";
         var span = 1;
         if (components > 0)
@@ -46,7 +46,7 @@ Blockly.VerticalArrangement.generateJSForAddingComponent = function(component){
 
 
 Blockly.VerticalArrangement.generateJSForRemovingComponent = function(component){
-    return     "var node = document.getElementById(\"div-"+component.Uuid +"\");" +
+    return     "var node = document.getElementById(\""+component.$Name +"\");" +
         "if(node.parentNode){" +
         "  node.parentNode.removeChild(node);"+
         "}";
@@ -63,13 +63,13 @@ Blockly.VerticalArrangement.generateJSForPropertyChange = function(component,pro
 Blockly.VerticalArrangement.setProperties = function(component, propName, propValue) {
     switch(propName) {
         case "Visible":
-            return "document.getElementById(\"" + component.Uuid + "\").style.visibility = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                 this.getVisibility(propValue) + "\";";
         case "Width":
-            return "document.getElementById(\"" + component.Uuid + "\").style.width = \""
+            return "document.getElementById(\"" + component.$Name + "\").style.width = \""
                 + this.getSizeVal(propValue) + "\";";
         case "Height":
-            return "document.getElementById(\"" + component.Uuid + "\").style.height = \"" +
+            return "document.getElementById(\"" + component.$Name + "\").style.height = \"" +
                 this.getSizeVal(propValue) + "\";";
         default:
             return "";
@@ -78,7 +78,7 @@ Blockly.VerticalArrangement.setProperties = function(component, propName, propVa
 
 Blockly.ButtonJsGenerator.getSizeVal = function(index) {
     if(index == "Automatic")
-        return "auto";ch
+        return "auto";
     else if(index == "Fill Parent")
         return "100%";
     else
