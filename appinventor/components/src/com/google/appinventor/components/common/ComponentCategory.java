@@ -50,12 +50,14 @@ import java.util.Map;
     USERINTERFACE("User Interface"),
     LAYOUT("Layout"),
     MEDIA("Media"),
-    ANIMATION("Drawing and Animation"),
-    SENSORS("Sensors"),
-    SOCIAL("Social"),
+    // TODO Bring back the commented categories to the Palette Panel on the UI,
+    // as new components are introduced.
+    //ANIMATION("Drawing and Animation"),
+    //SENSORS("Sensors"),
+    //SOCIAL("Social"),
     STORAGE("Storage"),
-    CONNECTIVITY("Connectivity"),
-    LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
+    //CONNECTIVITY("Connectivity"),
+    //LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
     //EXPERIMENTAL("Experimental"),
     INTERNAL("For internal use only"),
     // UNINITIALIZED is used as a default value so Swing libraries can still compile
@@ -69,12 +71,14 @@ import java.util.Map;
       DOC_MAP.put("User Interface", "userinterface");
       DOC_MAP.put("Layout", "layout");
       DOC_MAP.put("media", "media");
-      DOC_MAP.put("Drawing and Animation", "animation");
-      DOC_MAP.put("Sensors", "sensors");
-      DOC_MAP.put("Social", "social");
+      // TODO Bring back the commented categories to the Palette Panel on the UI,
+      // as new components are introduced.
+      //DOC_MAP.put("Drawing and Animation", "animation");
+      //DOC_MAP.put("Sensors", "sensors");
+      //DOC_MAP.put("Social", "social");
       DOC_MAP.put("Storage", "storage");
-      DOC_MAP.put("Connectivity", "connectivity");
-      DOC_MAP.put("LEGO\u00AE MINDSTORMS\u00AE", "legomindstorms");
+      //DOC_MAP.put("Connectivity", "connectivity");
+      //DOC_MAP.put("LEGO\u00AE MINDSTORMS\u00AE", "legomindstorms");
       //DOC_MAP.put("Experimental", "experimental");
     }
 

@@ -270,7 +270,7 @@ public class TopPanel extends Composite {
     });
     panel.add(logo);
     panel.setCellWidth(logo, "50px");
-    Label title = new Label("MIT App Inventor 2");
+    Label title = new Label("MIT Web App Inventor");
     Label version = new Label("Beta");
     title.setStyleName("ode-LogoText");
     version.setStyleName("ode-LogoVersion");
@@ -570,4 +570,3 @@ public class TopPanel extends Composite {
     Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), mCallback);
   }
 }
-
