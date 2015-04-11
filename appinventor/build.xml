@@ -16,34 +16,18 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
   <target name="comps">
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
   </target>
 
   <target name="noplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
-  </target>
-
-  <target name="installplay">
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
-  </target>
-
-  <target name="RunLocalBuildServer">
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="RunLocalBuildServer"/>
-  </target>
-
-  <target name="PlayApp">
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
   <target name="AIMergerApp">
@@ -62,7 +46,6 @@
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>
     <mkdir dir="reports"/>
@@ -70,7 +53,6 @@
       <fileset dir="appengine/reports/raw" includes="TEST-*.xml"/>
       <!-- These are not the comments you're looking for.  This is for testing -->
       <fileset dir="blocklyeditor/reports/raw" includes="TEST-*.xml"/>
-      <fileset dir="buildserver/reports/raw" includes="TEST-*.xml"/>
       <fileset dir="common/reports/raw" includes="TEST-*.xml"/>
       <fileset dir="components/reports/raw" includes="TEST-*.xml"/>
       <report format="frames" todir="reports/html"/>
@@ -83,7 +65,6 @@
     <javadoc destdir="build/javadoc">
       <sourcepath>
         <pathelement location="appengine/src" />
-        <pathelement location="buildserver/src" />
         <pathelement location="common/src" />
         <pathelement location="components/src" />
       </sourcepath>
@@ -110,7 +91,6 @@
         <pathelement location="lib/twitter/twitter4j-media-support-3.0.5.jar" />
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
-        <fileset dir="buildserver/lib" includes="**/*.jar"/>
         <!-- oauth libs -->
         <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="lib/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -128,7 +108,7 @@
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/appengine-api-1.0-sdk-1.9.17.jar"/>
         <pathelement location="lib/gcs/appengine-gcs-client-0.4.3.jar"/>
-        -->
+        <!-- -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/testing/appengine-testing.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/impl/appengine-api-stubs.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.9.17/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
@@ -150,7 +130,6 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="clean"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
     <delete dir="build"/>

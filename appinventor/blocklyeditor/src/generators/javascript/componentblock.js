@@ -29,11 +29,11 @@ goog.provide('Blockly.JavaScript.componentblock');
 Blockly.JavaScript.component_event = function() {
   //Standard start for each blocks javascript functions
   var code = 'document.getElementById("' + this.instanceName + '").';
-  
+
   //Eventually will need a runtime library to deal with event handles
   //Currently will use a conditional
   var JSEvent;
-  
+
   // Switch Block to handle different event handlers
   switch (this.eventName) {
     case 'Click':
@@ -65,7 +65,7 @@ Blockly.JavaScript.component_event = function() {
 
   //Concatenate event handler functionality
   code = code + JSEvent;
-  
+
   //Fetch the code for the body
   code = code + '= function() {';
 
@@ -124,14 +124,14 @@ Blockly.JavaScript.component_method = function() {
  * Returns a function that generates JavaScript to call to a method with a return value. The generated
  * function takes no arguments and returns a 2-element Array with the method call code string
  * and the operation order Blockly.JavaScript.ORDER_ATOMIC.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
  */
 Blockly.JavaScript.methodWithReturn = function(instanceName, methodName) {
   return function() {
-    return [Blockly.JavaScript.methodHelper(this, instanceName, methodName, false), 
+    return [Blockly.JavaScript.methodHelper(this, instanceName, methodName, false),
             Blockly.JavaScript.ORDER_ATOMIC];
   }
 }
@@ -139,7 +139,7 @@ Blockly.JavaScript.methodWithReturn = function(instanceName, methodName) {
 /**
  * Returns a function that generates JavaScript to call to a method with no return value. The generated
  * function takes no arguments and returns the method call code string.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
@@ -151,10 +151,10 @@ Blockly.JavaScript.methodNoReturn = function(instanceName, methodName) {
 }
 
 /**
- * Returns a function that generates JavaScript to call to a generic method with a return value. 
- * The generated function takes no arguments and returns a 2-element Array with the method call 
+ * Returns a function that generates JavaScript to call to a generic method with a return value.
+ * The generated function takes no arguments and returns a 2-element Array with the method call
  * code string and the operation order Blockly.JavaScript.ORDER_ATOMIC.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
@@ -166,9 +166,9 @@ Blockly.JavaScript.genericMethodWithReturn = function(typeName, methodName) {
 }
 
 /**
- * Returns a function that generates JavaScript to call to a generic method with no return value. 
+ * Returns a function that generates JavaScript to call to a generic method with no return value.
  * The generated function takes no arguments and returns the method call code string.
- * 
+ *
  * @param {String} instanceName
  * @param {String} methodName
  * @returns {Function} method call generation function with instanceName and methodName bound in
@@ -194,7 +194,7 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
 // first argument type when we're generating yail for a generic block, instead of using
 // type information associated with the socket. The component parameter is treated differently
 // here than the other method parameters. This may be fine, but consider whether
-// to get the type for the first socket in a more general way in this case. 
+// to get the type for the first socket in a more general way in this case.
   var paramObjects = methodBlock.getMethodTypeObject().params;
   var numOfParams = paramObjects.length;
   var yailTypes = [];
@@ -207,37 +207,37 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
   //var yailTypes = (generic ? [Blockly.JavaScript.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
   var callPrefix;
   if (generic) {
-    callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_TYPE_METHOD 
+    callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_TYPE_METHOD
         // TODO(hal, andrew): check for empty socket and generate error if necessary
         + Blockly.JavaScript.valueToCode(methodBlock, 'COMPONENT', Blockly.JavaScript.ORDER_NONE)
         + Blockly.JavaScript.YAIL_SPACER;
   } else {
-    callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_METHOD; 
+    callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_METHOD;
     name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
   }
 
   var args = [];
   for (var x = 0; x < numOfParams; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
-    args.push(Blockly.JavaScript.YAIL_SPACER 
+    args.push(Blockly.JavaScript.YAIL_SPACER
               + Blockly.JavaScript.valueToCode(methodBlock, 'ARG' + x, Blockly.JavaScript.ORDER_NONE));
   }
 
   return callPrefix
     + Blockly.JavaScript.YAIL_QUOTE
-    + name 
+    + name
     + Blockly.JavaScript.YAIL_SPACER
     + Blockly.JavaScript.YAIL_QUOTE
     + methodName
-    + Blockly.JavaScript.YAIL_SPACER 
+    + Blockly.JavaScript.YAIL_SPACER
     + Blockly.JavaScript.YAIL_OPEN_COMBINATION
     + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR
-    + args.join(' ') 
+    + args.join(' ')
     + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
     + Blockly.JavaScript.YAIL_SPACER
     + Blockly.JavaScript.YAIL_QUOTE
     + Blockly.JavaScript.YAIL_OPEN_COMBINATION
-    + yailTypes.join(' ') 
+    + yailTypes.join(' ')
     + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
     + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
 }
@@ -281,34 +281,35 @@ Blockly.JavaScript.setproperty = function() {
 
   // Call helper function
   var code = Blockly.JavaScript.setPropertyHelper(elementCode, propertyName, bodyCode, this.typeName);
-  
+
   return code;
 }
 
 /**
  *  Helper function that returns code for setting a property on a block
  *  @param {String} elementCode   : The current element to set the property for
- *  @param {String} propertyName  : Name of the property to set 
+ *  @param {String} propertyName  : Name of the property to set
  *  @param {String} bodyCode      : The code for the value to set the element property to
  *  @param {String} typeName      : The type name of the current block
  *  @return {String} code         : Code to be generated based on property
  */
 Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyCode, typeName) {
-  
+
   var code;
 
   // Check if the body code is numeric, if it change keep it as numeric
-  var bodyNum = parseInt(bodyCode);
-  if (!isNaN(bodyNum))
-    bodyCode = bodyNum;
+  var isnum = /^\d+$/.test(bodyCode);
+  if (isnum) {
+    bodyCode = parseInt(bodyCode);
+  }
 
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
   var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)) 
+  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1))
     && (propertyName == 'Text')) {
     code = 'document.getElementById(\"' + 'label' + elementId + '\")';
-  } 
+  }
   else {
     code = elementCode;
   }
@@ -316,7 +317,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
   // Switch block
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
-    case 'text': 
+    case 'text':
       if (typeName == 'TextBox' || typeName == "DatePicker" || typeName == "ListPicker" || typeName == "PasswordTextBox") {
         code += '.value = ' + bodyCode + ';';
       // else if (typeName == 'CheckBox')
@@ -327,7 +328,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       }
       break;
     case 'backgroundcolor':
-      code += '.style.backgroundColor = ' + bodyCode + ';'; 
+      code += '.style.backgroundColor = ' + bodyCode + ';';
       break;
     case 'height':
       code += '.style.height = \"' + bodyCode + 'px\";';
@@ -347,7 +348,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     case 'textcolor':
       code += '.style.color = ' + bodyCode + ';';
       break;
-    case 'visible': 
+    case 'visible':
       code += '.style.visibility = (' + bodyCode + ' ? \"visible\" : \"hidden\");';
       break;
     case 'hasmargins':
@@ -363,7 +364,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += '.placeholder = ' + bodyCode + ';';
       break;
     case 'elementsfromstring':
-    
+
       var newCode = 'var values = ' + bodyCode + '.split(\",\");';
       newCode += 'var listItems = \"\";';
       newCode += 'for(var i=0; i<values.length; i++){';
@@ -394,7 +395,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
 }
 
 /**
- * Returns a function that takes no arguments, generates JavaScript code for setting a generic component's 
+ * Returns a function that takes no arguments, generates JavaScript code for setting a generic component's
  * property and returns the code string.
  *
  * @param {String} instanceName
@@ -415,7 +416,7 @@ Blockly.JavaScript.genericSetproperty = function() {
   // code = code.concat(Blockly.JavaScript.valueToCode(this, 'VALUE', Blockly.JavaScript.ORDER_NONE /*TODO:?*/));
   // code = code.concat(Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE
   //   + propType + Blockly.JavaScript.YAIL_CLOSE_COMBINATION);
-  
+
   var elementCode = Blockly.JavaScript.valueToCode(this, 'COMPONENT', Blockly.JavaScript.ORDER_NONE);
   var bodyCode = Blockly.JavaScript.valueToCode(this, 'VALUE', Blockly.JavaScript.ORDER_NONE /*TODO:?*/);
 
@@ -427,8 +428,8 @@ Blockly.JavaScript.genericSetproperty = function() {
 
 
 /**
- * Returns a function that takes no arguments, generates JavaScript code for getting a component's 
- * property value and returns a 2-element array containing the property getter code string and the 
+ * Returns a function that takes no arguments, generates JavaScript code for getting a component's
+ * property value and returns a 2-element array containing the property getter code string and the
  * operation order Blockly.JavaScript.ORDER_ATOMIC.
  *
  * @param {String} instanceName
@@ -442,7 +443,7 @@ Blockly.JavaScript.getproperty = function(instanceName) {
   var elementCode = 'document.getElementById(\"' + this.instanceName + '\")';
 
   // Call helper function
-  var code = Blockly.JavaScript.getPropertyHelper(elementCode, propertyName, this.typeName);
+  var code = '(' + Blockly.JavaScript.getPropertyHelper(elementCode, propertyName, this.typeName) + ')';
 
   // var code = Blockly.JavaScript.YAIL_GET_PROPERTY
   //   + Blockly.JavaScript.YAIL_QUOTE
@@ -457,21 +458,21 @@ Blockly.JavaScript.getproperty = function(instanceName) {
 /**
  *  Helper function that returns code for getting a property of a block
  *  @param {String} elementCode   : The current element to set the property for
- *  @param {String} propertyName  : Name of the property to set 
+ *  @param {String} propertyName  : Name of the property to set
  *  @param {String} typeName      : The type name of the current block
  *  @return {String} code         : Code to be generated based on property
  */
 Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeName) {
-  
+
   var code;
 
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
   var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)) 
+  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1))
     && (propertyName == 'Text')) {
     code = 'document.getElementById(\"' + 'label' + elementId + '\")';
-  } 
+  }
   else {
     code = elementCode;
   }
@@ -479,7 +480,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
   // Switch block
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
-    case 'text': 
+    case 'text':
       if (typeName == 'TextBox' || typeName == "DatePicker" || typeName == "ListPicker" || typeName == "PasswordTextBox") {
         code += '.value';
       // else if (typeName == 'CheckBox')
@@ -490,7 +491,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       }
       break;
     case 'backgroundcolor':
-      code += 'style.backgroundColor';
+      code += '.style.backgroundColor';
       break;
     case 'height':
       code += '.style.height';
@@ -509,7 +510,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
     case 'textcolor':
       code += '.style.color';
       break;
-    case 'visible': 
+    case 'visible':
       code += '.style.visibility == \"visible\"';
       break;
     case 'hasmargins':
@@ -547,8 +548,8 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
 }
 
 /**
- * Returns a function that takes no arguments, generates JavaScript code for getting a generic component's 
- * property value and returns a 2-element array containing the property getter code string and the 
+ * Returns a function that takes no arguments, generates JavaScript code for getting a generic component's
+ * property value and returns a 2-element array containing the property getter code string and the
  * operation order Blockly.JavaScript.ORDER_ATOMIC.
  *
  * @param {String} instanceName
@@ -570,7 +571,7 @@ Blockly.JavaScript.genericGetproperty = function(typeName) {
 
   // Initialize the code for the element
   var elementCode = Blockly.JavaScript.valueToCode(this, 'COMPONENT', Blockly.JavaScript.ORDER_NONE);
-  var code = Blockly.JavaScript.getPropertyHelper(elementCode, propertyName, this.typeName);
+  var code = '(' + Blockly.JavaScript.getPropertyHelper(elementCode, propertyName, this.typeName) + ')';
 
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 }
