@@ -41,7 +41,7 @@ public class DocumentationGenerator extends ComponentProcessor {
    * Returns string describing a given property.
    */
   private String getPropertyDefinition(String name, String description,
-                                       boolean isUserVisible, boolean isReadable, boolean isWritable) {
+      boolean isUserVisible, boolean isReadable, boolean isWritable) {
 
     if (!isUserVisible) {
       return String.format("  <dt><code>%s</code> (designer only)</dt>\n  <dd>%s</dd>\n",
