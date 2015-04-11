@@ -335,15 +335,18 @@ Blockly.liveWebAppClient = (function(){
 	    }
 
   doItAction = function(block) {
-     var js  = Blockly.JavaScript.blockToCode1(block);
+    if(checkLiveEditOpen()){
+        var js  = Blockly.JavaScript.blockToCode1(block);
 
-     console.log(" myBlock: " + block + " JS: " +
-        js + " block id: " + block.id);
+        console.log(" myBlock: " + block + " JS: " +
+           js + " block id: " + block.id);
 
-     if(Array.isArray(js)){
-        js = js[0];
-     }
-     sendMessage(js,MSG_DO_IT,block.id);
+        if(Array.isArray(js)){
+           js = js[0];
+        }
+        sendMessage(js,MSG_DO_IT,block.id);
+    }
+
   }
 
   return self;
