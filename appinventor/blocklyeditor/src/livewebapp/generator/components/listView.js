@@ -9,12 +9,16 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.ListViewJsGenerator.generateJSForAddingComponent = function(component){
-                                  return     "var div = document.createElement(\"div\");" +
-                                            "var listView = document.createElement(\"ul\");" +
-                                             "listView.setAttribute(\"id\",\"" + component.$Name + "\");" +
-                                            "div.appendChild(listView);" +
-                                            "document.body.appendChild(div);";
-                              };
+    return "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {"+
+        "var div = document.createElement(\"div\");" +
+            "var listView = document.createElement(\"ul\");" +
+            "listView.setAttribute(\"id\",\"" + component.$Name + "\");" +
+            "div.appendChild(listView);" +
+            "document.body.appendChild(div);}";
+};
 
 Blockly.ListViewJsGenerator.generateJSForRemovingComponent = function(component){
         return     "var node = document.getElementById(\"" + component.$Name + "\");" +
@@ -101,8 +105,10 @@ Blockly.ListViewJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 Blockly.ListViewJsGenerator.getColor = function(index) {

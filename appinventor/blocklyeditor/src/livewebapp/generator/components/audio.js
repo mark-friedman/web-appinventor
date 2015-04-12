@@ -9,15 +9,19 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.AudioJsGenerator.generateJSForAddingComponent = function(component){
-    return     "var div = document.createElement(\"div\");" +
-                "var audio = document.createElement(\"audio\");" +
-                "audio.setAttribute(\"id\",\"" + component.$Name + "\");" +
-                "audio.setAttribute(\"controls\",\"controls\");"+
-                "audio.setAttribute(\"hidden\", \"hidden\");"+
-                "audio.setAttribute(\"autoplay\", \"autoplay\");"+
-                "div.appendChild(audio);"+
-                "document.body.appendChild(div);";
-
+    return "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {"+
+        "var div = document.createElement(\"div\");" +
+      "var audio = document.createElement(\"audio\");" +
+      "audio.setAttribute(\"id\",\"" + component.$Name + "\");" +
+      "audio.setAttribute(\"controls\",\"controls\");"+
+      "audio.setAttribute(\"hidden\", \"hidden\");"+
+      "audio.setAttribute(\"autoplay\", \"autoplay\");"+
+      "div.appendChild(audio);"+
+      "document.body.appendChild(div);" +
+        "}";
 };
 
 

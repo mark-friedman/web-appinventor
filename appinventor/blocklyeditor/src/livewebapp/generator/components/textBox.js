@@ -9,16 +9,21 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.TextBoxJsGenerator.generateJSForAddingComponent = function(component){
-                                    var txtBox ="var div = document.createElement(\"div\");" ;
-                                      if(component["MultiLine"]=="True")
-                                          txtBox=txtBox+"var txt = document.createElement(\"textarea\");";
-                                      else
-                                          txtBox=txtBox+"var txt = document.createElement(\"input\");";
-                                      txtBox=txtBox+"txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
-                                      "div.appendChild(txt);" +
-                                      "document.body.appendChild(div);";
-                                    return txtBox
-                              };
+     var txtBox = "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {";
+        txtBox += "var div = document.createElement(\"div\");";
+        if (component["MultiLine"] == "True")
+            txtBox = txtBox + "var txt = document.createElement(\"textarea\");";
+        else
+            txtBox = txtBox + "var txt = document.createElement(\"input\");";
+        txtBox += "txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
+        "div.appendChild(txt);" +
+        "document.body.appendChild(div);";
+        txtBox +=txtBox +"}";
+    return txtBox;
+};
 
 
 Blockly.TextBoxJsGenerator.generateJSForRemovingComponent = function(component){
@@ -89,8 +94,10 @@ Blockly.TextBoxJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 Blockly.TextBoxJsGenerator.getFontType = function(index) {

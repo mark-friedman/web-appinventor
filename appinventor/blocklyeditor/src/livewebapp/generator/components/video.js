@@ -9,13 +9,15 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.VideoJsGenerator.generateJSForAddingComponent = function(component){
-    return     "var div = document.createElement(\"div\");" +
-                "var video = document.createElement(\"video\");" +
-                "video.setAttribute(\"id\",\"" + component.$Name + "\");" +
-                "video.setAttribute(\"controls\",\"controls\");"+
-                "div.appendChild(video);"+
-                "document.body.appendChild(div);";
-
+    return "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload(false);" +
+        "var div = document.createElement(\"div\");" +
+            "var video = document.createElement(\"video\");" +
+            "video.setAttribute(\"id\",\"" + component.$Name + "\");" +
+            "video.setAttribute(\"controls\",\"controls\");" +
+            "div.appendChild(video);" +
+            "document.body.appendChild(div);}";
 };
 
 
@@ -61,8 +63,10 @@ Blockly.VideoJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 
