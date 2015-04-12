@@ -5,7 +5,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 package com.google.appinventor.components.runtime.util;
 
-import com.google.appinventor.components.runtime.WebViewer;
+//import com.google.appinventor.components.runtime.WebViewer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -51,7 +51,8 @@ public class EclairUtil {
    * @param activity - Its containing activity used for placing the dialog box
    */
 
-  public static void setupWebViewGeoLoc(final WebViewer caller, WebView webview, final Activity activity) {
+  // TODO Method and class may not be required in the future.  Check and remove as appropriate.
+/*  public static void setupWebViewGeoLoc(final WebViewer caller, WebView webview, final Activity activity) {
     webview.getSettings().setGeolocationDatabasePath(activity.getFilesDir().getAbsolutePath());
     webview.getSettings().setDatabaseEnabled(true);
     webview.setWebChromeClient(new WebChromeClient() {
@@ -84,7 +85,7 @@ public class EclairUtil {
           alertDialog.show();
         }
       });
-  }
+  }*/
 
   /**
    * Clear Stored Location permissions. When the geolocation API is used in
