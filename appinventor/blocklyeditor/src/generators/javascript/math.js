@@ -17,7 +17,7 @@ Blockly.JavaScript['math_number'] = function() {
   // Numeric value.
   var code = window.parseFloat(this.getFieldValue('NUM'));
 
-  
+
   code = code + ''; //convert number to string
 
 
@@ -74,7 +74,7 @@ Blockly.JavaScript['math_arithmetic'] = function(mode,block) {
   // Basic arithmetic operators.
   var tuple = Blockly.JavaScript.math_arithmetic.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var argument0 = Blockly.JavaScript.valueToCode(block, 'A', order) || 0;
   var argument1 = Blockly.JavaScript.valueToCode(block, 'B', order) || 0;
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -148,7 +148,7 @@ Blockly.JavaScript['math_arithmetic_list'] = function(mode,block) {
   // code += Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + operator
   //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  
+
 
 
   var code = '(';
@@ -161,7 +161,7 @@ Blockly.JavaScript['math_arithmetic_list'] = function(mode,block) {
     }
 
   }
-  code = code + ')'; 
+  code = code + ')';
 
 
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
@@ -266,7 +266,8 @@ Blockly.JavaScript['math_random_int'] = function() {
   var code = '(';
     //find a random number between (1,interval) and add argument0
     // to put the result between the orignal endpoints/arguments
-  var code = code + 'Math.floor((Math.random()*' + interval + ') + 1) +' + argument0;
+  // var code = code + 'Math.floor((Math.random()*' + interval + ') + 1) +' + argument0;
+  var code = code + 'Math.floor((' + Blockly.JavaScript.mathSeedRandomString + '*' + interval + ') + 1) +' + argument0;
   var code = code + ')';
 
 
@@ -277,8 +278,8 @@ Blockly.JavaScript['math_random_float'] = function() {
   // Random fraction between 0 and 1.
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "random-fraction"
   //     + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + 
-  // Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + 
+  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR +
+  // Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE +
   // Blockly.JavaScript.YAIL_OPEN_COMBINATION;
   // code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER
   //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "random fraction"
@@ -287,10 +288,12 @@ Blockly.JavaScript['math_random_float'] = function() {
 
   //return code that keeps looking for a fraction and returns it once found
   //Math.random() returns 0s so we need to loop until we find a non-zero fraction
-  var code = '( function() { ';
-  code = code + 'var fraction = Math.random();';
-  code = code + 'while(fraction == 0) { fraction = Math.random();}';
-  code = code + 'return fraction;})';
+  var code = '(function() { ';
+  // code = code + 'var fraction = Math.random();';
+  // code = code + 'while(fraction == 0) { fraction = Math.random();}';
+  code = code + 'var fraction = ' + Blockly.JavaScript.mathSeedRandomString + ';';
+  code = code + 'while(fraction == 0) { fraction = ' + Blockly.JavaScript.mathSeedRandomString + ';}';
+  code = code + 'return fraction;})()';
 
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
@@ -298,25 +301,41 @@ Blockly.JavaScript['math_random_float'] = function() {
 Blockly.JavaScript['math_random_set_seed'] = function() {
   // Basic is_a_number.
   var argument = Blockly.JavaScript.valueToCode(this, 'NUM', Blockly.JavaScript.ORDER_NONE) || 0;
-  var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "random-set-seed"
-      + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION
-      + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER
-      + argument + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE
-      + Blockly.JavaScript.YAIL_OPEN_COMBINATION + "number"
-      + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "random set seed"
-      + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "random-set-seed"
+  //     + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION
+  //     + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER
+  //     + argument + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE
+  //     + Blockly.JavaScript.YAIL_OPEN_COMBINATION + "number"
+  //     + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+  // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "random set seed"
+  //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+
+  var code = '(function() { window.seedVal = ' + argument + ';})();';
+
   return code;
 };
+
+/* String representing a custom random number generator that uses a seed.
+ * Seed can be set using the math_random_set_seed function and is declared
+ * globally within the windows scope.
+ */
+Blockly.JavaScript.mathSeedRandomString =
+  '(function() { ' +
+    'if (window.seedVal == undefined) { ' +
+      'window.seedVal = 1; ' +
+    '} ' +
+    'var value = Math.sin(Math.random()*(window.seedVal+1)) * 10000; ' +
+    'return value - Math.floor(value); ' +
+  '})()';
 
 Blockly.JavaScript['math_on_list'] = function() {
   // Min and Max operators.
   var mode = this.getFieldValue('OP');
   var tuple = Blockly.JavaScript.math_on_list.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   //var args = "";
   //var typeString = "";
   // for(var i=0;i<this.itemCount_;i++) {
@@ -338,7 +357,7 @@ Blockly.JavaScript['math_on_list'] = function() {
 
   //operator will be min or max
   var code = '(Math.' + operator + '(';
-  //loop through and add all arguments within operator parenthesis  
+  //loop through and add all arguments within operator parenthesis
   for(var i=0;i<this.itemCount_;i++){
     var argument = (Blockly.JavaScript.valueToCode(this, 'NUM' + i, order) || 0);
     code = code + argument;
@@ -361,7 +380,7 @@ Blockly.JavaScript['math_divide'] = function() {
   var mode = this.getFieldValue('OP');
   var tuple = Blockly.JavaScript.math_divide.OPERATORS[mode];
   var operator = tuple[0];
-  var order = tuple[1]; 
+  var order = tuple[1];
   var argument0 = Blockly.JavaScript.valueToCode(this, 'DIVIDEND', order) || 0;
   var argument1 = Blockly.JavaScript.valueToCode(this, 'DIVISOR', order) || 1;
   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + operator
@@ -385,7 +404,7 @@ Blockly.JavaScript['math_divide'] = function() {
     code = code + '%';
   }
   code = code + argument1 + ')';
-  
+
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
 
@@ -415,7 +434,7 @@ Blockly.JavaScript['math_trig'] = function() {
   //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
 
 
-  //return code in form (Math.operator2(argument)) 
+  //return code in form (Math.operator2(argument))
   var code =  '(Math.' + operator2 + '(' + argument + '))';
 
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
@@ -514,7 +533,7 @@ Blockly.JavaScript['math_format_as_decimal'] = function() {
   // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "format as decimal"
   //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
 
-  
+
 
   var numString = argument0.toString(); //convert number to String
   var numArray = numString.split(".");
@@ -522,14 +541,14 @@ Blockly.JavaScript['math_format_as_decimal'] = function() {
   var numFraction = numArray[1];//get the fractional part
   //truncate the fractional part and concatenate it with the whole number part and decimal
   var code = '(' + numWhole + '.' + numFraction.substring(0,argument1);
-  
+
    var zeros = '';
     for(var i=1; i<=argument1 - numFraction.length; i++){
       zeros = zeros + '0';
     }
     code = code + zeros;
-  
-  
+
+
   code = code + ')';
 
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
@@ -548,7 +567,7 @@ Blockly.JavaScript['math_is_a_number'] = function() {
   //     + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
   // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "is a number?"
   //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  
+
 
   //checks whether the type of the argument returns "number"
   var code = '(' + '((typeof' + argument + ') == "number" ) )';
