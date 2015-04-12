@@ -9,13 +9,16 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.RangeJsGenerator.generateJSForAddingComponent = function(component){
-                                  return   "var div = document.createElement(\"div\");" +
-                                           "var rangefield = document.createElement(\"input\");" +
-                                           "rangefield.setAttribute(\"id\",\"" + component.$Name + "\");" +
-                                           "rangefield.setAttribute(\"type\", \"range\");"+
-                                           "div.appendChild(rangefield);" +
-                                           "document.body.appendChild(div);";
-                              };
+    return "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {"+ "var div = document.createElement(\"div\");" +
+            "var rangefield = document.createElement(\"input\");" +
+            "rangefield.setAttribute(\"id\",\"" + component.$Name + "\");" +
+            "rangefield.setAttribute(\"type\", \"range\");" +
+            "div.appendChild(rangefield);" +
+            "document.body.appendChild(div);}";
+};
 
 Blockly.RangeJsGenerator.generateJSForRemovingComponent = function(component){
         return     "var node = document.getElementById(\"" + component.$Name + "\");" +
@@ -59,8 +62,10 @@ Blockly.RangeJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 
