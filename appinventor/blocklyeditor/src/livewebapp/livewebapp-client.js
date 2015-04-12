@@ -130,8 +130,8 @@ Blockly.liveWebAppClient = (function(){
 
   sendBlocklyData = function(js,screenName) {
 
-    var projectId = Object.keys(window.parent.Blocklies).pop().split("_")[0];
-    var blockly = window.parent.Blocklies[projectId + "_" + screenName];
+    projectId = Object.keys(window.parent.Blocklies).pop().split("_")[0];
+    blockly = window.parent.Blocklies[projectId + "_" + screenName];
     var block, blocks = blockly.mainWorkspace.getTopBlocks(true);
     if(DBG) console.log("Blocks: " + blocks);
     var allBlocks = [];
@@ -254,7 +254,7 @@ Blockly.liveWebAppClient = (function(){
 	
   onBlocksAreaChange = function (screenNameWithProjectId){
     if(checkLiveEditOpen()){
-        var screenName = screenNameWithProjectId.split("_")[1];
+        screenName = screenNameWithProjectId.split("_")[1];
         if(updateLiveWebAppUrl(screenName)){
           //if url is updated we need to send message to change location
           liveWebAppWindow.location.assign(location.origin + liveWebAppUrl);
@@ -281,7 +281,7 @@ Blockly.liveWebAppClient = (function(){
   }
 
   sendMessage = function(data,messageType,blockId){
-      var message = generateMessageForType(data,messageType,blockId)
+      message = generateMessageForType(data,messageType,blockId)
       var sMessage = data
       if(JSON_MESSAGE){
         sMessage  = JSON.stringify(message)
