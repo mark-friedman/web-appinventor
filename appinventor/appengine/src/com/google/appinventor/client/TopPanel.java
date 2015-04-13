@@ -570,4 +570,3 @@ public class TopPanel extends Composite {
     Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), mCallback);
   }
 }
-

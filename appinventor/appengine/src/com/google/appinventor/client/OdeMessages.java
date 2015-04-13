@@ -5285,7 +5285,7 @@ public interface OdeMessages extends Messages {
   @Description("")
   String SwitchToSimplifiedChinese();
 
-  @DefaultMessage("繁体中文")
+  @DefaultMessage("�?体中文")
   @Description("")
   String SwitchToTraditionalChinese();
 

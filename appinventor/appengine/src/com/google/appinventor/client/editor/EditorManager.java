@@ -16,6 +16,7 @@ import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.commands.BuildWebCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.GenerateJavaScriptCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.project.ProjectSettings;
@@ -350,24 +351,41 @@ public final class EditorManager {
       projectSettings.saveSettings(callAfterSavingCommand);
     }
       if(BlocklyPanel.checkLiveEditWindowOpen()){
-          buildHTML();
+          buildHTMLAndJs();
       }
   }
     /**
      * Saving files related to Live Web App.
      * This method build HTML files after every incremental change.
      */
-    public void buildHTML(){
-        Command SaveCommand = new Command() {    public void execute() {
-            final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-            if (projectRootNode != null) {
-                ChainableCommand cmd = new BuildWebCommand(TARGET_LIVE_WEBAPP,null);
-                cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
+    public static void buildHTMLAndJs(){
+        Command SaveCommand = new Command() {
+            public void execute() {
+                final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+                if (projectRootNode != null) {
+                    ChainableCommand cmd =
+                            new GenerateJavaScriptCommand(
+                                    new BuildWebCommand(TARGET_LIVE_WEBAPP,null));
+                    cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
+                }
             }
-        }
         };
         SaveCommand.execute();
     }
+
+    public static void buildHTML(){
+        Command SaveCommand = new Command() {
+            public void execute() {
+                final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+                if (projectRootNode != null) {
+                    ChainableCommand cmd = new BuildWebCommand(TARGET_LIVE_WEBAPP,null);
+                    cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
+                }
+            }
+        };
+        SaveCommand.execute();
+    }
+
   /**
    * For each block editor (screen) in the current project, generate and save yail code for the 
    * blocks.

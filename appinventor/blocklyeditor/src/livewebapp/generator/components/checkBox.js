@@ -7,16 +7,20 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.CheckBoxJsGenerator.generateJSForAddingComponent = function(component){
-    return "var div = document.createElement(\"div\");" +
-        "var checkBox = document.createElement(\"input\");" +
-        "checkBox.setAttribute(\"type\",\"checkbox\");" +
-        "checkBox.setAttribute(\"id\",\"" + component.$Name + "\");" +
-        "var label = document.createElement(\"Label\");" +
-        "label.setAttribute(\"htmlFor\",\"" + component.$Name + "\");" +
-        "label.appendChild(document.createTextNode(\"" + component.Text + "\"));"+
-        "div.appendChild(checkBox);" +
-        "div.appendChild(label);" +
-        "document.body.appendChild(div);";
+    return "var element =  document.getElementById(\""+component.$Name+"\");"+
+        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "location.reload();" +
+        "}else {"+
+         "var div = document.createElement(\"div\");" +
+            "var checkBox = document.createElement(\"input\");" +
+            "checkBox.setAttribute(\"type\",\"checkbox\");" +
+            "checkBox.setAttribute(\"id\",\"" + component.$Name + "\");" +
+            "var label = document.createElement(\"Label\");" +
+            "label.setAttribute(\"htmlFor\",\"" + component.$Name + "\");" +
+            "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
+            "div.appendChild(checkBox);" +
+            "div.appendChild(label);" +
+            "document.body.appendChild(div);}";
 };
 
 Blockly.CheckBoxJsGenerator.generateJSForRemovingComponent = function(component){
@@ -89,8 +93,10 @@ Blockly.CheckBoxJsGenerator.getSizeVal = function(index) {
         return "auto";
     else if(index == "Fill Parent")
         return "100%";
-    else
+    else if(index.indexOf("-")<0)
         return index+"px";
+    else
+        return index.substring(3)+"%";
 };
 
 Blockly.CheckBoxJsGenerator.getColor = function(index) {
