@@ -219,6 +219,8 @@ public class Label extends Component{
           this.setWidth("auto");
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setWidth("100%");
+        else if(value.charAt(0)=='-')
+            this.setWidth(value.substring(2)+"%");
         else
           this.setWidth(value+"px");
         break;
@@ -227,6 +229,8 @@ public class Label extends Component{
           this.setHeight("auto");
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setHeight("100%");
+        else if(value.charAt(0)=='-')
+            this.setHeight(value.substring(2)+"%");
         else
           this.setHeight(value+"px");
         break;
