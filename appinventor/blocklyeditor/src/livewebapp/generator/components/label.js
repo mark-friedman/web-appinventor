@@ -86,12 +86,19 @@ Blockly.LabelJsGenerator.setProperties = function(component, propName, propValue
              return "document.getElementById(\"" + component.$Name + "\").disabled = \"" +
                  this.getVisibility(propValue) + "\";";
          case "HasMargins":
-             return "document.getElementById(\"" + component.$Name + "\").style.margin = \"" +
-                 this.getVisibility(propValue) + "\";";
+             return this.getBorder(component, propValue);
          default:
              return "";
      }
     };
+
+Blockly.LabelJsGenerator.getBorder = function(component, propValue) {
+    if (propValue == "False") {
+        return "document.getElementById(\"" + component.$Name + "\").style.border = \"none\";";
+    } else {
+        return "document.getElementById(\"" + component.$Name + "\").style.border = \"solid 1px\";";
+    }
+};
 
 Blockly.LabelJsGenerator.getSizeVal = function(index) {
     if(index == "Automatic")

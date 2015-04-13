@@ -5,32 +5,32 @@ import java.util.Map;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 /**
- * Button takes JSON string of Button component and return 
- * HTML and CSS equivalent for Button
- * Creation date: 03/13/15
+ * Screen takes JSON string for the whole String and returns 
+ * HTML and CSS equivalent for whole page
+ * Creation date: 04/09/15
  * 
- * @author veluru.k@husky.neu.edu (Veluru Kaushik)
+ * @author vaka.s@husky.neu.edu (Sudeep Vaka)
  */
 
 public class Screen extends ImageComponent{
 
   String backgroundColor = "";
   String backgroundImage = "";
-  String textAlign = "left";
-  String vertAlign="0%";
-  String scrollable="";
+  String horizontalAlign = "left";
+  String verticalAlign = "0%";
+  String scrollable = "";
   String name = "";
-  String title= "";
+  String title = "";
   String type = "Form";
 
 
 
-  public String getVertAlign() {
-	return vertAlign;
+  public String getVerticalAlign() {
+	return verticalAlign;
 }
 
-public void setVertAlign(String vertAlign) {
-	this.vertAlign = vertAlign;
+public void setVerticalAlign(String verticalAlign) {
+	this.verticalAlign = verticalAlign;
 }
 
 public String getScrollable() {
@@ -68,12 +68,12 @@ public String getBackgroundColor() {
 
 
 
-  public String getTextAlign() {
-    return textAlign;
+  public String getHorizontalAlign() {
+    return horizontalAlign;
   }
 
-  public void setTextAlign(String textAlign) {
-    this.textAlign  =  textAlign;
+  public void setHorizontalAlign(String horizontalAlign) {
+    this.horizontalAlign  =  horizontalAlign;
   }
 
   public String getName() {
@@ -97,13 +97,14 @@ public String getBackgroundColor() {
     StringBuilder sb = new StringBuilder();
     sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
-    if(!this.getBackgroundColor().equals(""))
+    if(!this.getBackgroundColor().equals("")){
       sb.append(" background : "+this.getBackgroundColor()+";\n");
+    }
     
-    sb.append(" background-image : url("+this.getPrefixedSrc(this.getBackgroundImage())+");\n");
-    sb.append(" text-align : "+this.getTextAlign()+";\n");
-    sb.append(" position : absolute;\n");
-    sb.append(" top : "+this.getVertAlign()+";\n");
+    sb.append(" background-image : url(assets/"+this.getPrefixedSrc(this.getBackgroundImage())+");\n");
+    //sb.append(" position : absolute;\n");
+    sb.append(" text-align : "+this.getHorizontalAlign()+";\n");
+    sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not for now!
       
     sb.append("}\n");
 
@@ -137,19 +138,19 @@ public String getBackgroundColor() {
         break;
       case "AlignHorizontal":
         if(value.equals("0"))
-          this.setTextAlign("left");
-        if(value.equals("1"))
-          this.setTextAlign("center");
+          this.setHorizontalAlign("left");
+        if(value.equals("3"))
+          this.setHorizontalAlign("center");
         if(value.equals("2"))
-          this.setTextAlign("right");
+          this.setHorizontalAlign("right");
         break;
       case "AlignVertical":
           if(value.equals("0"))
-              this.setVertAlign("0%");
-          if(value.equals("1"))
-              this.setVertAlign("50%");
+              this.setVerticalAlign("0%");
           if(value.equals("2"))
-              this.setVertAlign("100%");
+              this.setVerticalAlign("50%");
+          if(value.equals("3"))
+              this.setVerticalAlign("100%");
           break;
       case "BackgroundImage":
           this.setBackgroundImage(value);
