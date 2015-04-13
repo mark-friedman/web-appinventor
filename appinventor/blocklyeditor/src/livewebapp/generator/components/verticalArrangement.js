@@ -76,12 +76,18 @@ Blockly.VerticalArrangement.setProperties = function(component, propName, propVa
         case "Height":
             return "document.getElementById(\"" + component.$Name + "\").style.height = \"" +
                 this.getSizeVal(propValue) + "\";";
+        case "AlignHorizontal":
+            return "document.getElementById(\"" + component.$Name + "\").style.horizontalAlign=\""+
+                this.getHorizontalAlignment(propValue)+ "\";";
+        case "AlignVertical":
+            return "document.getElementById(\"" + component.$Name + "\").style.verticalAlign=\""+
+                this.getVerticalAlignment(propValue)+ "\";";
         default:
             return "";
     }
 };
 
-Blockly.ButtonJsGenerator.getSizeVal = function(index) {
+Blockly.VerticalArrangement.getSizeVal = function(index) {
     if(index == "Automatic")
         return "auto";
     else if(index == "Fill Parent")
@@ -92,3 +98,20 @@ Blockly.ButtonJsGenerator.getSizeVal = function(index) {
         return index.substring(3)+"%";
 };
 
+Blockly.VerticalArrangement.getHorizontalAlignment = function(propValue) {
+    if(propValue=="0")
+        return "left";
+    if(propValue=="3")
+        return "center";
+    if(propValue=="2")
+        return "right";
+};
+
+Blockly.VerticalArrangement.getVerticalAlignment = function(propValue) {
+    if(propValue=="0")
+        return "0%";
+    if(propValue=="3")
+        return "50%";
+    if(propValue=="2")
+        return "100%";
+};

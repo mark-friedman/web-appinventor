@@ -14,8 +14,8 @@ public class Image extends ImageComponent{
 
   String source = "";
   String visible = "true";
-  String width = "";
-  String height = "";
+  String width = "auto";
+  String height = "auto";
 
   String type = "Image";
   String name = "";
@@ -79,7 +79,7 @@ public class Image extends ImageComponent{
 
     sb.append("<img");
     sb.append(" id = "+"\""+this.getName()+"\"");
-    sb.append(" src = "+"\"url("+this.getPrefixedSrc(this.getSource())+")\"");
+    sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
 
 
     if(this.getVisible().equals("False"))
@@ -120,6 +120,8 @@ public class Image extends ImageComponent{
           this.setWidth("auto");
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setWidth("100%");
+        else if(value.charAt(0)=='-')
+            this.setWidth(value.substring(2)+"%");
         else
           this.setWidth(value+"px");
         break;
@@ -128,6 +130,8 @@ public class Image extends ImageComponent{
           this.setHeight("auto");
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setHeight("100%");
+        else if(value.charAt(0)=='-')
+            this.setHeight(value.substring(2)+"%");
         else
           this.setHeight(value+"px");
         break;

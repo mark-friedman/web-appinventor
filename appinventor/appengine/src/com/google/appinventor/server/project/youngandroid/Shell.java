@@ -84,7 +84,7 @@ public class Shell {
     
       // inject css for bootstrap and components
       htmlStringBuilder.append("<style>\n");
-      htmlStringBuilder.append(".container\n");
+      htmlStringBuilder.append(".container-fluid\n");
       htmlStringBuilder.append("{\n");
       htmlStringBuilder.append("padding-left : 0px;\n");
       htmlStringBuilder.append("padding-right : 0px;\n");
@@ -121,7 +121,7 @@ public class Shell {
     //including id for body - Sudeep
     htmlStringBuilder.append("<body id = \""+ screenName+"\">\n");
     //Included bootstrap code - Sudeep
-    htmlStringBuilder.append("<div class=\"container\">\n");
+    htmlStringBuilder.append("<div class=\"container-fluid\">\n");
     // inject html from the components
     if (!componentPackage.isEmpty()) {
       for (String[] component : componentPackage) {
