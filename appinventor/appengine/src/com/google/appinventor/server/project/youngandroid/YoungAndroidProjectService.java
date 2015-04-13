@@ -693,8 +693,16 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
                 // Build the html for this screen
                 StitchResult screenResult = Shell.stitchBuildHTML(projectName, screenName, screenJavaScript, screenComponentJSON, isLiveWebAppBuild, "assets/");
-                LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());
-                assetFileIds.addAll(screenResult.assetFiles);
+                LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());               
+                for (String assetFileId : screenResult.assetFiles)
+                {
+                  // Add any new asset references
+                  if ((assetFileId != null) && !assetFileIds.contains(assetFileId))
+                  {
+                    LOG.log(Level.INFO, "   Asset file = " + assetFileId);
+                    assetFileIds.add(assetFileId);
+                  }
+                }
 
                 LOG.log(Level.FINEST, "Built " + builtHtmlFileId + " : " + screenResult.html);
 
