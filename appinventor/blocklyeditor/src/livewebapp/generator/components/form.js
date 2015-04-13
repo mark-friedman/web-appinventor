@@ -35,67 +35,31 @@ Blockly.FormJsGenerator.setProperties = function(component, propName, propValue)
         case "BackgroundImage":
             return "document.body.style.backgroundImage = \"url(assets/" +
                 (propValue) + ")\";";
+        case "AlignHorizontal":
+            return "document.getElementById(\"" + component.$Name + "\").style.horizontalAlign=\""+
+            this.getHorizontalAlignment(propValue)+ "\";";
+        case "AlignVertical":
+            return "document.getElementById(\"" + component.$Name + "\").style.verticalAlign=\""+
+                this.getVerticalAlignment(propValue)+ "\";";
         default:
             return "";
     }
 };
 
-Blockly.FormJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
+Blockly.FormJsGenerator.getHorizontalAlignment = function(propValue) {
+    if(propValue=="0")
+        return "left";
+    if(propValue=="3")
+        return "center";
+    if(propValue=="2")
+        return "right";
+};
+
+Blockly.FormJsGenerator.getVerticalAlignment = function(propValue) {
+    if(propValue=="0")
+        return "0%";
+    if(propValue=="3")
+        return "50%";
+    if(propValue=="2")
         return "100%";
-    else if(index.indexOf("-")<0)
-        return index+"px";
-    else
-        return index.substring(3)+"%";
-};
-
-
-Blockly.FormJsGenerator.getVisibility = function(index) {
-    if (index == "True" ) {
-        return "";
-    } else {
-        return "hidden";
-    }
-};
-
-Blockly.FormJsGenerator.getEnabled = function(index) {
-    if (index == "True") {
-        return "False";
-    } else {
-        return "True";
-    }
-};
-
-Blockly.FormJsGenerator.getFontType = function(index) {
-    switch(index) {
-        case "0": return "courier";
-        case "1": return "sans-serif";
-        case "2": return "serif";
-        case "3": return "monospace";
-        default:  return "";
-    }
-};
-
-Blockly.FormJsGenerator.getTextAlignment = function(index) {
-    switch (index) {
-        case "0":
-            return "left";
-        case "1":
-            return "center";
-        case "2":
-            return "right";
-        default:
-            return "";
-    }
-};
-Blockly.FormJsGenerator.getShape = function(index) {
-        switch(index) {
-            case "0":
-            case "2":
-                return "default";
-            case "1": return "rounded";
-            default:  return "oval";
-        }
 };
