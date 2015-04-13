@@ -70,13 +70,18 @@
 
         if (window.parent.liveWebAppClient === undefined) {
 
-            var liveWebAppClient = Blockly.liveWebAppClient;
-            window.parent.liveWebAppClient = liveWebAppClient
+            createLiveWebApp(formName);
             console.log('created new web app client');
 
         }else{
 
-            console.log('using old web app client');
+            if(window.parent.liveWebAppClient.getProject() == formName){
+                console.log('using old web app client');
+            }else{
+                createLiveWebApp(formName);
+                console.log('switched project :created new web app client');
+            }
+
 
         }
 
@@ -86,6 +91,12 @@
         Blockly.ComponentTypes.populateTypes();
         window.parent.BlocklyPanel_initBlocksArea(formName);
         window.parent.BlocklyPanel_checkWarningState(formName);
+      }
+
+      function createLiveWebApp(projectName){
+         var liveWebAppClient = Blockly.liveWebAppClient;
+         window.parent.liveWebAppClient = liveWebAppClient
+         liveWebAppClient.setProject(projectName);
       }
 	  window.addListener(receiveMessage);
 function receiveMessage(event){ 
