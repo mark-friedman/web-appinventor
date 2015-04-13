@@ -5,7 +5,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class ListPicker extends ImageComponent{
 
-  String backgroundColor = "#FFFFFF";
+  String backgroundColor = "";
   String elementsFromString = "";
   String fontSize = "14";
   String fontBold = "none";
@@ -13,7 +13,7 @@ public class ListPicker extends ImageComponent{
   String enabled = "true";
   String fontTypeface = "sans-serif";
   String image = "";
-  String itemBackgroundColor = "#FFFFFF";
+  String itemBackgroundColor = "";
   String itemTextColor = "#000000";
   String shape = "0px";
   String text = "";

@@ -59,6 +59,12 @@ Blockly.JavaScript.component_event = function() {
     case 'PositionChanged':
       JSEvent = 'onchange';
       break;
+    case 'AfterPicking':
+      JSEvent = '';
+      break;
+    case 'Completed':
+      JSEvent = 'onended';
+      break;
     default:
       break;
   }
@@ -67,7 +73,7 @@ Blockly.JavaScript.component_event = function() {
   code = code + JSEvent;
 
   //Fetch the code for the body
-  code = code + '= function() {';
+  code = code + ' = function() {';
 
   var body = Blockly.JavaScript.statementToCode(this, 'DO', Blockly.JavaScript.ORDER_NONE);
 
@@ -116,7 +122,7 @@ Blockly.JavaScript.component_method = function() {
   if(this.getMethodTypeObject().returnType) {
     return [methodHelperJavaScriptString, Blockly.JavaScript.ORDER_ATOMIC];
   } else {
-    return methodHelperJavaScriptString;
+    return methodHelperJavaScriptString + ';';
   }
 }
 
@@ -197,25 +203,10 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
 // to get the type for the first socket in a more general way in this case.
   var paramObjects = methodBlock.getMethodTypeObject().params;
   var numOfParams = paramObjects.length;
-  var yailTypes = [];
-  if(generic) {
-    yailTypes.push(Blockly.JavaScript.YAIL_COMPONENT_TYPE);
-  }
-  for(var i=0;i<paramObjects.length;i++) {
-    yailTypes.push(paramObjects[i].type);
-  }
-  //var yailTypes = (generic ? [Blockly.JavaScript.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
-  var callPrefix;
-  if (generic) {
-    callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_TYPE_METHOD
-        // TODO(hal, andrew): check for empty socket and generate error if necessary
-        + Blockly.JavaScript.valueToCode(methodBlock, 'COMPONENT', Blockly.JavaScript.ORDER_NONE)
-        + Blockly.JavaScript.YAIL_SPACER;
-  } else {
-    callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_METHOD;
-    name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
-  }
+  // not sure if the following array is needed
+  // var paramTypes = [];
 
+  // Iterate through to retrieve all the arguments
   var args = [];
   for (var x = 0; x < numOfParams; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -223,23 +214,193 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
               + Blockly.JavaScript.valueToCode(methodBlock, 'ARG' + x, Blockly.JavaScript.ORDER_NONE));
   }
 
-  return callPrefix
-    + Blockly.JavaScript.YAIL_QUOTE
-    + name
-    + Blockly.JavaScript.YAIL_SPACER
-    + Blockly.JavaScript.YAIL_QUOTE
-    + methodName
-    + Blockly.JavaScript.YAIL_SPACER
-    + Blockly.JavaScript.YAIL_OPEN_COMBINATION
-    + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR
-    + args.join(' ')
-    + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
-    + Blockly.JavaScript.YAIL_SPACER
-    + Blockly.JavaScript.YAIL_QUOTE
-    + Blockly.JavaScript.YAIL_OPEN_COMBINATION
-    + yailTypes.join(' ')
-    + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
-    + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  typeName = methodBlock.typeName;
+
+  switch (typeName) {
+
+    // maybe? -> test
+    // might have to use jquery to implement datepicker
+    case 'DatePicker':
+      // not sure about launchpicker or setdatetodisplay
+      if (methodName == 'LaunchPicker') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").onclick());' +
+        '})()';
+      } else if (methodName == 'SetDateToDisplay') {
+        var year = args[0];
+        var month = args[1];
+        var day = args[2];
+        if (day.length != 2) { day = "0" + day; };
+        if (month.length != 2) { month = "0" + month; };
+
+        var date = month + '/' + day + '/' + year;
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").datepicker(\"setDate\", ' + date + '));' +
+        '})()';
+      }
+      break;
+
+    // not sure about this one
+    case 'ListPicker':
+      if (methodName == 'Open') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").onclick());' +
+        '})()';
+      }
+      break;
+
+    // RequestFocus WORKS
+    case 'PasswordTextBox':
+      if (methodName == 'RequestFocus') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").focus());' +
+        '})()';
+      }
+      break;
+
+    // RequestFocus WORKS. Need to test on phone "hidekeyboard"
+    // i read that blur might hide the keyboard... test!!
+    case 'TextBox':
+      if (methodName == 'HideKeyboard') {
+        var code = '(function() { ' +
+          '(document.activeElement.blur());' +
+        '})()';
+      } else if (methodName == 'RequestFocus') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").focus());' +
+        '})()';
+      }
+      break;
+
+    // maybe? -> test
+    // might have to use jquery to use timepicker
+    case 'TimePicker':
+      if (methodName == 'LaunchPicker') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").onclick());' +
+        '})()';
+      } else if (methodName == 'SetTimeToDisplay') {
+        var hour = args[0];
+        var minute = args[1];
+        var suffix = 'AM';
+        if (hour > 12) {
+          suffix = 'PM';
+          hour -= 12;
+        }
+        // not sure if the following line is needed
+        if (hour.length != 2) { hour = "0" + hour; };
+        if (minute.length != 2) { minute = "0" + minute; };
+
+        var time = hour + ':' + minute + ' ' + suffix;
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").timepicker(\"setTime\", ' + time + '));' +
+        '})()';
+      }
+      break;
+
+    // maybe? -> test
+    case 'ImagePicker':
+      if (methodName == 'Open') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").imagepicker());' +
+        '})()';
+      }
+      break;
+
+    // TODO
+    // CURRENT TIME JUMPS TO 0 NO MATTER WHAT INPUT
+    case 'Player':
+      if (methodName == 'Pause') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").pause());' +
+        '})()';
+      } else if (methodName == 'Start') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").play());' +
+        '})()';
+      } else if (methodName == 'Stop') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").pause());' +
+          '(document.getElementById(\"' + name + '\").currentTime = 0);' +
+        '})()';
+      }
+      // potentially vibrate? w.e
+      break;
+
+    // TODO
+    // CURRENT TIME JUMPS TO 0 NO MATTER WHAT INPUT
+    case 'VideoPlayer':
+      if (methodName == 'GetDuration') {
+        var code = '(function() { ' +
+          'return (document.getElementById(\"' + name + '\").duration * 1000);' +
+        '})()';
+      } else if (methodName == 'Pause') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").pause());' +
+        '})()';
+      } else if (methodName == 'SeekTo') {
+        var time = args[0] / 1000;
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").currentTime = ' + time + ');' +
+        '})()';
+      } else if (methodName == 'Start') {
+        var code = '(function() { ' +
+          '(document.getElementById(\"' + name + '\").play());' +
+        '})()';
+      }
+      break;
+
+
+    default:
+      break;
+  }
+
+  return code;
+
+  // if(generic) {
+  //   paramTypes.push(Blockly.JavaScript.YAIL_COMPONENT_TYPE);
+  // }
+
+  // for(var i=0;i<paramObjects.length;i++) {
+  //   paramTypes.push(paramObjects[i].type);
+  // }
+
+  // //var paramTypes = (generic ? [Blockly.JavaScript.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.paramTypes);
+  // var callPrefix;
+  // if (generic) {
+  //   callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_TYPE_METHOD
+  //       // TODO(hal, andrew): check for empty socket and generate error if necessary
+  //       + Blockly.JavaScript.valueToCode(methodBlock, 'COMPONENT', Blockly.JavaScript.ORDER_NONE)
+  //       + Blockly.JavaScript.YAIL_SPACER;
+  // } else {
+  //   callPrefix = Blockly.JavaScript.YAIL_CALL_COMPONENT_METHOD;
+  //   name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
+  // }
+
+  // var args = [];
+  // for (var x = 0; x < numOfParams; x++) {
+  //   // TODO(hal, andrew): check for empty socket and generate error if necessary
+  //   args.push(Blockly.JavaScript.YAIL_SPACER
+  //             + Blockly.JavaScript.valueToCode(methodBlock, 'ARG' + x, Blockly.JavaScript.ORDER_NONE));
+  // }
+
+  // return callPrefix
+  //   + Blockly.JavaScript.YAIL_QUOTE
+  //   + name
+  //   + Blockly.JavaScript.YAIL_SPACER
+  //   + Blockly.JavaScript.YAIL_QUOTE
+  //   + methodName
+  //   + Blockly.JavaScript.YAIL_SPACER
+  //   + Blockly.JavaScript.YAIL_OPEN_COMBINATION
+  //   + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR
+  //   + args.join(' ')
+  //   + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
+  //   + Blockly.JavaScript.YAIL_SPACER
+  //   + Blockly.JavaScript.YAIL_QUOTE
+  //   + Blockly.JavaScript.YAIL_OPEN_COMBINATION
+  //   + paramTypes.join(' ')
+  //   + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
+  //   + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
 }
 
 Blockly.JavaScript.component_set_get = function() {
@@ -333,8 +494,14 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     case 'height':
       code += '.style.height = \"' + bodyCode + 'px\";';
       break;
+    case 'heightpercent':
+      code += '.style.height = \"' + bodyCode + '%\";';
+      break;
     case 'width':
       code += '.style.width = \"' + bodyCode + 'px\";';
+      break;
+    case 'widthpercent':
+      code += '.style.width = \"' + bodyCode + '%\";';
       break;
     case 'fontbold':
       code += '.style.fontWeight = (' + bodyCode + ' ? \"bold\" : \"normal\");';
@@ -388,6 +555,9 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     // case 'multiline':
     //   code += "";
     //   break;
+    case 'volume':
+      code += '.volume = ' + bodyCode + ';';
+      break;
     default:
       break;
   }

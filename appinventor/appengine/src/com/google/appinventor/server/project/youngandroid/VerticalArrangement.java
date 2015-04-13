@@ -224,7 +224,9 @@ private String generateAssestsforComponent(ArrayList<String[]> arrayList)
 	StringBuffer sb=new StringBuffer();
 	for(String[] str:arrayList)
 	{
+		if((str[2] != null) && (sb.length() == 0)) {
 		sb.append(str[2]);
+		}
 	}
 	  
 	return sb.toString().valueOf(sb);
