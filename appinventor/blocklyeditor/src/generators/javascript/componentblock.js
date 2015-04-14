@@ -60,7 +60,7 @@ Blockly.JavaScript.component_event = function() {
       JSEvent = 'onchange';
       break;
     case 'AfterPicking':
-      JSEvent = '';
+      JSEvent = 'onselect';
       break;
     case 'Completed':
       JSEvent = 'onended';
@@ -249,7 +249,7 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
       }
       break;
 
-    // RequestFocus WORKS
+    // maybe? -> test
     case 'PasswordTextBox':
       if (methodName == 'RequestFocus') {
         var code = '(function() { ' +
@@ -258,7 +258,7 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
       }
       break;
 
-    // RequestFocus WORKS. Need to test on phone "hidekeyboard"
+    // maybe? -> test
     // i read that blur might hide the keyboard... test!!
     case 'TextBox':
       if (methodName == 'HideKeyboard') {
@@ -495,13 +495,13 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += '.style.height = \"' + bodyCode + 'px\";';
       break;
     case 'heightpercent':
-      code += '.style.height = \"' + bodyCode + '%\";';
+      code += '.style.height = \"' + bodyCode + 'vh\";';
       break;
     case 'width':
       code += '.style.width = \"' + bodyCode + 'px\";';
       break;
     case 'widthpercent':
-      code += '.style.width = \"' + bodyCode + '%\";';
+      code += '.style.width = \"' + bodyCode + 'vh\";';
       break;
     case 'fontbold':
       code += '.style.fontWeight = (' + bodyCode + ' ? \"bold\" : \"normal\");';
@@ -557,6 +557,12 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     //   break;
     case 'volume':
       code += '.volume = ' + bodyCode + ';';
+      break;
+    case 'source':
+      code += '.src = ' + bodyCode + ';';
+      break;
+    case 'fullscreen':
+      code += '';
       break;
     default:
       break;
@@ -711,6 +717,12 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
     // case 'multiline':
     //   code += '';
     //   break;
+    case 'source':
+      code += '.src';
+      break;
+    case 'isplaying':
+      code += '.paused != true';
+      break;
     default:
       break;
   }
