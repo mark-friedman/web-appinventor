@@ -105,11 +105,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   private static final String BUILD_FOLDER = "build";
 
   public static final String PROJECT_KEYSTORE_LOCATION = "android.keystore";
-
-  // host[:port] to use for connecting to the build server
-  private static final Flag<String> buildServerHost =
-      Flag.createFlag("build.server.host", "localhost:9990");
-
+  
   public YoungAndroidProjectService(StorageIo storageIo) {
     super(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, storageIo);
   }
@@ -502,26 +498,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         + ", project=" + projectId + ", target=" + target;
   }
 
-  // Note that this is a function rather than just a constant because we assume it will get
-  // a little more complicated when we want to get the URL from an App Engine config file or
-  // command line argument.
-  private String getBuildServerUrlStr(String userName, String userId,
-                                      long projectId, String fileName)
-      throws UnsupportedEncodingException, EncryptionException {
-    return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
-           + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-           + (sendGitVersion.get()
-               ? "&gitBuildVersion="
-                 + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
-               : "")
-           + "&callback="
-           + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
-                               + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
-                               + Security.encryptUserAndProjectId(userId, projectId)
-                               + "/" + fileName,
-                               "UTF-8");
-  }
-
   private String getCurrentHost() {
     if (Server.isProductionServer()) {
       String applicationVersionId = SystemProperty.applicationVersion.get();
@@ -531,71 +507,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // TODO(user): Figure out how to make this more generic
       return "localhost:8888";
     }
-  }
-
-  /*
-   * Reads the UTF-8 content from the given input stream.
-   */
-  private static String readContent(InputStream stream) throws IOException {
-    if (stream != null) {
-      BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
-      try {
-        return CharStreams.toString(reader);
-      } finally {
-        reader.close();
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Check if there are any build progress available for the given user's project
-   *
-   * @param user the User that owns the {@code projectId}.
-   * @param projectId  project id to be built
-   * @param target  build target (optional, implementation dependent)
-   */
-  public void updateCurrentProgress(User user, long projectId, String target) {
-    try {
-      String userId = user.getUserId();
-      String projectName = storageIo.getProjectName(userId, projectId);
-      String outputFileDir = BUILD_FOLDER + '/' + target;
-      URL buildServerUrl = null;
-      ProjectSourceZip zipFile = null;
-
-      buildServerUrl = new URL(getBuildServerUrlStr(user.getUserEmail(),
-        userId, projectId, outputFileDir));
-      HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
-      connection.setDoOutput(true);
-      connection.setRequestMethod("POST");
-
-      int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-          try {
-            String content = readContent(connection.getInputStream());
-            if (content != null && !content.isEmpty()) {
-              LOG.info("The current progress is " + content + "%.");
-              currentProgress = Integer.parseInt(content);
-            }
-          } catch (IOException e) {
-            // No content. That's ok.
-          }
-         }
-      } catch (MalformedURLException e) {
-        // that's ok, nothing to do
-      } catch (IOException e) {
-        // that's ok, nothing to do
-      } catch (EncryptionException e) {
-        // that's ok, nothing to do
-      } catch (RuntimeException e) {
-        // that's ok, nothing to do
-      }
-  }
-
-  // Nicely format floating number using only two decimal places
-  private String format(double input) {
-    DecimalFormat formatter = new DecimalFormat("###.##");
-    return formatter.format(input);
   }
 
     /**
@@ -617,97 +528,43 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Note: not used currently, but could be useful for LiveWebApp?
     storageIo.storeNonce(nonce, userId, projectId);
     
+    Boolean result = false;
     try {
-      Boolean result = build(userId, projectId, target, null);
+      result = build(userId, projectId, target, null);
     }
     catch (JSONException e)
     {
       CrashReport.createAndLogError(LOG, null, buildErrorMsg("", userId, projectId, target), e);
     }
-  
-    return true;
+    
+    return result;
   }
 
-
-    /**
-     * Make a request to built the html files for a project into a zip file.
-     * The html files are stored to a target specific project output path;
-     * The returned zip file contains the built html and referenced assets
-     * (images, sound files, etc)
-     *
-     * @param user the User that owns the {@code projectId}.
-     * @param projectId  project id to be built
-     * @param target The build target (= web or LiveWebApp)
-     *
-     * @return the zipfile containing the result of the build
-     */
-  public RawFile buildZip(User user, long projectId, String target) {
-      String userId = user.getUserId();
-      String projectName = storageIo.getProjectName(userId, projectId);
-      //String outputFileDir = BUILD_FOLDER + "/" + target + "/";   // Note: forces a target
-      ArrayList<String> assetFileIds = new ArrayList<String>();
-      
-      Boolean result;
-      try {
-        result = build(userId, projectId, target, assetFileIds);
-      }
-      catch (JSONException e)
-      {
-        throw CrashReport.createAndLogError(LOG, null, buildErrorMsg("", userId, projectId, target), e);
-      }   
-      
-      // Create zip file of html and associated asset files for the build.
-      // e.g. referenced image files.
-      if (result) {
-          ProjectWebOutputZip zipFile = null;
-          try {
-              FileExporter fileExporter = new FileExporterImpl();
-              if (assetFileIds.size() > 0)
-              {
-                  LOG.log(Level.INFO, "..first asset file (out of " + assetFileIds.size() + ") = " + assetFileIds.get(0));
-              }
-              String fileName = /* outputFileDir + */ projectName + ".zip";
-              
-              zipFile = fileExporter.exportProjectWebOutputZip(userId, projectId, assetFileIds, fileName, true);
-
-              byte[] fileBytes = zipFile.getContent();
-
-               LOG.log(Level.INFO, "Returning build output zip file: " + fileName);
-              
-              return new RawFile(fileName, fileBytes);              
-              //storageIo.addOutputFilesToProject(userId, projectId, filePath);
-              //storageIo.uploadRawFileForce(projectId, filePath, userId, fileBytes);
-
-          } catch (IOException e) {
-              throw CrashReport.createAndLogError(LOG, null, "IOException when building web output zip file", e);
-          }
-      }
-      
-      // 
-      throw new IllegalArgumentException("No zip file to download");
-    }
-    
-
   /**
-   * Internal helper to build the html files for a given user/project/target
-   * The html files are stored to a target specific project output path.
+   * Make a request to build the html files for a web project.
+   * The html files are stored to a target specific project output path;
+   * an optional input array returns the references assets for the build.
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
    * @param target The build target (= web or LiveWebApp)
+   * @param assetFileIds An optional array to return asset files in
    *
-   * @return True if the build was successful, false otherwise
-   * @throws JSONException 
-   */    
+   * @return true the build succeeded, false otherwise
+   */
     public Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException {
           boolean isLiveWebAppBuild = target.equalsIgnoreCase("LiveWebApp");
-          //String userId = user.getUserId();
           String projectName = storageIo.getProjectName(userId, projectId);
-          String outputFileDir = BUILD_FOLDER + "/" + target + "/";   // Note: forces a target
+          String outputFileDir = BUILD_FOLDER + "/" + target + "/";
 
           LOG.log(Level.FINE, "Building output, target = " + target);
-
       
+          if (assetFileIds != null)
+          {
+            // Start with no referenced assets.
+            assetFileIds.clear();
+          }
+          
           // Search storage for project source.
           // Find the Javascript and JSON files.
           List<String> screenNames = new ArrayList<String>();
@@ -758,8 +615,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
               }
           }
 
+          if (screenNames.isEmpty())
+          {
+            // No screens = no build (but any old build output has been deleted)
+            return false;
+          }          
+          
           // For each screen, put the html file together from the component JSON and JavaScript
-          //ArrayList<String> assetFileIds = new ArrayList<String>();
           try {
 
               for (String screenName : screenNames)

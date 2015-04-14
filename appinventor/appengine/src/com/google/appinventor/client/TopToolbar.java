@@ -355,19 +355,16 @@ public class TopToolbar extends Composite {
             ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
             if (projectRootNode != null) {
                 //String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-                String target = "web";    // TODO: We need a new type of project service and project node.
+                String target = "web";    // TODO: Define target in common place.
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
-                                /* new BuildWebCommand(target, */
-                                        new DownloadWebOutputCommand(target)
-                                /*)*/
+                                // Download web output will build the html and zip it up
+                                new DownloadWebOutputCommand(target)
                                 ));
-//	        updateBuildButton(true);
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
                         new Command() {
                             @Override
                             public void execute() {
-//	                updateBuildButton(false);
                             }
                         });
             }

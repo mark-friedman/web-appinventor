@@ -281,7 +281,7 @@ public abstract class CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
-   * @param nonce -- random string used to find finished APK
+   * @param nonce -- random string used to reference project build for a limited time
    * @param target  build target (optional, implementation dependent)
    *
    * @return  True if the build succeeded, false otherwise

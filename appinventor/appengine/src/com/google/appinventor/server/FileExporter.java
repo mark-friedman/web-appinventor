@@ -15,8 +15,6 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
-import org.json.JSONException;
-
 /**
  * Methods for exporting project files.
  *
@@ -26,18 +24,17 @@ public interface FileExporter {
   public static final String REMIX_INFORMATION_FILE_PATH = "youngandroidproject/remix_history";
 
   /**
-   * Exports a project output file.
+   * Exports a project build output file (= a zip)
    *
    * @param userId the userId
    * @param projectId the project id belonging to the userId
-   * @param buildZipFirst true to build an exportable zip file and return it, false otherwise
-   * @param target the output target platform, or null
+   * @param target the output target platform ( = "web")
    * @return RawFile with the name and content of the exported file
    * @throws IOException 
    * @throws IllegalArgumentException if download request cannot be fulfilled
    *         (typically = build failed)
    */
-  RawFile exportProjectBuildOutputFile(String userId, long projectId, @Nullable String target)
+  RawFile exportProjectBuildOutputFile(String userId, long projectId, String target)
       throws IOException;
 
     /**

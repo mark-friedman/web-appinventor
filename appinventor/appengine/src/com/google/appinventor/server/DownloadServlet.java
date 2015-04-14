@@ -20,8 +20,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONException;
-
 import java.io.IOException;
 import java.net.FileNameMap;
 import java.net.URLConnection;

@@ -15,7 +15,6 @@ import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
-import com.google.appinventor.client.explorer.commands.BuildWebCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.GenerateJavaScriptCommand;
 import com.google.appinventor.client.explorer.project.Project;
@@ -367,7 +366,7 @@ public final class EditorManager {
                 if (projectRootNode != null) {
                     ChainableCommand cmd =
                             new GenerateJavaScriptCommand(
-                                    new BuildCommand(TARGET_LIVE_WEBAPP,null));
+                                    new BuildCommand(TARGET_LIVE_WEBAPP, null));
                     cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
                 }
             }

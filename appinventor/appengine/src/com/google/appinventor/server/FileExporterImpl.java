@@ -36,26 +36,23 @@ public final class FileExporterImpl implements FileExporter {
   private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
 
   @Override
-  public RawFile exportProjectBuildOutputFile(String userId, long projectId, @Nullable String target)
+  public RawFile exportProjectBuildOutputFile(String userId, long projectId, String target)
       throws IOException {
     
-    // Is this a "build and download zip" request?
-    // (only the web target supported for build + download zip)
+    // Only the web target supported for build + download zip
     if (target.equals("web"))
     {
          
       String projectName = storageIo.getProjectName(userId, projectId);
       ArrayList<String> assetFileIds = new ArrayList<String>();
-      
-      Boolean result;
-      
+            
       ProjectServiceImpl projSvc = new ProjectServiceImpl();
       try
       {
-        result = projSvc.build(userId, projectId, target, assetFileIds);      
+        Boolean result = projSvc.build(userId, projectId, target, assetFileIds);      
 
         // Create zip file of html and associated asset files for the build.
-        // e.g. referenced image files.
+        // (asset files = referenced images, videos, audio files)
         if (result) {
           ProjectWebOutputZip zipFile = null;
           String fileName = projectName + ".zip";
@@ -64,13 +61,14 @@ public final class FileExporterImpl implements FileExporter {
 
           return zipFile.getRawFile(); 
         }
-      } catch (JSONException e)
+      } 
+      catch (JSONException e)
       {
-        throw new IllegalArgumentException("Build failed with JSON parse exception, so no zip file to download");      
+        throw new IllegalArgumentException("Build failed with JSON parse exception; no zip file to download");      
       }
     } 
-      // 
-      throw new IllegalArgumentException("Build failed, so no zip file to download");      
+    
+    throw new IllegalArgumentException("Build failed; no zip file to download");      
     
   }
 
