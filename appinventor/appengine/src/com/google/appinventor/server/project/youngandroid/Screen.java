@@ -100,11 +100,11 @@ public String getBackgroundColor() {
     if(!this.getBackgroundColor().equals("")){
       sb.append(" background : "+this.getBackgroundColor()+";\n");
     }
-    
+    sb.append(" background-size : cover;\n");
     sb.append(" background-image : url(assets/"+this.getPrefixedSrc(this.getBackgroundImage())+");\n");
     //sb.append(" position : absolute;\n");
     sb.append(" text-align : "+this.getHorizontalAlign()+";\n");
-    sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not for now!
+    sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not work for now!
       
     sb.append("}\n");
 

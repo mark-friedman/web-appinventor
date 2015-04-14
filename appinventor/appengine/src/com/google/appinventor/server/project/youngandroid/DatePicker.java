@@ -13,7 +13,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class DatePicker extends Component{
 
-  String backgroundColor = "#FFFFFF";
+  String backgroundColor = "";
   String fontSize = "14";
   String fontBold = "none";
   String fontItalic = "none";
