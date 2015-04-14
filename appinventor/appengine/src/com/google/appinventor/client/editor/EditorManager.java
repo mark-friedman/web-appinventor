@@ -14,6 +14,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.BuildWebCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.project.Project;
@@ -361,7 +362,7 @@ public final class EditorManager {
         Command SaveCommand = new Command() {    public void execute() {
             final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
             if (projectRootNode != null) {
-                ChainableCommand cmd = new BuildWebCommand(TARGET_LIVE_WEBAPP,null);
+                ChainableCommand cmd = new BuildCommand(TARGET_LIVE_WEBAPP, null);
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
             }
         }

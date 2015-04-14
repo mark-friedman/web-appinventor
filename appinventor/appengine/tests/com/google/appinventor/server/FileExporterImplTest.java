@@ -42,12 +42,12 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
   private static final String FORM1_CONTENT = "Form A\nEnd Form";
   private static final String IMAGE1_NAME = "Image.jpg";
   private static final byte[] IMAGE_CONTENT = { (byte) 0, (byte) 1, (byte) 32, (byte) 255};
-  private static final String TARGET1_NAME = "Project1.apk";
-  private static final String TARGET1_QUALIFIED_NAME = "build/target1/" + TARGET1_NAME;
+  private static final String TARGET1_NAME = "Project1.zip";
+  private static final String TARGET1_QUALIFIED_NAME = "build/web/" + TARGET1_NAME;
   private static final byte[] TARGET1_CONTENT = "pk1".getBytes();
-  private static final String TARGET2_NAME = "Project2.pak";
-  private static final String TARGET2_QUALIFIED_NAME = "build/target2/" + TARGET2_NAME;
-  private static final byte[] TARGET2_CONTENT = "pk2".getBytes();
+  //private static final String TARGET2_NAME = "Project2.pak";
+  //private static final String TARGET2_QUALIFIED_NAME = "build/web/" + TARGET2_NAME;
+  //private static final byte[] TARGET2_CONTENT = "pk2".getBytes();
   private static final String SETTINGS = "";
   private static final String HISTORY = "1:History";
 
@@ -69,12 +69,12 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
         StorageUtil.DEFAULT_CHARSET);
     storageIo.addSourceFilesToProject(USER_ID, projectId, false, IMAGE1_NAME);
     storageIo.uploadRawFile(projectId, IMAGE1_NAME, USER_ID, true, IMAGE_CONTENT);
-    storageIo.addOutputFilesToProject(USER_ID, projectId, TARGET1_QUALIFIED_NAME);
-    storageIo.uploadRawFile(projectId, TARGET1_QUALIFIED_NAME, USER_ID,
-        true, TARGET1_CONTENT);
-    storageIo.addOutputFilesToProject(USER_ID, projectId, TARGET2_QUALIFIED_NAME);
-    storageIo.uploadRawFile(projectId, TARGET2_QUALIFIED_NAME, USER_ID,
-        true, TARGET2_CONTENT);
+    //storageIo.addOutputFilesToProject(USER_ID, projectId, TARGET1_QUALIFIED_NAME);
+    //storageIo.uploadRawFile(projectId, TARGET1_QUALIFIED_NAME, USER_ID,
+    //    true, TARGET1_CONTENT);
+    //storageIo.addOutputFilesToProject(USER_ID, projectId, TARGET2_QUALIFIED_NAME);
+    //storageIo.uploadRawFile(projectId, TARGET2_QUALIFIED_NAME, USER_ID,
+    //    true, TARGET2_CONTENT);
   }
 
   private Map<String, byte[]> testExportProjectSourceZipHelper(ProjectSourceZip project)
@@ -136,14 +136,14 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
   }
 
   public void testExportProjectOutputFileWithTarget() throws IOException {
-    RawFile file = exporter.exportProjectOutputFile(USER_ID, projectId, "target1");
+    RawFile file = exporter.exportProjectBuildOutputFile(USER_ID, projectId, "web");
     assertEquals(TARGET1_NAME, file.getFileName());
     assertTrue(Arrays.equals(TARGET1_CONTENT, file.getContent()));
   }
 
   public void testExportProjectOutputFileWithNonExistingTraget() throws IOException {
     try {
-      exporter.exportProjectOutputFile(USER_ID, projectId, "target3");
+      exporter.exportProjectBuildOutputFile(USER_ID, projectId, "target3");
       fail();
     } catch (IllegalArgumentException e) {
       // expected

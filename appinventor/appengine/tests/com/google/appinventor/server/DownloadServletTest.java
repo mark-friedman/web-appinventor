@@ -38,14 +38,14 @@ public class DownloadServletTest {
   private static final String USER_ID = "1";
   private static final long PROJECT_ID = 1234L;
   private static final String DUMMY_FILENAME = "filename123";
-  private static final String DUMMY_APK_FILENAME = "filename123.apk";
+  private static final String DUMMY_BUILT_FILENAME = "filename123.zip";
   private static final String DUMMY_ZIP_FILENAME = "filename123.aia";
   private static final String DUMMY_ZIP_FILENAME_WITH_TITLE = "MyProjectTitle123.aia";
   private static final String DOWNLOAD_URL = "http://localhost/baseUrl/download/";
 
   private ProjectSourceZip dummyZip;
   private ProjectSourceZip dummyZipWithTitle;
-  private RawFile dummyApk;
+  private RawFile dummyBuiltFile;
   private RawFile dummyFile;
 
   private FileExporterImpl exporterMock;
@@ -62,7 +62,7 @@ public class DownloadServletTest {
 
     dummyZip = new ProjectSourceZip(DUMMY_ZIP_FILENAME, new byte[] {}, 2);
     dummyZipWithTitle = new ProjectSourceZip(DUMMY_ZIP_FILENAME_WITH_TITLE, new byte[] {}, 2);
-    dummyApk = new RawFile(DUMMY_APK_FILENAME, new byte[] {});
+    dummyBuiltFile = new RawFile(DUMMY_BUILT_FILENAME, new byte[] {});
     dummyFile = new RawFile(DUMMY_FILENAME, new byte[] {});
   }
 
@@ -125,14 +125,14 @@ public class DownloadServletTest {
   public void testDownloadProjectOutputFileWithoutTarget() throws IOException {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/1234");
-    expect(exporterMock.exportProjectOutputFile(USER_ID, PROJECT_ID, null))
-        .andReturn(dummyApk);
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, null))
+        .andReturn(dummyBuiltFile);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
-    checkResponseHeader(response, "attachment; filename=\"filename123.apk\"");
-    assertEquals("application/vnd.android.package-archive; charset=utf-8",
+    checkResponseHeader(response, "attachment; filename=\"filename123.zip\"");
+    assertEquals("application/zip; charset=utf-8",
         response.getContentType());
     PowerMock.verifyAll();
   }
@@ -141,14 +141,14 @@ public class DownloadServletTest {
   public void testDownloadProjectOutputFileWithTarget() throws IOException {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/1234/target1");
-    expect(exporterMock.exportProjectOutputFile(USER_ID, PROJECT_ID, "target1"))
-        .andReturn(dummyApk);
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, "target1"))
+        .andReturn(dummyBuiltFile);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
-    checkResponseHeader(response, "attachment; filename=\"filename123.apk\"");
-    assertEquals("application/vnd.android.package-archive; charset=utf-8",
+    checkResponseHeader(response, "attachment; filename=\"filename123.zip\"");
+    assertEquals("application/zip; charset=utf-8",
         response.getContentType());
     PowerMock.verifyAll();
   }
@@ -158,7 +158,7 @@ public class DownloadServletTest {
     IllegalArgumentException expectedException = new IllegalArgumentException();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/12345");
-    expect(exporterMock.exportProjectOutputFile(USER_ID, 12345L, null))
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, 12345L, null))
         .andThrow(expectedException);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -176,7 +176,7 @@ public class DownloadServletTest {
     IllegalArgumentException expectedException = new IllegalArgumentException();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/1234/target3");
-    expect(exporterMock.exportProjectOutputFile(USER_ID, PROJECT_ID, "target3"))
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, "target3"))
         .andThrow(expectedException);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();

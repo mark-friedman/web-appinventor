@@ -126,7 +126,7 @@ public class StorageUtil {
       return "application/vnd.android.package-archive; charset=utf-8";
     }
 
-    if (filePath.endsWith(".aia")) {
+    if (filePath.endsWith(".aia") || filePath.endsWith(".zip")) {
       return "application/zip; charset=utf-8";
     }
 

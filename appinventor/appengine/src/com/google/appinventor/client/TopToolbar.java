@@ -365,7 +365,7 @@ public class TopToolbar extends Composite {
         String target = "web";
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateJavaScriptCommand(
-                new BuildWebCommand(target, new ShowBarcodeCommand(target))));
+                new BuildCommand(target, new ShowBarcodeCommand(target))));
 //        updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -574,8 +574,10 @@ public class TopToolbar extends Composite {
                 String target = "web";    // TODO: We need a new type of project service and project node.
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
-                                new BuildWebCommand(target,
-                                        new DownloadWebOutputCommand(target))));
+                                /* new BuildWebCommand(target, */
+                                        new DownloadWebOutputCommand(target)
+                                /*)*/
+                                ));
 //	        updateBuildButton(true);
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
                         new Command() {
@@ -598,7 +600,7 @@ public class TopToolbar extends Composite {
 
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
-                                new BuildWebCommand("LiveWebApp",
+                                new BuildCommand("LiveWebApp",
                                         new LaunchLiveWebAppCommand(null))));
 
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_LAUNCH_LIVE_WEB_APP, projectRootNode);

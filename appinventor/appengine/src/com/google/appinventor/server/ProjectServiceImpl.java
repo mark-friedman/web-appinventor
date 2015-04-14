@@ -25,6 +25,7 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
+import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.util.Base64Util;
@@ -40,9 +41,14 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.channels.Channels;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
+
+import org.json.JSONException;
 
 /**
  * The implementation of the RPC service which runs on the server.
@@ -481,7 +487,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
     /**
-     * Invokes a build-to-zip command for the project on the back-end.
+     * Invokes a build command for the project on the back-end.
      *
      * @param projectId  project ID
      * @param nonce used to access the built project -- random string
@@ -490,13 +496,29 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
      * @return  results of invoking the command
      */
     @Override
-    public RpcResult build(long projectId, String nonce, String target){
+    public Boolean build(long projectId, String nonce, String target){
         // Dispatch
     final String userId = userInfoProvider.getUserId();
-    return getProjectRpcImpl(userId, projectId).build(
+    Boolean result = getProjectRpcImpl(userId, projectId).build(
       userInfoProvider.getUser(), projectId, nonce, target);
+    
+    return result;
   }
   
+    /**
+     * Invokes a build command for the project on the back-end.
+     *
+     * @param projectId  project ID
+     * @param target  The build target (= web or LiveWebApp)
+     *
+     * @return  results of invoking the command
+     * @throws JSONException 
+     */
+    public Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException{
+        // Dispatch
+     return getProjectRpcImpl(userId, projectId).build(userId, projectId, target, assetFileIds);
+  }
+    
   /*
    * Write the serialized response out to stdout. This is a very unusual thing
    * to do, but it allows us to create a static file version of the response

@@ -64,7 +64,10 @@ public class Shell{
         if (!componentPackage.isEmpty()) {
             htmlStringBuilder.append("<style>\n");
             for (String[] component : componentPackage) {
-                htmlStringBuilder.append(component[1] + "\n");
+                if ((component != null) && (component.length > 1) && (component[1] != null))
+                {
+                  htmlStringBuilder.append(component[1] + "\n");
+                }
             }
             htmlStringBuilder.append("</style>\n");
             htmlStringBuilder.append("\n");
@@ -90,12 +93,15 @@ public class Shell{
         // inject html from the components
         if (!componentPackage.isEmpty()) {
             for (String[] component : componentPackage) {
-                htmlStringBuilder.append("<div>");
-                htmlStringBuilder.append(component[0] + "\n");
-                htmlStringBuilder.append("</div>\n");
+                if ((component != null) && (component.length > 0) && (component[0] != null))
+                {
+                  htmlStringBuilder.append("<div>");
+                  htmlStringBuilder.append(component[0] + "\n");
+                  htmlStringBuilder.append("</div>\n");
+                }
 
                 // While we are at it, collect any image asset file ids
-                if ((component.length > 2) && (component[2] != null) && (component[2] != ""))
+                if ((component != null) && (component.length > 2) && (component[2] != null) && (component[2] != ""))
                 {
                     // Collect the unique set of referenced assets (no dupes)
                     if (!retVal.assetFiles.contains(component[2])) {

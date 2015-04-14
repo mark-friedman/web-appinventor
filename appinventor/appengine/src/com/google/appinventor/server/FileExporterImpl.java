@@ -19,10 +19,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.annotation.Nullable;
+
+import org.json.JSONException;
 
 /**
  * Implementation of {@link FileExporter} based on {@link StorageIo}
@@ -33,38 +36,42 @@ public final class FileExporterImpl implements FileExporter {
   private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
 
   @Override
-  public RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target)
+  public RawFile exportProjectBuildOutputFile(String userId, long projectId, @Nullable String target)
       throws IOException {
-    // Download project output file.
-    List<String> files = storageIo.getProjectOutputFiles(userId, projectId);
-    if (target != null) {
-      // Target given - filter file list
-      files = filterByFilePrefix(files, "build/" + target + '/');
-    }
+    
+    // Is this a "build and download zip" request?
+    // (only the web target supported for build + download zip)
+    if (target.equals("web"))
+    {
+         
+      String projectName = storageIo.getProjectName(userId, projectId);
+      ArrayList<String> assetFileIds = new ArrayList<String>();
+      
+      Boolean result;
+      
+      ProjectServiceImpl projSvc = new ProjectServiceImpl();
+      try
+      {
+        result = projSvc.build(userId, projectId, target, assetFileIds);      
 
-    // We expect the files List to contain:
-    //   build/Android/<project>.apk
-    //   build/Android/build.out
-    //   build/Android/build.err
-    // There should never be more than one .apk file.
+        // Create zip file of html and associated asset files for the build.
+        // e.g. referenced image files.
+        if (result) {
+          ProjectWebOutputZip zipFile = null;
+          String fileName = projectName + ".zip";
 
+          zipFile = exportProjectWebOutputZip(userId, projectId, assetFileIds, fileName, true);
 
-      for (String fileName : files) {
-
-          // Output zip for a web project, apk otherwise
-          if (target.equalsIgnoreCase("web") && fileName.endsWith(".zip"))
-          {
-              byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
-              return new RawFile(StorageUtil.basename(fileName), content);
-          }
-          else if (fileName.endsWith(".apk")) {
-              byte[] content = storageIo.downloadRawFile(userId, projectId, fileName);
-              return new RawFile(StorageUtil.basename(fileName), content);
-          }
+          return zipFile.getRawFile(); 
+        }
+      } catch (JSONException e)
+      {
+        throw new IllegalArgumentException("Build failed with JSON parse exception, so no zip file to download");      
       }
-
-
-    throw new IllegalArgumentException("No files to download");
+    } 
+      // 
+      throw new IllegalArgumentException("Build failed, so no zip file to download");      
+    
   }
 
     /**

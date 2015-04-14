@@ -13,11 +13,17 @@ import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.util.Base64Util;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.annotation.Nullable;
+
+import org.json.JSONException;
 
 /**
  * The base class for classes that provide project services for a specific
@@ -278,8 +284,21 @@ public abstract class CommonProjectService {
    * @param nonce -- random string used to find finished APK
    * @param target  build target (optional, implementation dependent)
    *
-   * @return  build results
+   * @return  True if the build succeeded, false otherwise
    */
-  public abstract RpcResult build(User user, long projectId, String nonce, String target);
+  public abstract Boolean build(User user, long projectId, String nonce, String target);
+
+  /**
+   * Invokes a build command for the project.
+   *
+   * @param user the User that owns the {@code projectId}.
+   * @param projectId  project id to be built
+   * @param target  build target (optional, implementation dependent)
+   * @param assetFileIds optional array to hold the list of asset files referenced by the build
+   *
+   * @return  True if the build succeeded, false otherwise
+   * @throws JSONException 
+   */
+  public abstract Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException;
 
 }

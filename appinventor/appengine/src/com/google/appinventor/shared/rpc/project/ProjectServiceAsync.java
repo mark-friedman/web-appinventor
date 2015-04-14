@@ -139,8 +139,8 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#build(long, String, String)
    */
-  void build(long projectId, String nonce, String target, AsyncCallback<RpcResult> callback);
-
+  void build(long projectId, String nonce, String target, AsyncCallback<Boolean> callback);
+ 
   /**
    * @see ProjectService#addFile(long, String)
    */

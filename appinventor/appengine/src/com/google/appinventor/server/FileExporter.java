@@ -15,6 +15,8 @@ import java.util.ArrayList;
 
 import javax.annotation.Nullable;
 
+import org.json.JSONException;
+
 /**
  * Methods for exporting project files.
  *
@@ -28,12 +30,14 @@ public interface FileExporter {
    *
    * @param userId the userId
    * @param projectId the project id belonging to the userId
+   * @param buildZipFirst true to build an exportable zip file and return it, false otherwise
    * @param target the output target platform, or null
    * @return RawFile with the name and content of the exported file
+   * @throws IOException 
    * @throws IllegalArgumentException if download request cannot be fulfilled
-   *         (either no output file or too many output files)
+   *         (typically = build failed)
    */
-  RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target)
+  RawFile exportProjectBuildOutputFile(String userId, long projectId, @Nullable String target)
       throws IOException;
 
     /**

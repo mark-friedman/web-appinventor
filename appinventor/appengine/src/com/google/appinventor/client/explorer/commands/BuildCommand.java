@@ -61,45 +61,19 @@ public class BuildCommand extends ChainableCommand {
     messagesOutput.addMessages(MESSAGES.buildRequestedMessage(node.getName(),
         DateTimeFormat.getMediumDateTimeFormat().format(new Date())));
 
-    OdeAsyncCallback<RpcResult> callback =
-        new OdeAsyncCallback<RpcResult>(
+    OdeAsyncCallback<Boolean> callback =
+        new OdeAsyncCallback<Boolean>(
             // failure message
             MESSAGES.buildError()) {
       @Override
-      public void onSuccess(RpcResult result) {
-        messagesOutput.addMessages(result.getOutput());
-        messagesOutput.addMessages(result.getError());
+      public void onSuccess(Boolean result) {        
         Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_SUBACTION_BUILD_YA,
                             node.getName(), getElapsedMillis());
-        if (result.succeeded()) {
+        if (result) {
           executeNextCommand(node);
         } else {
-          // The result is the HTTP response code from the build server.
-          int responseCode = result.getResult();
-          switch (responseCode) {
-            case Response.SC_SERVICE_UNAVAILABLE:
-              // SC_SERVICE_UNAVAILABLE (response code 503), means that the build server is too busy
-              // at this time to accept this build request.
-              // We use ErrorReporter.reportInfo so that the message has yellow background instead of
-              // red background.
-              ErrorReporter.reportInfo(MESSAGES.buildServerBusyError());
-              break;
-            case Response.SC_CONFLICT:
-              // SC_CONFLICT (response code 409), means that the build server is running a
-              // different version of the App Inventor code.
-              // We use ErrorReporter.reportInfo so that the message has yellow background instead
-              // of red background.
-              ErrorReporter.reportInfo(MESSAGES.buildServerDifferentVersion());
-              break;
-            default:
-              String errorMsg = result.getError();
-              // This is not an internal App Inventor bug. The error is reported as info so that
-              // the red background is not shown.
-              ErrorReporter.reportInfo(MESSAGES.buildFailedError() + 
-                  (errorMsg.isEmpty() ? "" : " " + errorMsg));
-              break;
-          }
-          executionFailedOrCanceled();
+              ErrorReporter.reportInfo(MESSAGES.buildFailedError());
+              executionFailedOrCanceled();
         }
       }
 
