@@ -124,7 +124,7 @@ public class ImagePicker extends ImageComponent{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#Label"+this.getName());
+    sb.append("#label"+this.getName());
     sb.append("{\n");
     
     if(!this.getBackgroundColor().equals(""))

@@ -467,7 +467,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
   var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1))
+  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1) || (elementId.indexOf("ImagePicker") > -1))
     && (propertyName == 'Text')) {
     code = 'document.getElementById(\"' + 'label' + elementId + '\")';
   }
@@ -645,7 +645,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
   var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1))
+  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1) || (elementId.indexOf("ImagePicker") > -1))
     && (propertyName == 'Text')) {
     code = 'document.getElementById(\"' + 'label' + elementId + '\")';
   }
@@ -709,6 +709,10 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'thumbposition':
       code += '.value';
+      break;
+
+    case 'image':
+      code += ".value";
       break;
     //case 'image':
     //  code += '.src';
