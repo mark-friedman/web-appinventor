@@ -565,8 +565,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
-   * This service is passed a URL to an aia file in GCS, of the form
-   *    /gs/bucket/gallery/apps/<galleryid>/aia
+   * This service is passed a URL to an wai file in GCS, of the form
+   *    /gs/bucket/gallery/apps/<galleryid>/wai
    * It converts it to a byte array and imports the project using FileImporter.
    * It also sets the attributionId of the project to point to the galleryID
    * it is remixing.
@@ -597,7 +597,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
       // close the gcs
       readChannel.close();
-      // now use byte stream to process aia file
+      // now use byte stream to process wai file
       FileImporter fileImporter = new FileImporterImpl();
       UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
         projectName, bais);

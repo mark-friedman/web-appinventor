@@ -11,6 +11,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
@@ -232,6 +233,7 @@ public final class AddFormCommand extends ChainableCommand {
             public void execute() {
               ProjectEditor projectEditor = 
                   ode.getEditorManager().getOpenProjectEditor(project.getProjectId());
+              EditorManager.buildHTMLAndJs();
               FileEditor formEditor = projectEditor.getFileEditor(formFileId);
               FileEditor blocksEditor = projectEditor.getFileEditor(blocksFileId);
               if (formEditor != null && blocksEditor != null && !ode.screensLocked()) {

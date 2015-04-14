@@ -52,7 +52,7 @@ public class StorageUtilTest extends TestCase {
     assertEquals("application/vnd.android.package-archive; charset=utf-8",
         StorageUtil.getContentTypeForFilePath("HelloPurr.apk"));
     assertEquals("application/zip; charset=utf-8",
-        StorageUtil.getContentTypeForFilePath("HelloPurr.aia"));
+        StorageUtil.getContentTypeForFilePath("HelloPurr.wai"));
     assertEquals("application/octet-stream",
         StorageUtil.getContentTypeForFilePath("android.keystore"));
     assertEquals("text/plain; charset=utf-8", StorageUtil.getContentTypeForFilePath("kitty.txt"));
@@ -64,7 +64,7 @@ public class StorageUtilTest extends TestCase {
     assertTrue(StorageUtil.isImageFile("kitty.jpeg"));
     assertTrue(StorageUtil.isImageFile("kitty.png"));
     assertFalse(StorageUtil.isImageFile("HelloPurr.apk"));
-    assertFalse(StorageUtil.isImageFile("HelloPurr.aia"));
+    assertFalse(StorageUtil.isImageFile("HelloPurr.wai"));
     assertFalse(StorageUtil.isImageFile("android.keystore"));
     assertFalse(StorageUtil.isImageFile("kitty.txt"));
   }
@@ -75,7 +75,7 @@ public class StorageUtilTest extends TestCase {
     assertFalse(StorageUtil.isTextFile("kitty.jpeg"));
     assertFalse(StorageUtil.isTextFile("kitty.png"));
     assertFalse(StorageUtil.isTextFile("HelloPurr.apk"));
-    assertFalse(StorageUtil.isTextFile("HelloPurr.aia"));
+    assertFalse(StorageUtil.isTextFile("HelloPurr.wai"));
     assertFalse(StorageUtil.isTextFile("android.keystore"));
     assertTrue(StorageUtil.isTextFile("kitty.txt"));
   }

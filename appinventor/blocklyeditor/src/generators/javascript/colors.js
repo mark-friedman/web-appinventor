@@ -82,31 +82,65 @@ Blockly.JavaScript['color_yellow'] = function() {
   // return Blockly.JavaScript.color.call(this);
 };
 
+
+function componentToHex(c) {
+    var hex = c.toString(16);
+    return hex.length == 1 ? "0" + hex : hex;
+}
+
+function rgbToHex(r, g, b) {
+    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+}
+
 Blockly.JavaScript['color_make_color'] = function() {
-  var blackList = "(call-yail-primitive make-yail-list (*list-for-runtime* 0 0 0)  '( any any any)  \"make a list\")";
+  var blackList = [0,0,0];
+  // var blackList = "(call-yail-primitive make-yail-list (*list-for-runtime* 0 0 0)  '( any any any)  \"make a list\")";
   var argument0 = Blockly.JavaScript.valueToCode(this, 'COLORLIST', Blockly.JavaScript.ORDER_NONE) || blackList;
-  var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "make-color" + Blockly.JavaScript.YAIL_SPACER;
-  code += Blockly.JavaScript.YAIL_OPEN_COMBINATION
-      + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER
-      + argument0 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  code += Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE
-      + Blockly.JavaScript.YAIL_OPEN_COMBINATION + "list"
-      + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  code += Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "make-color"
-      + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  var rgb = eval(argument0);
+  var code;
+  if (rgb.length == 0){
+    code = blackList;
+  } else {
+    code = '\"' + rgbToHex(rgb[0],rgb[1],rgb[2]) + '\"';
+  }
+
+  if (argument0 == "[]"){
+    rgb = blackList;
+  } else {
+    rgb = eval(argument0);
+  }
+
+  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "make-color" + Blockly.JavaScript.YAIL_SPACER;
+  // code += Blockly.JavaScript.YAIL_OPEN_COMBINATION
+  //     + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER
+  //     + argument0 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // code += Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE
+  //     + Blockly.JavaScript.YAIL_OPEN_COMBINATION + "list"
+  //     + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
+  // code += Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "make-color"
+  //     + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };
 
 Blockly.JavaScript['color_split_color'] = function() {
-  var argument0 = Blockly.JavaScript.valueToCode(this, 'COLOR', Blockly.JavaScript.ORDER_NONE) || -1;
-  var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "split-color" + Blockly.JavaScript.YAIL_SPACER;
-  code += Blockly.JavaScript.YAIL_OPEN_COMBINATION
-      + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER
-      + argument0 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  code += Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE
-      + Blockly.JavaScript.YAIL_OPEN_COMBINATION + "number"
-      + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  code += Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "split-color"
-      + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'COLOR', Blockly.JavaScript.ORDER_NONE) || "#000000";
+  // Identify if the argument is a hex value,
+  // if it is not - it has to be the result from a getter so just take the 3 values in it
+
+  var code = '(function() { ' +
+    'if (eval(\'' + argument0 + '\') == "" ){ ' +
+      'return null;' +
+    '}' +
+    'if (eval(\'' + argument0 + '\')[0] != \"#\") { ' +
+      'rgb = ' + argument0 + '.match(/[0-9]+/g); ' +
+      'return \"[\" + rgb[0] + \",\" + rgb[1] + \",\" + rgb[2] + \"]\";' +
+    '} else { ' +
+      'var bigint = parseInt(eval(\'' + argument0 + '\').substr(1)' + ', 16); ' +
+      'var r = (bigint >> 16) & 255; ' +
+      'var g = (bigint >> 8) & 255; ' +
+      'var b = bigint & 255; ' +
+      'return \"[\" + r + \",\" + g + \",\" + b + \"]\";' +
+    '} ' +
+  '})()';
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };

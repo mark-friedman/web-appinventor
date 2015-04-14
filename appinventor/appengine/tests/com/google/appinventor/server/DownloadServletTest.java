@@ -39,8 +39,8 @@ public class DownloadServletTest {
   private static final long PROJECT_ID = 1234L;
   private static final String DUMMY_FILENAME = "filename123";
   private static final String DUMMY_BUILT_FILENAME = "filename123.zip";
-  private static final String DUMMY_ZIP_FILENAME = "filename123.aia";
-  private static final String DUMMY_ZIP_FILENAME_WITH_TITLE = "MyProjectTitle123.aia";
+  private static final String DUMMY_ZIP_FILENAME = "filename123.wai";
+  private static final String DUMMY_ZIP_FILENAME_WITH_TITLE = "MyProjectTitle123.wai";
   private static final String DOWNLOAD_URL = "http://localhost/baseUrl/download/";
 
   private ProjectSourceZip dummyZip;
@@ -82,7 +82,7 @@ public class DownloadServletTest {
     DownloadServlet download = new DownloadServlet();
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
-    checkResponseHeader(response, "attachment; filename=\"filename123.aia\"");
+    checkResponseHeader(response, "attachment; filename=\"filename123.wai\"");
     assertEquals("application/zip; charset=utf-8", response.getContentType());
     PowerMock.verifyAll();
   }
@@ -92,13 +92,13 @@ public class DownloadServletTest {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234/My Project Title 123");
     expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false,
-        "MyProjectTitle123.aia", false))
+        "MyProjectTitle123.wai", false))
         .andReturn(dummyZipWithTitle);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
-    checkResponseHeader(response, "attachment; filename=\"MyProjectTitle123.aia\"");
+    checkResponseHeader(response, "attachment; filename=\"MyProjectTitle123.wai\"");
     assertEquals("application/zip; charset=utf-8", response.getContentType());
     PowerMock.verifyAll();
   }

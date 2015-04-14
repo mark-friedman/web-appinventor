@@ -51,7 +51,7 @@ public class Player extends SourceComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<audio controls");
+    sb.append("<audio");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = "+"\""+this.getType()+"\"");
     sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");

@@ -45,6 +45,12 @@ Blockly.ComponentJSGenerator.getGeneratorForComponent  =  function(component) {
                 return Blockly.AudioJsGenerator;
             case "imagePicker":
                 return Blockly.ImagePickerJsGenerator;
+            case "horizontalArrangement":
+                return Blockly.HorizontalArrangement;
+            case "verticalArrangement":
+                return Blockly.VerticalArrangement;
+            case "form":
+                return Blockly.FormJsGenerator;
             default:
                 console.log("==== unknown type: " + component.$Type);
                 return null;
@@ -69,6 +75,11 @@ Blockly.ComponentJSGenerator.getComponentType = function(type) {
              case "VideoPlayer" : return "video";
              case "Player" : return "audio";
              case "ImagePicker" : return "imagePicker";
+             case "HorizontalArrangement":
+                 return "horizontalArrangement";
+             case "VerticalArrangement":
+                 return "verticalArrangement";
+             case "Form" : return "form";
             default: return "";
          }
       };

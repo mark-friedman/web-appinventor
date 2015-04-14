@@ -616,7 +616,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     // Store the userId and projectId based on the nonce
     // Note: not used currently, but could be useful for LiveWebApp?
     storageIo.storeNonce(nonce, userId, projectId);
-
     
     try {
       Boolean result = build(userId, projectId, target, null);
