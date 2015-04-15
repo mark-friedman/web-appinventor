@@ -233,7 +233,7 @@ public final class AddFormCommand extends ChainableCommand {
             public void execute() {
               ProjectEditor projectEditor = 
                   ode.getEditorManager().getOpenProjectEditor(project.getProjectId());
-              EditorManager.buildHTMLAndJs();
+              EditorManager.buildHTML();
               FileEditor formEditor = projectEditor.getFileEditor(formFileId);
               FileEditor blocksEditor = projectEditor.getFileEditor(blocksFileId);
               if (formEditor != null && blocksEditor != null && !ode.screensLocked()) {

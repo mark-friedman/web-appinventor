@@ -358,7 +358,6 @@ public final class EditorManager {
      * Saving files related to Live Web App.
      * This method build HTML files after every incremental change.
      */
-
     public static void buildHTMLAndJs(){
         Command SaveCommand = new Command() {
             public void execute() {
@@ -366,7 +365,7 @@ public final class EditorManager {
                 if (projectRootNode != null) {
                     ChainableCommand cmd =
                             new GenerateJavaScriptCommand(
-                                    new BuildCommand(TARGET_LIVE_WEBAPP, null));
+                                    new BuildCommand(TARGET_LIVE_WEBAPP,null));
                     cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
                 }
             }
@@ -374,6 +373,18 @@ public final class EditorManager {
         SaveCommand.execute();
     }
 
+    public static void buildHTML(){
+        Command SaveCommand = new Command() {
+            public void execute() {
+                final ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+                if (projectRootNode != null) {
+                    ChainableCommand cmd = new BuildCommand(TARGET_LIVE_WEBAPP,null);
+                    cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_HTML, projectRootNode);
+                }
+            }
+        };
+        SaveCommand.execute();
+    }
 
   /**
    * For each block editor (screen) in the current project, generate and save yail code for the 

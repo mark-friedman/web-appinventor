@@ -552,128 +552,128 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    *
    * @return true the build succeeded, false otherwise
    */
-    public Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException {
-          boolean isLiveWebAppBuild = target.equalsIgnoreCase("LiveWebApp");
-          String projectName = storageIo.getProjectName(userId, projectId);
-          String outputFileDir = BUILD_FOLDER + "/" + target + "/";
+  public Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException {
+    boolean isLiveWebAppBuild = target.equalsIgnoreCase("LiveWebApp");
+    String projectName = storageIo.getProjectName(userId, projectId);
+    String outputFileDir = BUILD_FOLDER + "/" + target + "/";
 
-          LOG.log(Level.FINE, "Building output, target = " + target);
-      
-          if (assetFileIds != null)
+    LOG.log(Level.FINE, "Building output, target = " + target);
+
+    if (assetFileIds != null)
+    {
+      // Start with no referenced assets.
+      assetFileIds.clear();
+    }
+
+    // Search storage for project source.
+    // Find the Javascript and JSON files.
+    List<String> screenNames = new ArrayList<String>();
+    Map<String, String> screenJavaScriptFileIds = new HashMap<String, String>();
+    Map<String, String> screenComponentJSONFileIds = new HashMap<String, String>();
+
+    for (String srcFileId : storageIo.getProjectSourceFiles(userId, projectId)) {
+
+      LOG.log(Level.FINE, "Project source file id: " + srcFileId);
+
+      if (StorageUtil.isTextFile(srcFileId)) {
+        // Pare the file id down to just the file name - no path or extension
+        String fileBaseName = StorageUtil.basename(StorageUtil.trimOffExtension(srcFileId));
+        boolean isScreenSourceFile = false;
+
+        // Is this an scm file for a screen (= the component json)
+        if (srcFileId.endsWith(FORM_PROPERTIES_EXTENSION))
+        {
+          screenComponentJSONFileIds.put(fileBaseName, srcFileId);
+          isScreenSourceFile = true;
+        }
+        // Is this the generated javascript file (for now, named *.yail)
+        else if (srcFileId.endsWith(YAIL_FILE_EXTENSION))
+        {
+          screenJavaScriptFileIds.put(fileBaseName, srcFileId);
+          isScreenSourceFile = true;
+        }
+
+        // Build a list of screen names from the scm and yail files.
+        if (isScreenSourceFile)
+        {
+          if (!screenNames.contains(fileBaseName))
           {
-            // Start with no referenced assets.
-            assetFileIds.clear();
+            LOG.log(Level.FINE, "...adding screen: " + fileBaseName);
+            screenNames.add(fileBaseName);
           }
-          
-          // Search storage for project source.
-          // Find the Javascript and JSON files.
-          List<String> screenNames = new ArrayList<String>();
-          Map<String, String> screenJavaScriptFileIds = new HashMap<String, String>();
-          Map<String, String> screenComponentJSONFileIds = new HashMap<String, String>();
+        }
+      }
+    }
 
-          for (String srcFileId : storageIo.getProjectSourceFiles(userId, projectId)) {
+    // Delete any previously built files for this target.
+    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
+    for (String buildOutputFile : buildOutputFiles) {
+      LOG.log(Level.FINER, "...found previous output file = " + buildOutputFile);
+      if (buildOutputFile.contains(outputFileDir)) {
+        LOG.log(Level.FINER, "...removing previous output file = " + buildOutputFile);
+        storageIo.deleteFile(userId, projectId, buildOutputFile);
+      }
+    }
 
-              LOG.log(Level.FINE, "Project source file id: " + srcFileId);
+    if (screenNames.isEmpty())
+    {
+      // No screens = no build (but any old build output has been deleted)
+      return false;
+    }          
 
-              if (StorageUtil.isTextFile(srcFileId)) {
-                  // Pare the file id down to just the file name - no path or extension
-                  String fileBaseName = StorageUtil.basename(StorageUtil.trimOffExtension(srcFileId));
-                  boolean isScreenSourceFile = false;
+    // For each screen, put the html file together from the component JSON and JavaScript
+    try {
 
-                  // Is this an scm file for a screen (= the component json)
-                  if (srcFileId.endsWith(FORM_PROPERTIES_EXTENSION))
-                  {
-                      screenComponentJSONFileIds.put(fileBaseName, srcFileId);
-                      isScreenSourceFile = true;
-                  }
-                  // Is this the generated javascript file (for now, named *.yail)
-                  else if (srcFileId.endsWith(YAIL_FILE_EXTENSION))
-                  {
-                      screenJavaScriptFileIds.put(fileBaseName, srcFileId);
-                      isScreenSourceFile = true;
-                  }
+      for (String screenName : screenNames)
+      {
+        // Retrieve the file ids for this screen's source.
+        String screenJavaScriptFileId = screenJavaScriptFileIds.get(screenName);
+        String screenComponentJSONFileId = screenComponentJSONFileIds.get(screenName);
 
-                  // Build a list of screen names from the scm and yail files.
-                  if (isScreenSourceFile)
-                  {
-                      if (!screenNames.contains(fileBaseName))
-                      {
-                          LOG.log(Level.FINE, "...adding screen: " + fileBaseName);
-                          screenNames.add(fileBaseName);
-                      }
-                  }
-              }
-          }
+        // Name the html output based on the screen nam (just like the source)
+        String builtHtmlFileId = outputFileDir + screenName + ".html";
 
-          // Delete any previously built files for this target.
-          List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
-          for (String buildOutputFile : buildOutputFiles) {
-              LOG.log(Level.FINER, "...found previous output file = " + buildOutputFile);
-              if (buildOutputFile.contains(outputFileDir)) {
-                  LOG.log(Level.FINER, "...removing previous output file = " + buildOutputFile);
-                  storageIo.deleteFile(userId, projectId, buildOutputFile);
-              }
-          }
+        // Get the javascript and json for this screen
+        String screenJavaScript = storageIo.downloadFile(userId, projectId, screenJavaScriptFileId, StorageUtil.DEFAULT_CHARSET);
+        LOG.log(Level.FINEST, screenJavaScriptFileId + ":  " + screenJavaScript);
 
-          if (screenNames.isEmpty())
+        String screenComponentJSON = storageIo.downloadFile(userId, projectId, screenComponentJSONFileId, StorageUtil.DEFAULT_CHARSET);
+        LOG.log(Level.FINEST, screenComponentJSONFileId + ":  " + screenComponentJSON);
+
+        // Build the html for this screen
+        StitchResult screenResult = Shell.stitchBuildHTML(projectName, screenName, screenJavaScript, screenComponentJSON, isLiveWebAppBuild, "assets/");
+        LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());
+        if (assetFileIds != null)
+        {
+          // If the caller wants to keep track of the asset ids....
+          for (String assetFileId : screenResult.assetFiles)
           {
-            // No screens = no build (but any old build output has been deleted)
-            return false;
-          }          
-          
-          // For each screen, put the html file together from the component JSON and JavaScript
-          try {
-
-              for (String screenName : screenNames)
-              {
-                  // Retrieve the file ids for this screen's source.
-                  String screenJavaScriptFileId = screenJavaScriptFileIds.get(screenName);
-                  String screenComponentJSONFileId = screenComponentJSONFileIds.get(screenName);
-
-                  // Name the html output based on the screen nam (just like the source)
-                  String builtHtmlFileId = outputFileDir + screenName + ".html";
-
-                  // Get the javascript and json for this screen
-                  String screenJavaScript = storageIo.downloadFile(userId, projectId, screenJavaScriptFileId, StorageUtil.DEFAULT_CHARSET);
-                  LOG.log(Level.FINEST, screenJavaScriptFileId + ":  " + screenJavaScript);
-
-                  String screenComponentJSON = storageIo.downloadFile(userId, projectId, screenComponentJSONFileId, StorageUtil.DEFAULT_CHARSET);
-                  LOG.log(Level.FINEST, screenComponentJSONFileId + ":  " + screenComponentJSON);
-
-                  // Build the html for this screen
-                  StitchResult screenResult = Shell.stitchBuildHTML(projectName, screenName, screenJavaScript, screenComponentJSON, isLiveWebAppBuild, "assets/");
-                  LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());
-                  if (assetFileIds != null)
-                  {
-                    // If the caller wants to keep track of the asset ids....
-                  for (String assetFileId : screenResult.assetFiles)
-                  {
-                    // Add any new asset references
-                    if ((assetFileId != null) && !assetFileIds.contains(assetFileId))
-                    {
-                      LOG.log(Level.INFO, "   Asset file = " + assetFileId);
-                      assetFileIds.add(assetFileId);
-                    }
-                  }
-                  }
-                  LOG.log(Level.FINEST, "Built " + builtHtmlFileId + " : " + screenResult.html);
-
-                  // Save built file (add the id as an output file, then add the contents for that id)
-                  LOG.log(Level.FINE, "Storing web output as " + builtHtmlFileId);
-                  storageIo.addOutputFilesToProject(userId, projectId, builtHtmlFileId);
-                  storageIo.uploadFileForce(projectId, builtHtmlFileId, userId, screenResult.html, StorageUtil.DEFAULT_CHARSET);
-              }
-          } catch (JSONException e) {
-
-              // Could not turn component json into html - return error.
-               LOG.log(Level.FINE, "JSONException details:", e);
-
-              throw e;
+            // Add any new asset references
+            if ((assetFileId != null) && !assetFileIds.contains(assetFileId))
+            {
+              LOG.log(Level.INFO, "   Asset file = " + assetFileId);
+              assetFileIds.add(assetFileId);
+            }
           }
+        }
+        LOG.log(Level.FINEST, "Built " + builtHtmlFileId + " : " + screenResult.html);
 
-          // Html files are built and stored - return to client.
-          // Return success for build result
-          return true;
-      }    
+        // Save built file (add the id as an output file, then add the contents for that id)
+        LOG.log(Level.FINE, "Storing web output as " + builtHtmlFileId);
+        storageIo.addOutputFilesToProject(userId, projectId, builtHtmlFileId);
+        storageIo.uploadFileForce(projectId, builtHtmlFileId, userId, screenResult.html, StorageUtil.DEFAULT_CHARSET);
+      }
+    } catch (JSONException e) {
+
+      // Could not turn component json into html - return error.
+      LOG.log(Level.FINE, "JSONException details:", e);
+
+      throw e;
+    }
+
+    // Html files are built and stored - return to client.
+    // Return success for build result
+    return true;
+  }    
 }
 
