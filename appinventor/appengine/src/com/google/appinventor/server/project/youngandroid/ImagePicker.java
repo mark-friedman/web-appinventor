@@ -124,7 +124,7 @@ public class ImagePicker extends ImageComponent{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#Label"+this.getName());
+    sb.append("#label"+this.getName());
     sb.append("{\n");
     
     if(!this.getBackgroundColor().equals(""))
@@ -157,7 +157,7 @@ public class ImagePicker extends ImageComponent{
     sb.append(" border-radius : "+this.getShape()+";\n");
     sb.append("}\n");
     
-    sb.append("#"+"Label"+this.getName()+"\n");
+    sb.append("#"+"label"+this.getName()+"\n");
     sb.append("{\n");
     sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
@@ -172,7 +172,7 @@ public class ImagePicker extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
     sb.append("<label");
-    sb.append(" for = "+"\""+"Label"+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label"+this.getName()+"\"");
    
     if(this.getVisible().equals("False"))
       sb.append(" hidden");
