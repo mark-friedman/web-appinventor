@@ -347,7 +347,23 @@ Blockly.liveWebAppClient = (function(){
      }
      sendMessage(js,MSG_DO_IT,block.id);
   }
-
+	
+	
+  listnerReceiveMessage = function(){
+   window.addListener(receiveMessage);
+ }
+ receiveMessage = function(event){ 
+	console.log(event.data);
+	var json = goog.json.parse(event.data);
+		console.log("json.status"+json.status);
+		console.log("json"+json);
+		if (json.status == 'OK') {
+		console.log("json.values"+json.values);                        
+		Blockly.ReplMgr.processRetvals([json.values]);
+		}else if(json.status == 'BAD'){
+		console.log("json.values"+json.values);   
+		}
+	 }
   setProject = function(project){
     this.projectName = project;
   }
