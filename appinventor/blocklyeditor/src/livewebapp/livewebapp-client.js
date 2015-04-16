@@ -31,6 +31,8 @@ Blockly.liveWebAppClient = (function(){
   // screen to blocks map
   var blocksMap = {};
 
+  var projectName = null;
+
 
   var MSG_BLOCKLY = 2;
   var MSG_COMPONENT_ADD = 1;
@@ -344,6 +346,14 @@ Blockly.liveWebAppClient = (function(){
         js = js[0];
      }
      sendMessage(js,MSG_DO_IT,block.id);
+  }
+
+  setProject = function(project){
+    this.projectName = project;
+  }
+
+  getProject = function(){
+      return this.projectName;
   }
 
   return self;
