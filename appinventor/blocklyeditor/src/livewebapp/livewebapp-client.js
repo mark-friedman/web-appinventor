@@ -353,15 +353,13 @@ Blockly.liveWebAppClient = (function(){
    window.addListener(receiveMessage);
  }
  receiveMessage = function(event){ 
-	console.log(event.data);
+	console.log("RESPONCE ==>"+event.data);
 	var json = goog.json.parse(event.data);
-		console.log("json.status"+json.status);
-		console.log("json"+json);
-		if (json.status == 'OK') {
-		console.log("json.values"+json.values);                        
+		console.log("JSON Status ==>"+json.status);		
+		if (json.status == 'OK') {		                   
 		Blockly.ReplMgr.processRetvals([json.values]);
 		}else if(json.status == 'BAD'){
-		console.log("json.values"+json.values);   
+		console.log("ERROR BAD MESSAGE==>"+json.values);   
 		}
 	 }
   setProject = function(project){
