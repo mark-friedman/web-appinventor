@@ -1,6 +1,7 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 /**
@@ -11,6 +12,10 @@ import com.google.appinventor.shared.properties.json.JSONValue;
  * @author veluru.k@husky.neu.edu (Veluru Kaushik)
  */
 public class Image extends ImageComponent{
+
+  public Image(String assetPrefix) {
+    super(assetPrefix);
+  }
 
   String source = "";
   String visible = "true";
@@ -93,10 +98,10 @@ public class Image extends ImageComponent{
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
-    String asset = null;
+    ParseResult componentInfo = new ParseResult();
+    
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -104,7 +109,6 @@ public class Image extends ImageComponent{
       {
       case "Picture":
         this.setSource(value);
-        asset = value;
         break;
       case "$Name":
         this.setName(value);
@@ -145,9 +149,9 @@ public class Image extends ImageComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getSource());
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getSource())); 
 
     return componentInfo;
 

@@ -16,6 +16,18 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class HorizontalArrangement extends Component{
 
+ String assetSrcPrefix;
+  
+  private HorizontalArrangement()
+  {
+    super();
+  }
+  
+  public HorizontalArrangement(String assetPrefix)
+  {
+    this.assetSrcPrefix = assetPrefix;
+  }  
+  
   Component[] components;
   
   String name = "";
@@ -96,7 +108,7 @@ public void setVerticalAlign(String verticalAlign) {
 	this.verticalAlign = verticalAlign;
 }
 
-private String generateCSSforComponent(ArrayList<String[]> arrayList)
+private String generateCSSforComponent(ArrayList<String> containedCssList)
 {
   StringBuilder sb = new StringBuilder();
   sb.append("#"+this.getName()+"\n");
@@ -107,15 +119,15 @@ private String generateCSSforComponent(ArrayList<String[]> arrayList)
   sb.append(" text-align : "+this.getHorizontalAlign()+";\n");
   sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not work for now!
   sb.append("}\n");
-  for(String[] str:arrayList)
+  for(String str:containedCssList)
   {
-	  sb.append(str[1]);
+	  sb.append(str);
   }
   
   return sb.toString().valueOf(sb);
 }
 
-private String generateHTMLforComponent(ArrayList<String[]> arrayList)
+private String generateHTMLforComponent(ArrayList<String> containedHtmlList)
 {
   StringBuilder sb = new StringBuilder();
   sb.append("<div class=\"row\" id = \""+this.getName()+"\"");
@@ -123,14 +135,14 @@ private String generateHTMLforComponent(ArrayList<String[]> arrayList)
     sb.append(" hidden");
   }
   sb.append(">\n");
-  if(!arrayList.isEmpty())
+  if(!containedHtmlList.isEmpty())
   {
-  int span=12/arrayList.size();
-  for(String[] str:arrayList)
+  int span=12/containedHtmlList.size();
+  for(String str:containedHtmlList)
   {
     sb.append("<div class=\"col-md-"+span+"\">\n");
 	//sb.append("<div class=\"col-md-1\">\n");
-    sb.append(str[0]);
+    sb.append(str);
     sb.append("</div>\n");
   }
   }
@@ -140,10 +152,10 @@ private String generateHTMLforComponent(ArrayList<String[]> arrayList)
 }
 
 
-public String[] getComponentString(Map<String,JSONValue> properties)
+public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-	String componentInfo[] = new String[3];
-    for(String property:properties.keySet())
+  ParseResult componentInfo = new ParseResult();
+   for(String property:properties.keySet())
     {
       if(!property.equals("$Components"))
       {
@@ -206,34 +218,21 @@ public String[] getComponentString(Map<String,JSONValue> properties)
       }
       }
     }
-    ArrayList<String[]> arrayList=new ArrayList<String[]>();
+    
+    ParseResult childrenResults = new ParseResult();
     if(properties.containsKey("$Components"))
     {
-    JSONArray componentsArray= properties.get("$Components").asArray();
-    arrayList=new Parse().parseComponents(componentsArray);
+      JSONArray componentsArray= properties.get("$Components").asArray();
+      childrenResults=new Parse().parseComponents(componentsArray, this.assetSrcPrefix);
     }
-    componentInfo[0] = generateHTMLforComponent(arrayList);
-    componentInfo[1] = generateCSSforComponent(arrayList);
-    componentInfo[2] = generateAssestsforComponent(arrayList); 
+
+    componentInfo.bodyHtml.add(generateHTMLforComponent(childrenResults.bodyHtml));
+    componentInfo.css.add(generateCSSforComponent(childrenResults.css));
+    componentInfo.assetFiles =  childrenResults.assetFiles; 
+
     return componentInfo;
   }
-
-
-private String generateAssestsforComponent(ArrayList<String[]> arrayList) 
-{
-	StringBuffer sb=new StringBuffer();
-	for(String[] str:arrayList)
-	{
-		if((str[2] != null) && (sb.length() == 0)) {
-		sb.append(str[2]);
-		}
-	}
-	  
-	return sb.toString().valueOf(sb);
-}  
-
-
-    
+ 
   
 
 }

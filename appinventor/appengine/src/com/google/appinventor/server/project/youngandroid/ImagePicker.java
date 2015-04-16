@@ -6,6 +6,10 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class ImagePicker extends ImageComponent{
 
+  public ImagePicker(String assetPrefix) {
+    super(assetPrefix);
+  }
+
   String backgroundColor = ""; 
   String enabled = "true";
   String fontSize = "14";
@@ -198,9 +202,9 @@ public class ImagePicker extends ImageComponent{
     return sb.toString().valueOf(sb);
   }
   
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -300,9 +304,9 @@ public class ImagePicker extends ImageComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getImage()); 
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
     return componentInfo;
 
   }

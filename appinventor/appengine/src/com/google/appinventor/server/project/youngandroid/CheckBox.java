@@ -1,6 +1,7 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 /**
@@ -188,10 +189,10 @@ public class CheckBox extends Component{
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
-
+    ParseResult componentInfo = new ParseResult();
+    
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -274,9 +275,8 @@ public class CheckBox extends Component{
       }
     }
 
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = null;
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
 
     return componentInfo;
 

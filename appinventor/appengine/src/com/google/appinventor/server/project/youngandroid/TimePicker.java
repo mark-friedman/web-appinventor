@@ -6,6 +6,11 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class TimePicker extends ImageComponent{
 
+  public TimePicker(String assetPrefix) {
+    super(assetPrefix);
+  }
+
+
   String backgroundColor = "";
   String fontSize = "14";
   String fontBold = "none";
@@ -206,9 +211,9 @@ public class TimePicker extends ImageComponent{
   }
   
   
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -306,9 +311,10 @@ public class TimePicker extends ImageComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = null;
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
+
     return componentInfo;
   }
   
