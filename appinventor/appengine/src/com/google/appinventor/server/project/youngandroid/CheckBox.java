@@ -14,7 +14,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class CheckBox extends Component{
 
-  String backgroundColor = "none";
+  String backgroundColor = "";
   String checked = "false";
   String fontSize = "14";
   String fontBold = "none";
@@ -122,7 +122,8 @@ public class CheckBox extends Component{
     sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
 
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -136,7 +137,8 @@ public class CheckBox extends Component{
     sb.append("#label_"+this.getName()+"\n");
     sb.append("{\n");
     
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");

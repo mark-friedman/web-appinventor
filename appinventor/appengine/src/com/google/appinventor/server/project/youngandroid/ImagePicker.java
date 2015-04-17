@@ -10,7 +10,7 @@ public class ImagePicker extends ImageComponent{
     super(assetPrefix);
   }
 
-  String backgroundColor = "none"; 
+  String backgroundColor = ""; 
   String enabled = "true";
   String fontSize = "14";
   String fontBold = "none";
@@ -129,7 +129,8 @@ public class ImagePicker extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
 
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");      
@@ -141,7 +142,8 @@ public class ImagePicker extends ImageComponent{
 
     sb.append("#"+"label_"+this.getName()+"\n");
     sb.append("{\n");
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");

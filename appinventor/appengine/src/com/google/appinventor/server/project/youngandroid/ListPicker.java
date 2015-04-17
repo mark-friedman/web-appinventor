@@ -10,7 +10,7 @@ public class ListPicker extends ImageComponent{
     super(assetPrefix);
   }
 
-  String backgroundColor = "none";
+  String backgroundColor = "";
   String elementsFromString = "";
   String fontSize = "14";
   String fontBold = "none";
@@ -159,7 +159,8 @@ public class ListPicker extends ImageComponent{
     StringBuilder sb = new StringBuilder();
     sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
-    sb.append(" background : "+this.getItemBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getItemBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");      
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -173,7 +174,8 @@ public class ListPicker extends ImageComponent{
     
     sb.append("#label_"+this.getName()+"\n");
     sb.append("{\n");
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");

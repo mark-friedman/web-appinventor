@@ -18,7 +18,7 @@ public class Screen extends ImageComponent{
     super(assetPrefix);
   }
 
-  String backgroundColor = "none";
+  String backgroundColor = "";
   String backgroundImage = "";
   String horizontalAlign = "left";
   String verticalAlign = "0%";

@@ -18,7 +18,7 @@ public class Button extends ImageComponent{
     super(assetPrefix);
   }
 
-  String backgroundColor = "none";
+  String backgroundColor = "";
   String fontSize = "14";
   String fontBold = "none";
   String fontItalic = "none";
@@ -172,7 +172,8 @@ public class Button extends ImageComponent{
     sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
     
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");		
     sb.append(" width : "+this.getWidth()+";\n");
