@@ -238,7 +238,7 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
         var day = args[2];
 
         // Array to handle the number of days possible in specified month
-        // NOT
+        // Leap year is factored in later on
         var dayLim = [31,28,31,30,31,30,31,31,30,31,30,31];
 
         // YEAR - '0001' to '275760'
