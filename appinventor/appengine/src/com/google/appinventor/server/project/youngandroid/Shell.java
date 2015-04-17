@@ -120,6 +120,9 @@ public class Shell {
     htmlStringBuilder.append("</head>\n");
     //including id for body - Sudeep
     htmlStringBuilder.append("<body id = \""+ screenName+"\">\n");
+    // include jquery library
+    htmlStringBuilder
+    .append("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js\"></script>\n");
     //Included bootstrap code - Sudeep
     htmlStringBuilder.append("<div class=\"container-fluid\">\n");
     // inject html from the components
