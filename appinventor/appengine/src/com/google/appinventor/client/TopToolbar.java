@@ -269,7 +269,7 @@ public class TopToolbar extends Composite {
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
-        String target = "web";
+        String target = ServerLayout.BUILD_TARGET_QRCODE;
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateJavaScriptCommand(
                 new BuildCommand(target, new ShowBarcodeCommand(target))));
@@ -355,7 +355,7 @@ public class TopToolbar extends Composite {
             ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
             if (projectRootNode != null) {
                 //String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-                String target = "web";    // TODO: Define target in common place.
+                String target = ServerLayout.BUILD_TARGET_WEB;
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
                                 // Download web output will build the html and zip it up
@@ -381,7 +381,7 @@ public class TopToolbar extends Composite {
 
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
-                                new BuildCommand("LiveWebApp",
+                                new BuildCommand(ServerLayout.BUILD_TARGET_LIVEWEBAPP,
                                         new LaunchLiveWebAppCommand(null))));
 
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_LAUNCH_LIVE_WEB_APP, projectRootNode);

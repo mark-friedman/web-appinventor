@@ -17,6 +17,7 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -528,12 +529,12 @@ public class ProjectServiceTest {
     long project1ModificationDate = uproject.getDateModified();
     assertTrue(project1ModificationDate >= project1CreationDate);
 
-    //ProjectWebOutputZip zipFile = projectServiceImpl.build(yaProject1, "", "web");
-    Boolean result = projectServiceImpl.build(yaProject, "123", "web");
+    //ProjectWebOutputZip zipFile = projectServiceImpl.build(yaProject1, "", ServerLayout.BUILD_TARGET_WEB);
+    Boolean result = projectServiceImpl.build(yaProject, "123", ServerLayout.BUILD_TARGET_WEB);
     assertTrue(result);
 
     // Verify exactly one html was built
-    Map<String, String> htmlFiles = getBuiltHtmlFiles(USER_ID_ONE, yaProject, "web");
+    Map<String, String> htmlFiles = getBuiltHtmlFiles(USER_ID_ONE, yaProject, ServerLayout.BUILD_TARGET_WEB);
     assertEquals(htmlFiles.size(), 1);
     assertTrue(htmlFiles.containsKey("build/web/Screen1.html"));
 
