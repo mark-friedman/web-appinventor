@@ -7,7 +7,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class ListView extends Component{
 
-  String backgroundColor = "";
+  String backgroundColor = "none";
   String elementsFromString = "";
   String textSize = "14";
   String textColor = "#000000";

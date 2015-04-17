@@ -11,7 +11,7 @@ public class TimePicker extends ImageComponent{
   }
 
 
-  String backgroundColor = "";
+  String backgroundColor = "none";
   String fontSize = "14";
   String fontBold = "none";
   String fontItalic = "none";
@@ -162,7 +162,7 @@ public class TimePicker extends ImageComponent{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#"+"label"+this.getName()+"\n");
+    sb.append("#"+"label_"+this.getName()+"\n");
     sb.append("{\n");
 
     sb.append(" background : "+this.getBackgroundColor()+";\n");
@@ -189,7 +189,7 @@ public class TimePicker extends ImageComponent{
     StringBuilder sb = new StringBuilder();
 
     sb.append("<label");
-    sb.append(" id = "+"\""+"label"+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label> ");

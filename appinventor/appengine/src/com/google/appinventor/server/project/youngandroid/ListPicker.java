@@ -10,7 +10,7 @@ public class ListPicker extends ImageComponent{
     super(assetPrefix);
   }
 
-  String backgroundColor = "";
+  String backgroundColor = "none";
   String elementsFromString = "";
   String fontSize = "14";
   String fontBold = "none";
@@ -171,7 +171,7 @@ public class ListPicker extends ImageComponent{
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append("}\n");
     
-    sb.append("Label[for="+this.getName()+"]\n");
+    sb.append("#label_"+this.getName()+"\n");
     sb.append("{\n");
     sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
@@ -186,7 +186,7 @@ public class ListPicker extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
     sb.append("<label");
-    sb.append(" for = "+"\""+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
    
     if(this.getVisible().equals("False"))
       sb.append(" hidden");

@@ -18,11 +18,11 @@ public class Screen extends ImageComponent{
     super(assetPrefix);
   }
 
-  String backgroundColor = "";
+  String backgroundColor = "none";
   String backgroundImage = "";
   String horizontalAlign = "left";
   String verticalAlign = "0%";
-  String scrollable = "";
+  String scrollable = "false";
   String name = "";
   String title = "";
   String type = "Form";

@@ -15,7 +15,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class TextBox extends Component{
 
-  String backgroundColor = "";
+  String backgroundColor = "none";
   String fontSize = "14";
   String fontBold = "none";
   String fontItalic = "none";
