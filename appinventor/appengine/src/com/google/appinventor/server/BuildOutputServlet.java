@@ -109,7 +109,7 @@ public class BuildOutputServlet extends OdeServlet {
       {
         // No more path segments, so this url ends with just the file name
         fileId = uriComponents[FOLDER_KEY_INDEX];
-        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), ServerLayout.BUILD_TARGET_WEB, fileId);
+        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), ServerLayout.BUILD_TARGET_QRCODE, fileId);
       } 
       else if (uriComponents.length >= FOLDER_KEY_INDEX + 1)
       {
