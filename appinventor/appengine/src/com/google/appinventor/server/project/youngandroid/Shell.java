@@ -5,9 +5,16 @@
 
 package com.google.appinventor.server.project.youngandroid;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.json.JSONException;
+
+import com.google.appinventor.server.properties.json.ServerJsonParser;
+import com.google.appinventor.shared.properties.json.JSONObject;
+import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 
 /**
  * Shell takes component and blockly data and creates an HTML string
@@ -45,6 +52,7 @@ public class Shell {
     StringBuilder htmlStringBuilder = new StringBuilder();    // StringBuilder for building the page line-by-line
     StitchResult retVal = new StitchResult();
 
+    
     // sends component JSON for parsing into HTML and CSS
     componentPackage = Parse.parseJsonString(componentJSON, assetSrcPrefix);
 
@@ -59,16 +67,41 @@ public class Shell {
     // ToDo #2 - This likely should be the screen Title attribute, not the screen component name
     htmlStringBuilder.append(screenName); 
     htmlStringBuilder.append("</title>\n");
+    
+    // Including Bootstrap Library - Sudeep
+    htmlStringBuilder.append("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n");
+      
 
     // inject css from the components
-    if (!componentPackage.isEmpty()) {
+    /*if (!componentPackage.isEmpty()) {
       htmlStringBuilder.append("<style>\n");
       for (String[] component : componentPackage) {
         htmlStringBuilder.append(component[1] + "\n");
       }
       htmlStringBuilder.append("</style>\n");
       htmlStringBuilder.append("\n");
-    }
+    }*/
+    
+      // inject css for bootstrap and components
+      htmlStringBuilder.append("<style>\n");
+      htmlStringBuilder.append(".container-fluid\n");
+      htmlStringBuilder.append("{\n");
+      htmlStringBuilder.append("padding-left : 0px;\n");
+      htmlStringBuilder.append("padding-right : 0px;\n");
+      htmlStringBuilder.append("margin-right : 0px;\n");
+      htmlStringBuilder.append("margin-left : 0px;\n");
+      htmlStringBuilder.append("width : 100%;\n");
+      htmlStringBuilder.append("}\n");
+      
+      for (String[] component : componentPackage) {
+        htmlStringBuilder.append(component[1] + "\n");
+      }
+      
+      htmlStringBuilder.append("</style>\n");
+      htmlStringBuilder.append("\n");
+    
+    
+    
 
     // inject javascript from blockly
     htmlStringBuilder.append("<script>\n");
@@ -85,14 +118,14 @@ public class Shell {
     }
 
     htmlStringBuilder.append("</head>\n");
-    htmlStringBuilder.append("<body>\n");
-
+    //including id for body - Sudeep
+    htmlStringBuilder.append("<body id = \""+ screenName+"\">\n");
+    //Included bootstrap code - Sudeep
+    htmlStringBuilder.append("<div class=\"container-fluid\">\n");
     // inject html from the components
     if (!componentPackage.isEmpty()) {
       for (String[] component : componentPackage) {
-        htmlStringBuilder.append("<div>");
         htmlStringBuilder.append(component[0] + "\n");
-        htmlStringBuilder.append("</div>\n");
                
         // While we are at it, collect any image asset file ids
         if ((component.length > 2) && (component[2] != null) && (component[2] != ""))
@@ -104,7 +137,7 @@ public class Shell {
         }        
       }
     }
-
+    htmlStringBuilder.append("</div>\n");
     htmlStringBuilder.append("</body>\n");
     htmlStringBuilder.append("</html>");    // end of page building
     
