@@ -37,33 +37,36 @@ Blockly.JavaScript.component_event = function() {
   // Switch Block to handle different event handlers
   switch (this.eventName) {
     case 'Click':
-      JSEvent = 'onclick';
+      JSEvent = 'onclick = ';
       break;
     case 'GotFocus':
-      JSEvent = 'onmouseover';
+      JSEvent = 'onmouseover = ';
       break;
     case 'LostFocus':
-      JSEvent = 'onmouseout';
+      JSEvent = 'onmouseout = ';
       break;
     case 'Changed':
-      JSEvent = 'onchange';
+      JSEvent = 'onchange = ';
     case 'TouchDown':
-      JSEvent = 'onmousedown';
+      JSEvent = 'onmousedown = ';
       break;
     case 'TouchUp':
-      JSEvent = 'onmouseup';
+      JSEvent = 'onmouseup = ';
       break;
     case 'AfterDateSet':
-      JSEvent = 'onchange';
+      JSEvent = 'onchange = ';
       break;
     case 'PositionChanged':
-      JSEvent = 'onchange';
+      JSEvent = 'onchange = ';
       break;
     case 'AfterPicking':
-      JSEvent = 'onselect';
+      JSEvent = 'onselect = ';
       break;
     case 'Completed':
-      JSEvent = 'onended';
+      JSEvent = 'onended = ';
+      break;
+    case 'AfterTimeSet':
+      JSEvent = 'addEventListener(\"change\", ';
       break;
     default:
       break;
@@ -73,7 +76,7 @@ Blockly.JavaScript.component_event = function() {
   code = code + JSEvent;
 
   //Fetch the code for the body
-  code = code + ' = function() {';
+  code = code + ' function() {';
 
   var body = Blockly.JavaScript.statementToCode(this, 'DO', Blockly.JavaScript.ORDER_NONE);
 
@@ -87,7 +90,11 @@ Blockly.JavaScript.component_event = function() {
 
 
   //Finalize
-  code = code + '};';
+  if (this.eventName == 'AfterTimeSet') {
+    code = code + '});';
+  } else {
+    code = code + '};';
+  }
 
   return code;
 
@@ -210,8 +217,7 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
   var args = [];
   for (var x = 0; x < numOfParams; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
-    args.push(Blockly.JavaScript.YAIL_SPACER
-              + Blockly.JavaScript.valueToCode(methodBlock, 'ARG' + x, Blockly.JavaScript.ORDER_NONE));
+    args.push(Blockly.JavaScript.valueToCode(methodBlock, 'ARG' + x, Blockly.JavaScript.ORDER_NONE));
   }
 
   typeName = methodBlock.typeName;
@@ -230,12 +236,52 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
         var year = args[0];
         var month = args[1];
         var day = args[2];
-        if (day.length != 2) { day = "0" + day; };
-        if (month.length != 2) { month = "0" + month; };
 
-        var date = month + '/' + day + '/' + year;
+        // Array to handle the number of days possible in specified month
+        // NOT
+        var dayLim = [31,28,31,30,31,30,31,31,30,31,30,31];
+
+        // YEAR - '0001' to '275760'
+        if (parseInt(year) <= 0) {
+          year = "0001";
+        } else if (year.length < 4) {
+          while (year.length < 4) {
+            year = "0" + year;
+          }
+        } else if (year.length > 6 || parseInt(year) > 275760) {
+          year = "0001";
+        };
+
+        // Check if its a leap year
+        // If it is change dayLim for february
+        // Logic from: https://support.microsoft.com/en-us/kb/214019
+        yearVal = parseInt(year);
+        if (((yearVal % 4 == 0) && (yearVal % 100 != 0)) || (yearVal % 400 == 0)) {
+          dayLim[1] = 29;
+        }
+
+        // MONTH - '01' to '12'
+        if (parseInt(month) <= 0) {
+          month = "01";
+        } else if (month.length == 1) {
+          month = "0" + month;
+        } else if (month.length > 2 || parseInt(month) > 12) {
+          month = "01";
+        };
+
+        // DAY - '01' to dayLim
+        if (parseInt(day) <= 0) {
+          day = "01";
+        } else if (day.length == 1) {
+          day = "0" + day;
+        } else if (day.length > 2 || parseInt(day) > dayLim[parseInt(month)-1]) {
+          day = "01";
+        };
+
+        var date = year + '-' + month + '-' + day;
+        date = date.trim();
         var code = '(function() { ' +
-          '(document.getElementById(\"' + name + '\").datepicker(\"setDate\", ' + date + '));' +
+          '(document.getElementById(\"' + name + '\").value = \"' + date + '\"); ' +
         '})()';
       }
       break;
@@ -275,25 +321,40 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
     // maybe? -> test
     // might have to use jquery to use timepicker
     case 'TimePicker':
+      // LAUNCH PICKER CURRENTLY NOT WORKING
       if (methodName == 'LaunchPicker') {
         var code = '(function() { ' +
           '(document.getElementById(\"' + name + '\").onclick());' +
         '})()';
+
+      // Sets the time
       } else if (methodName == 'SetTimeToDisplay') {
+        // hours are from 0-24
         var hour = args[0];
         var minute = args[1];
-        var suffix = 'AM';
-        if (hour > 12) {
-          suffix = 'PM';
-          hour -= 12;
-        }
-        // not sure if the following line is needed
-        if (hour.length != 2) { hour = "0" + hour; };
-        if (minute.length != 2) { minute = "0" + minute; };
 
-        var time = hour + ':' + minute + ' ' + suffix;
+        // HOURS - '00' to '23'
+        if (parseInt(hour) < 0) {
+          hour = "00";
+        } else if (hour.length == 1) {
+          hour = "0" + hour;
+        } else if (hour.length > 2 || parseInt(hour) > 23) {
+          hour = "00";
+        }
+
+        // MINUTES - '00' to '59'
+        if (parseInt(minute) < 0) {
+          minute = "00";
+        } else if (minute.length == 1) {
+          minute = "0" + minute;
+        } else if (minute.length > 2 || parseInt(minute) > 59) {
+          minute = "00";
+        }
+
+        var time = hour + ':' + minute;
+        time = time.trim();
         var code = '(function() { ' +
-          '(document.getElementById(\"' + name + '\").timepicker(\"setTime\", ' + time + '));' +
+          '(document.getElementById(\"' + name + '\").value = \"' + time + '\"); ' +
         '})()';
       }
       break;
@@ -349,7 +410,6 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
         '})()';
       }
       break;
-
 
     default:
       break;
@@ -467,7 +527,8 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
   var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1) || (elementId.indexOf("ImagePicker") > -1))
+  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)
+    || (elementId.indexOf("ImagePicker") > -1) || (elementId.indexOf("TimePicker") > -1))
     && (propertyName == 'Text')) {
     code = 'document.getElementById(\"' + 'label' + elementId + '\")';
   }
@@ -492,16 +553,68 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += '.style.backgroundColor = ' + bodyCode + ';';
       break;
     case 'height':
-      code += '.style.height = \"' + bodyCode + 'px\";';
+      code += '.style.height = ';
+      code += '(function() { ' +
+        'var code = \"\"; ' +
+        'var bodyVal = eval(\'' + bodyCode + '\'); ' +
+        // Check if the value evaluated from the body code is numeric or a string with -px
+        // Its numeric
+        'if (!isNaN(bodyVal)) { ' +
+        ' code += bodyVal + \"px\"; ' +
+        // Should be a string otherwise
+        '} else { ' +
+        ' code += bodyVal; ' +
+        '} ' +
+        'return code; ' +
+      '})();';
       break;
     case 'heightpercent':
-      code += '.style.height = \"' + bodyCode + 'vh\";';
+      code += '.style.height = ';
+      code += '(function() { ' +
+        'var code = \"\"; ' +
+        'var bodyVal = eval(\'' + bodyCode + '\'); ' +
+        // Check if the value evaluated from the body code is numeric or a string with -px
+        // Its numeric
+        'if (!isNaN(bodyVal)) { ' +
+        ' code += bodyVal + \"vh\"; ' +
+        // Should be a string otherwise
+        '} else { ' +
+        ' code += bodyVal; ' +
+        '} ' +
+        'return code; ' +
+      '})();';
       break;
     case 'width':
-      code += '.style.width = \"' + bodyCode + 'px\";';
+      code += '.style.width = ';
+      code += '(function() { ' +
+        'var code = \"\"; ' +
+        'var bodyVal = eval(\'' + bodyCode + '\'); ' +
+        // Check if the value evaluated from the body code is numeric or a string with -px
+        // Its numeric
+        'if (!isNaN(bodyVal)) { ' +
+        ' code += bodyVal + \"px\"; ' +
+        // Should be a string otherwise
+        '} else { ' +
+        ' code += bodyVal; ' +
+        '} ' +
+        'return code; ' +
+      '})();';
       break;
     case 'widthpercent':
-      code += '.style.width = \"' + bodyCode + 'vh\";';
+      code += '.style.width = ';
+      code += '(function() { ' +
+        'var code = \"\"; ' +
+        'var bodyVal = eval(\'' + bodyCode + '\'); ' +
+        // Check if the value evaluated from the body code is numeric or a string with -px
+        // Its numeric
+        'if (!isNaN(bodyVal)) { ' +
+        ' code += bodyVal + \"vh\"; ' +
+        // Should be a string otherwise
+        '} else { ' +
+        ' code += bodyVal; ' +
+        '} ' +
+        'return code; ' +
+      '})();';
       break;
     case 'fontbold':
       code += '.style.fontWeight = (' + bodyCode + ' ? \"bold\" : \"normal\");';
@@ -510,7 +623,20 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += '.style.fontStyle = (' + bodyCode + ' ? \"italic\" : \"normal\");';
       break;
     case 'fontsize':
-      code += '.style.fontSize = \"' + bodyCode + 'px\";';
+      code += '.style.fontSize = ';
+      code += '(function() { ' +
+        'var code = \"\"; ' +
+        'var bodyVal = eval(\'' + bodyCode + '\'); ' +
+        // Check if the value evaluated from the body code is numeric or a string with -px
+        // Its numeric
+        'if (!isNaN(bodyVal)) { ' +
+        ' code += bodyVal + \"px\"; ' +
+        // Should be a string otherwise
+        '} else { ' +
+        ' code += bodyVal; ' +
+        '} ' +
+        'return code; ' +
+      '})();';
       break;
     case 'textcolor':
       code += '.style.color = ' + bodyCode + ';';
@@ -531,7 +657,6 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += '.placeholder = ' + bodyCode + ';';
       break;
     case 'elementsfromstring':
-
       var newCode = 'var values = ' + bodyCode + '.split(\",\");';
       newCode += 'var listItems = \"\";';
       newCode += 'for(var i=0; i<values.length; i++){';
@@ -548,6 +673,9 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     case 'thumbposition':
       code += '.value = ' + bodyCode + ';';
       break;
+    case 'thumbenabled':
+      code += '.disabled = ' + '!' + bodyCode + ';';
+      break;
     //case 'image':
     //  code += '.src = ' + bodyCode + ';';
     //case 'showfeedback':
@@ -556,13 +684,65 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     //   code += "";
     //   break;
     case 'volume':
-      code += '.volume = ' + bodyCode + ';';
+      code += '.volume = ' + eval(bodyCode / 100) + ';';
       break;
     case 'source':
       code += '.src = ' + bodyCode + ';';
       break;
+    case 'loop':
+      code += '.loop = ' + bodyCode + ';';
+      break;
+    //TODO - GET FULL SCREEN WORKING
     case 'fullscreen':
-      code += '';
+      var elemCode = code;
+      var fsCode = '(function() { ' +
+      // Enter full screen mode based on bodyCode boolean result
+        'var elem = ' + elemCode + '; ' +
+        'if (' + bodyCode + ') { ' +
+        ' if (elem.requestFullscreen) { ' +
+        '   elem.requestFullscreen(); ' +
+        ' } else if (elem.msRequestFullscreen) { ' +
+        '   elem.msRequestFullscreen(); ' +
+        ' } else if (elem.mozRequestFullScreen) { ' +
+        '   elem.mozRequestFullScreen(); ' +
+        ' } else if (elem.webkitRequestFullscreen) { ' +
+        '   elem.webkitRequestFullscreen(); ' +
+        ' } ' +
+
+        '} else { ' +
+        ' if (elem.exitFullscreen) { ' +
+        '   elem.exitFullscreen(); ' +
+        ' } else if (elem.msExitFullscreen) { ' +
+        '   elem.msExitFullscreen(); ' +
+        ' } else if (elem.mozExitFullScreen) { ' +
+        '   elem.mozExitFullScreen(); ' +
+        ' } else if (elem.webkitExitFullscreen) { ' +
+        '   elem.webkitExitFullscreen(); ' +
+        ' } ' +
+        '} ' +
+      '})();';
+        code = fsCode;
+        break;
+    case 'numbersonly': //april13
+      if(bodyCode){  //april13
+        code += '.type = \"number\";'; //april13
+      } else{  //april13
+        code += '.type = \"text\";'; //april13
+      }
+      break; //april13
+    case 'image':  //april14
+      code += '.style.backgroundImage = ' + bodyCode + ';';  //april14
+      break;
+    //case 'showfeedback':
+    //  code += '.showfeedback = ' + bodyCode + ';';
+    case 'multiline': //april13
+      var oldChild = code;
+      code = 'var parent = ' + oldChild + '.parentNode;';
+      code += 'var newChild = document.createElement( ' ;
+      code += bodyCode + ' ? \'textarea\' : \'input\'';
+      code += ');';
+      code += 'newChild.id = \"' + elementId + '\";';
+      code += 'parent.replaceChild(newChild,' + oldChild +');';
       break;
     default:
       break;
@@ -645,7 +825,8 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
   var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1) || (elementId.indexOf("ImagePicker") > -1))
+  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)
+    || (elementId.indexOf("ImagePicker") > -1) || (elementId.indexOf("TimePicker") > -1))
     && (propertyName == 'Text')) {
     code = 'document.getElementById(\"' + 'label' + elementId + '\")';
   }
@@ -674,6 +855,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'width':
       code += '.style.width';
+      break;
     case 'fontbold':
       code += '.style.fontWeight == \"bold\"';
       break;
@@ -710,7 +892,9 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
     case 'thumbposition':
       code += '.value';
       break;
-
+    case 'thumbenabled':
+      code += '.disabled != true';
+      break;
     case 'image':
       code += ".value";
       break;
@@ -726,6 +910,61 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'isplaying':
       code += '.paused != true';
+      break;
+    case 'loop':
+      code += '.loop';
+      break;
+    case 'numbersonly': //april13
+      code += '.type';  //april13
+      break;            //april13
+    case 'image':       //april14
+      code += '.style.backgroundImage';  //april14
+      break; //april14
+    //case 'showfeedback' :
+    //  code += '.showfeedback';
+    case 'multiline':
+      var stringCode = '' + code; //april13
+      code = ("textarea" == stringCode.match(/textarea/)); //april13
+      code = '' + code; //april13
+      break;
+    case 'fullscreen':
+      var elemCode = code;
+      var fsCode = '(function() { ' +
+        'var fsBool = ' +
+        ' ((' + elemCode + ' == ' + elemCode + '.fullscreenElement) || ' +
+        ' (' + elemCode + ' == ' + elemCode + '.webkitFullscreenElement) || ' +
+        ' (' + elemCode + ' == ' + elemCode + '.mozFullScreenElement) || ' +
+        ' (' + elemCode + ' == ' + elemCode + '.msFullscreenElement)); ' +
+        'return fsBool; ' +
+      '})()';
+      code = fsCode;
+      break;
+    case 'hour':
+      code += '.value.substring(0,2)';
+      break;
+    case 'minute':
+      code += '.value.substring(3,5)';
+      break;
+
+    // Format expected from datepicker -> YYYY-MM-DD
+    case 'year':
+      code += '.value.substring(0,4)';
+      break;
+    case 'month':
+      code += '.value.substring(5,7)';
+      break;
+    case 'day':
+      code += '.value.substring(8,10)';
+      break;
+    case 'monthintext':
+      var elemCode = code;
+      var dateCode = '(function() { ' +
+        'var months = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"]; ' +
+        'var monthIdx = parseInt(' + elemCode + '.value.substring(5,7)) - 1; ' +
+        'var monthInText = months[monthIdx]; ' +
+        'return monthInText; ' +
+      '})()';
+      code = dateCode;
       break;
     default:
       break;
