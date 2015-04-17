@@ -16,6 +16,7 @@ import com.google.appinventor.server.encryption.KeyczarEncryptor;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -26,7 +27,6 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
-
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -495,6 +495,52 @@ public class ProjectServiceTest {
     PowerMock.verifyAll();
   }
 
+  @Test
+  public void testBuildProject() throws Exception {
+    // Since only USER_ID_ONE is used in this test, we don't care how
+    // many times getUser or getUserId are called; they'll always
+    // return the same result
+    expect(localUserMock.getUserId()).andReturn(USER_ID_ONE).anyTimes();
+    expect(localUserMock.getUser()).andReturn(storageIo.getUser(USER_ID_ONE)).anyTimes();
+    PowerMock.replayAll();
+    do_init();
+
+    // First create a Young Android project.
+    long yaProject = getBuildableYoungAndroidProjectId(USER_ID_ONE, PROJECT1_NAME);
+    // Check the contents of each file in the new project.
+    Map<String, String> expectedYaFiles1 = new HashMap<String, String>();
+    expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.bky", "");
+    expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.yail", "");
+    expectedYaFiles1.put("youngandroidproject/project.properties",
+        "main=com.domain.noname.Project1.Screen1\n" +
+        "name=Project1\n" +
+        "assets=../assets\n" +
+        "source=../src\n" +
+        "build=../build\n");
+    expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.scm",
+        YOUNG_ANDROID_PROJECT_SCM_SOURCE);
+    assertEquals(expectedYaFiles1, getTextFiles(USER_ID_ONE, yaProject));
+    assertTrue(getNonTextFiles(USER_ID_ONE, yaProject).isEmpty());
+
+    assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
+    UserProject uproject = storageIo.getUserProject(USER_ID_ONE, yaProject);
+    long project1CreationDate = uproject.getDateCreated();
+    long project1ModificationDate = uproject.getDateModified();
+    assertTrue(project1ModificationDate >= project1CreationDate);
+
+    //ProjectWebOutputZip zipFile = projectServiceImpl.build(yaProject1, "", "web");
+    Boolean result = projectServiceImpl.build(yaProject, "123", "web");
+    assertTrue(result);
+
+    // Verify exactly one html was built
+    Map<String, String> htmlFiles = getBuiltHtmlFiles(USER_ID_ONE, yaProject, "web");
+    assertEquals(htmlFiles.size(), 1);
+    assertTrue(htmlFiles.containsKey("build/web/Screen1.html"));
+
+    PowerMock.verifyAll();
+  }
+  
+  
   private Map<String, String> getTextFiles(String userId, long projectId) {
     Map<String, String> textFiles = new HashMap<String, String>();
     for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
@@ -528,6 +574,19 @@ public class ProjectServiceTest {
     return userFiles;
   }
 
+  private Map<String, String> getBuiltHtmlFiles(String userId, long projectId, String screenName) {
+    Map<String, String> htmlFiles = new HashMap<String, String>();
+    for (String fileId : storageIo.getProjectOutputFiles(userId, projectId)) {
+      if (StorageUtil.isTextFile(fileId) && fileId.endsWith(".html")) {
+        // TODO(user): We should get rid of DEFAULT_CHARSET and use UTF-8 everywhere.
+        htmlFiles.put(fileId,
+                      storageIo.downloadFile(userId, projectId, fileId,
+                                             StorageUtil.DEFAULT_CHARSET));
+      }
+    }
+    return htmlFiles;
+  }
+  
   private static String findFileIdByName(ProjectNode parent, String name) {
     if (parent.getName().equals(name)) {
       return parent.getFileId();

@@ -261,8 +261,8 @@ public interface ProjectService extends RemoteService {
    *
    * @return  results of invoking the build command
    */
-  RpcResult build(long projectId, String nonce, String target);
-
+  Boolean build(long projectId, String nonce, String target);
+  
   /**
    * Adds a new file to the given project.
    *
