@@ -3,6 +3,16 @@ package com.google.appinventor.server.project.youngandroid;
 public abstract class ImageComponent extends Component {
 
   String imageSrcPrefix;
+  
+  private ImageComponent()
+  {
+    super();
+  }
+  
+  public ImageComponent(String assetPrefix)
+  {
+    this.imageSrcPrefix = assetPrefix;
+  }  
 
   public String getImageSrcPrefix() {
     return imageSrcPrefix;

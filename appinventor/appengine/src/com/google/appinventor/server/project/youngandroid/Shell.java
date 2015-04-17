@@ -48,13 +48,12 @@ public class Shell {
                                                   throws JSONException {
 
     // New objects for component data manipulation
-    ArrayList<String[]> componentPackage= new ArrayList<>();  // component data after parsing the data-store contents
     StringBuilder htmlStringBuilder = new StringBuilder();    // StringBuilder for building the page line-by-line
     StitchResult retVal = new StitchResult();
 
     
     // sends component JSON for parsing into HTML and CSS
-    componentPackage = Parse.parseJsonString(componentJSON, assetSrcPrefix);
+    ParseResult componentPackage = Parse.parseJsonString(componentJSON, assetSrcPrefix);
 
     // build the page sections
     htmlStringBuilder.append("<!doctype html>\n");
@@ -93,8 +92,8 @@ public class Shell {
       htmlStringBuilder.append("width : 100%;\n");
       htmlStringBuilder.append("}\n");
       
-      for (String[] component : componentPackage) {
-        htmlStringBuilder.append(component[1] + "\n");
+      for (String css : componentPackage.css) {
+        htmlStringBuilder.append(css + "\n");
       }
       
       htmlStringBuilder.append("</style>\n");
@@ -123,26 +122,59 @@ public class Shell {
     //Included bootstrap code - Sudeep
     htmlStringBuilder.append("<div class=\"container-fluid\">\n");
     // inject html from the components
-    if (!componentPackage.isEmpty()) {
-      for (String[] component : componentPackage) {
-        htmlStringBuilder.append(component[0] + "\n");
-               
-        // While we are at it, collect any image asset file ids
-        if ((component.length > 2) && (component[2] != null) && (component[2] != ""))
-        {
-          // Collect the unique set of referenced assets (no dupes)
-          if (!retVal.assetFiles.contains(component[2])) {
-            retVal.assetFiles.add(component[2]);
-          }
-        }        
-      }
-    }
+
+    for (String html : componentPackage.bodyHtml) {
+      htmlStringBuilder.append(html + "\n");
+    }     
+ 
+  
     htmlStringBuilder.append("</div>\n");
     htmlStringBuilder.append("</body>\n");
     htmlStringBuilder.append("</html>");    // end of page building
     
     retVal.html = htmlStringBuilder.toString();  
     
+    retVal.assetFiles = componentPackage.assetFiles;
+    
     return retVal;
   }
+  
+  //testing
+  public static void main(String args[]) 
+  {
+     // For debugging, mock up input for the scm and bky files for a project
+     // Set to the contents of a screen bky file
+     
+    String blocklyJS = "";     
+     //window.onload =
+     //    function() {
+     //    document.getElementById("Button1").onclick = function() {  if (((document.getElementById("TextBox1").value).length === 0 ? true : false)) {
+     //        document.getElementById("Label2").style.visibility = (true ? "visible" : "hidden");document.getElementById("Label1").style.color = "#FF0000";}
+     //      if (((document.getElementById("PasswordTextBox1").value).length === 0 ? true : false)) {
+     //        document.getElementById("Label4").style.visibility = (true ? "visible" : "hidden");document.getElementById("Label11").style.color = "#FF0000";}
+     //      if (((0<(document.getElementById("TextBox1").value).length)&&(0<(document.getElementById("PasswordTextBox1").value).length))) {
+     //        (function() { (document.getElementById("Player1").play());})();document.location.href = "Pizza.html"}
+     //    };
+     //    document.getElementById("Button2").onclick = function() {  (function() { (document.getElementById("Player1").play());})();document.location.href = "Register.html"};
+     //    };
+     
+     // Set to the contents of a screen scm file for testing
+     String componentJSON = "#|\n" +
+     "$JSON\n" +
+     "{\"YaVersion\":\"123\",\"Source\":\"Form\",\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\",\"$Version\":\"14\",\"Uuid\":\"0\",\"BackgroundImage\":\"blur2.jpeg\",\"ScreenOrientation\":\"portrait\",\"Title\":\"Screen1\",\"$Components\":[{\"$Name\":\"Label12\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"1848186139\",\"FontBold\":\"True\",\"FontItalic\":\"True\",\"FontSize\":\"30.0\",\"Text\":\"Login\"},{\"$Name\":\"Spacer1\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-581484512\",\"Text\":\"Text for Label13\",\"Visible\":\"False\"},{\"$Name\":\"HorizontalArrangement1\",\"$Type\":\"HorizontalArrangement\",\"$Version\":\"2\",\"Uuid\":\"-1539775014\",\"$Components\":[{\"$Name\":\"VerticalArrangement2\",\"$Type\":\"VerticalArrangement\",\"$Version\":\"2\",\"Uuid\":\"-1662128288\",\"$Components\":[{\"$Name\":\"HorizontalArrangement2\",\"$Type\":\"HorizontalArrangement\",\"$Version\":\"2\",\"Uuid\":\"-1476596348\",\"$Components\":[{\"$Name\":\"Label1\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-599138246\",\"FontBold\":\"True\",\"FontSize\":\"20.0\",\"FontTypeface\":\"2\",\"HasMargins\":\"False\",\"Text\":\"Username\"},{\"$Name\":\"TextBox1\",\"$Type\":\"TextBox\",\"$Version\":\"5\",\"Uuid\":\"-1902637944\",\"FontSize\":\"18.0\",\"Hint\":\"Enter username\",\"Width\":\"300\"}]},{\"$Name\":\"Label2\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-1712769354\",\"FontItalic\":\"True\",\"HasMargins\":\"False\",\"Text\":\"*Enter username\",\"TextColor\":\"&HFFFF0000\",\"Visible\":\"False\"},{\"$Name\":\"Spacer2\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"244522724\",\"HasMargins\":\"False\",\"Text\":\"dscx\",\"TextColor\":\"&H00FFFFFF\",\"Height\":\"15\"},{\"$Name\":\"HorizontalArrangement3\",\"$Type\":\"HorizontalArrangement\",\"$Version\":\"2\",\"Uuid\":\"-368296258\",\"$Components\":[{\"$Name\":\"Label11\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"50548192\",\"FontBold\":\"True\",\"FontSize\":\"20.0\",\"Text\":\"Password\"},{\"$Name\":\"PasswordTextBox1\",\"$Type\":\"PasswordTextBox\",\"$Version\":\"3\",\"Uuid\":\"-1653887431\",\"FontSize\":\"18.0\",\"Text\":\"Enter password\",\"Width\":\"300\"}]},{\"$Name\":\"Label4\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-1601909974\",\"FontItalic\":\"True\",\"HasMargins\":\"False\",\"Text\":\"*Enter password\",\"TextColor\":\"&HFFFF0000\",\"Visible\":\"False\"},{\"$Name\":\"Spacer3\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-704696507\",\"HasMargins\":\"False\",\"Text\":\"dsx\",\"TextColor\":\"&H00FFFFFF\",\"Height\":\"15\"},{\"$Name\":\"CheckBox2\",\"$Type\":\"CheckBox\",\"$Version\":\"2\",\"Uuid\":\"933677172\",\"Text\":\"Remember me\"},{\"$Name\":\"Spacer4\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"1666097540\",\"HasMargins\":\"False\",\"Text\":\"xc\",\"TextColor\":\"&H00FFFFFF\",\"Height\":\"15\"},{\"$Name\":\"Button1\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"2059963512\",\"BackgroundColor\":\"&H00FFFFFF\",\"FontBold\":\"True\",\"FontItalic\":\"True\",\"FontSize\":\"18.0\",\"Image\":\"member-login-button.png\",\"Shape\":\"1\",\"Text\":\" \",\"Width\":\"324\",\"Height\":\"83\"}]},{\"$Name\":\"VerticalArrangement1\",\"$Type\":\"VerticalArrangement\",\"$Version\":\"2\",\"Uuid\":\"-798872588\",\"$Components\":[{\"$Name\":\"Label5\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"1884075851\",\"FontItalic\":\"True\",\"FontSize\":\"18.0\",\"FontTypeface\":\"2\",\"HasMargins\":\"False\",\"Text\":\"Not a member yet?\"},{\"$Name\":\"Spacer6\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-1612043168\",\"Text\":\"Text for Label13\",\"Visible\":\"False\"},{\"$Name\":\"Button2\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"231739164\",\"BackgroundColor\":\"&H00FFFFFF\",\"FontBold\":\"True\",\"FontItalic\":\"True\",\"FontSize\":\"18.0\",\"Image\":\"register_now1.png\",\"Shape\":\"1\",\"Text\":\" \",\"TextColor\":\"&H00FFFFFF\",\"Width\":\"250\",\"Height\":\"240\"}]}]},{\"$Name\":\"Spacer5\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"-338471383\",\"HasMargins\":\"False\",\"Text\":\"dfvv\",\"TextColor\":\"&H00FFFFFF\",\"Height\":\"15\"},{\"$Name\":\"Player1\",\"$Type\":\"Player\",\"$Version\":\"6\",\"Uuid\":\"-1094937265\",\"Source\":\"app_game_interactive_alert_tone_016.mp3\"}]}}" +
+     "\n|#";
+     
+     Boolean isLiveWebAppBuild = false;
+     String assetSrcPrefix = "assets/";
+     try {
+      StitchResult testResult = Shell.stitchBuildHTML("test", "test", blocklyJS, componentJSON, isLiveWebAppBuild, assetSrcPrefix);
+      System.out.println("Html:");
+      System.out.println(testResult.html);
+      System.out.println("Asset files: ");
+      System.out.println(testResult.assetFiles);
+    } catch (JSONException e) {
+      System.out.println("Caught exception");
+      e.printStackTrace();
+    }     
+  }     
 }

@@ -16,6 +16,18 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class VerticalArrangement extends Component{
 
+ String assetSrcPrefix;
+  
+  private VerticalArrangement()
+  {
+    super();
+  }
+  
+  public VerticalArrangement(String assetPrefix)
+  {
+    this.assetSrcPrefix = assetPrefix;
+  }  
+  
   Component[] components;
   
   String name = "";
@@ -96,7 +108,7 @@ public void setVerticalAlign(String verticalAlign) {
 	this.verticalAlign = verticalAlign;
 }
 
-private String generateCSSforComponent(ArrayList<String[]> arrayList)
+private String generateCSSforComponent(ArrayList<String> arrayList)
 {
   StringBuilder sb = new StringBuilder();
   sb.append("#"+this.getName()+"\n");
@@ -107,15 +119,15 @@ private String generateCSSforComponent(ArrayList<String[]> arrayList)
   sb.append(" text-align : "+this.getHorizontalAlign()+";\n");
   sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not work for now!
   sb.append("}\n");
-  for(String[] str:arrayList)
+  for(String str:arrayList)
   {
-	  sb.append(str[1]);
+	  sb.append(str);
   }
   
   return sb.toString().valueOf(sb);
 }
 
-private String generateHTMLforComponent(ArrayList<String[]> arrayList)
+private String generateHTMLforComponent(ArrayList<String> arrayList)
 {
   StringBuilder sb = new StringBuilder();
   sb.append("<div class=\"col\" id = \""+this.getName()+"\"");
@@ -126,11 +138,11 @@ private String generateHTMLforComponent(ArrayList<String[]> arrayList)
   if(!arrayList.isEmpty())
   {
   int span=12/arrayList.size();
-  for(String[] str:arrayList)
+  for(String str:arrayList)
   {
     sb.append("<div class=\"row-md-"+span+"\">\n");
 	//sb.append("<div class=\"row-md-1\">\n");
-    sb.append(str[0]);
+    sb.append(str);
     sb.append("</div>\n");
   }
   }
@@ -140,9 +152,9 @@ private String generateHTMLforComponent(ArrayList<String[]> arrayList)
 }
 
 
-public String[] getComponentString(Map<String,JSONValue> properties)
-  {
-	String componentInfo[] = new String[3];
+public ParseResult getComponentString(Map<String,JSONValue> properties)
+{
+  ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       if(!property.equals("$Components"))
@@ -206,34 +218,18 @@ public String[] getComponentString(Map<String,JSONValue> properties)
       }
       }
     }
-    ArrayList<String[]> arrayList=new ArrayList<String[]>();
+    
+    ParseResult childrenResults = new ParseResult();
     if(properties.containsKey("$Components"))
     {
-    JSONArray componentsArray= properties.get("$Components").asArray();
-    arrayList=new Parse().parseComponents(componentsArray);
+      JSONArray componentsArray= properties.get("$Components").asArray();
+      childrenResults=new Parse().parseComponents(componentsArray, this.assetSrcPrefix);
     }
-    componentInfo[0] = generateHTMLforComponent(arrayList);
-    componentInfo[1] = generateCSSforComponent(arrayList);
-    componentInfo[2] = generateAssestsforComponent(arrayList); 
+
+    componentInfo.bodyHtml.add(generateHTMLforComponent(childrenResults.bodyHtml));
+    componentInfo.css.add(generateCSSforComponent(childrenResults.css));
+    componentInfo.assetFiles =  childrenResults.assetFiles; 
+
     return componentInfo;
-  }
-
-
-private String generateAssestsforComponent(ArrayList<String[]> arrayList) 
-{
-	StringBuffer sb=new StringBuffer();
-	for(String[] str:arrayList)
-	{
-		if((str[2] != null) && (sb.length() == 0)) {
-		sb.append(str[2]);
-		}
-	}
-	  
-	return sb.toString().valueOf(sb);
-}  
-
-
-    
-  
-
+  }  
 }

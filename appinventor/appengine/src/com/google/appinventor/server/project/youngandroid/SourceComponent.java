@@ -4,6 +4,17 @@ package com.google.appinventor.server.project.youngandroid;
 public abstract class SourceComponent extends Component {
 
   String srcPrefix;
+  
+  // Force use of the other constructor - assetPrefix required
+  private SourceComponent()
+  {
+    super();
+  }
+  
+  public SourceComponent(String assetPrefix)
+  {
+    this.srcPrefix = assetPrefix;
+  }    
 
   public String getSrcPrefix() {
     return srcPrefix;
