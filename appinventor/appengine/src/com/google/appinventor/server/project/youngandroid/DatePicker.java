@@ -124,10 +124,11 @@ public class DatePicker extends Component{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("label[for="+this.getName()+"]\n");
+    sb.append("#label_"+this.getName()+"\n");
     sb.append("{\n");
 
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -150,7 +151,7 @@ public class DatePicker extends Component{
     StringBuilder sb = new StringBuilder();
 
     sb.append("<label");
-    sb.append(" for = "+"\""+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label> ");

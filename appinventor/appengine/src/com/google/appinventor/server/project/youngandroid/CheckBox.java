@@ -123,10 +123,7 @@ public class CheckBox extends Component{
     sb.append("{\n");
 
     if(!this.getBackgroundColor().equals(""))
-	{
       sb.append(" background : "+this.getBackgroundColor()+";\n");
-	}
-     
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -136,15 +133,12 @@ public class CheckBox extends Component{
     sb.append(" height : "+this.getHeight()+";\n");
 
     sb.append("}\n");
-    
-    sb.append("label[for="+this.getName()+"]\n");
+
+    sb.append("#label_"+this.getName()+"\n");
     sb.append("{\n");
-
+    
     if(!this.getBackgroundColor().equals(""))
-    {
       sb.append(" background : "+this.getBackgroundColor()+";\n");
-    }
-     
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -154,9 +148,9 @@ public class CheckBox extends Component{
     sb.append(" height : "+this.getHeight()+";\n");
 
     sb.append("}\n");
-    
-    
-    
+
+
+
 
     // System.out.println(sb.toString().valueOf(sb));
 
@@ -178,21 +172,21 @@ public class CheckBox extends Component{
       sb.append(" hidden");
 
     sb.append(">");
-    
+
     sb.append("<label");
-    sb.append(" for=\""+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label>");
     sb.append("</input>"); 
-    
+
     return sb.toString().valueOf(sb);
   }
 
   public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
     ParseResult componentInfo = new ParseResult();
-    
+
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -248,7 +242,7 @@ public class CheckBox extends Component{
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
-            this.setWidth(value.substring(2)+"%");
+          this.setWidth(value.substring(2)+"%");
         else
           this.setWidth(value+"px");
         break;
@@ -258,7 +252,7 @@ public class CheckBox extends Component{
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
-            this.setHeight(value.substring(2)+"%");
+          this.setHeight(value.substring(2)+"%");
         else
           this.setHeight(value+"px");
         break;

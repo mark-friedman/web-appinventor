@@ -159,7 +159,8 @@ public class ListPicker extends ImageComponent{
     StringBuilder sb = new StringBuilder();
     sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
-    sb.append(" background : "+this.getItemBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getItemBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");      
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -171,9 +172,10 @@ public class ListPicker extends ImageComponent{
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append("}\n");
     
-    sb.append("Label[for="+this.getName()+"]\n");
+    sb.append("#label_"+this.getName()+"\n");
     sb.append("{\n");
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
@@ -186,7 +188,7 @@ public class ListPicker extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
     sb.append("<label");
-    sb.append(" for = "+"\""+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
    
     if(this.getVisible().equals("False"))
       sb.append(" hidden");

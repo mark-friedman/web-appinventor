@@ -25,7 +25,7 @@ public class Label extends Component{
   String visible = "true";
   String width = "auto";
   String height = "auto";	
-  String hasMargins = "solid 1px";
+  String hasMargins = "true";
 
   String name = "";
   String type = "Label";
@@ -132,11 +132,12 @@ public class Label extends Component{
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" width : "+this.getWidth()+";\n");
     sb.append(" height : "+this.getHeight()+";\n");
-    sb.append(" border : "+this.getHasMargins()+";\n");
+    if(this.getHasMargins().equalsIgnoreCase("true"))
+    {
+      sb.append(" margin : 1px;\n");
+      sb.append(" display : inline-block;\n");
+    }
     sb.append("}\n");
-
-    // System.out.println(sthis.toString().valueOf(sb));
-
     return sb.toString().valueOf(sb);
   }
 
@@ -154,7 +155,6 @@ public class Label extends Component{
     sb.append(this.getText());
     sb.append("</label>");
 
-    //System.out.println("HTML equivalent for button: "+sthis.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }
 
@@ -221,7 +221,7 @@ public class Label extends Component{
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
-            this.setWidth(value.substring(2)+"%");
+          this.setWidth(value.substring(2)+"%");
         else
           this.setWidth(value+"px");
         break;
@@ -231,15 +231,12 @@ public class Label extends Component{
         else if(value.equalsIgnoreCase("Fill Parent"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
-            this.setHeight(value.substring(2)+"%");
+          this.setHeight(value.substring(2)+"%");
         else
           this.setHeight(value+"px");
         break;
       case "HasMargins":
-        if(value.equalsIgnoreCase("false"))
-        {
-          this.setHasMargins("none");
-        }
+        this.setHasMargins(value);
         break;
       case "Uuid":
         break;

@@ -127,7 +127,6 @@ public class PasswordTextBox extends Component{
       sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
-
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
