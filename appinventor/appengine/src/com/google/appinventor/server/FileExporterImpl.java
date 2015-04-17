@@ -6,6 +6,7 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.ProjectWebOutputZip;
 import com.google.common.base.Strings;
 import com.google.appinventor.server.storage.ObjectifyStorageIo;
@@ -40,7 +41,7 @@ public final class FileExporterImpl implements FileExporter {
       throws IOException {
     
     // Only the web target supported for build + download zip
-    if (target.equals("web"))
+    if (target.equals(ServerLayout.BUILD_TARGET_WEB))
     {
          
       String projectName = storageIo.getProjectName(userId, projectId);

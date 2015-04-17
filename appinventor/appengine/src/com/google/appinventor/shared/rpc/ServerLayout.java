@@ -13,6 +13,14 @@ package com.google.appinventor.shared.rpc;
  *
  */
 public class ServerLayout {
+  
+    /**
+    * Define the various build target types
+    */
+    public final static String BUILD_TARGET_WEB = "web";
+    public final static String BUILD_TARGET_LIVEWEBAPP = "LiveWebApp";
+    public final static String BUILD_TARGET_QRCODE = "QRCode";
+
     /**
      * Absolute path prefix that defines where the ODE services and servlets live.
      */
@@ -236,7 +244,7 @@ public class ServerLayout {
      * Generate Web app launch relative path
      */
     public static String genRelativeWebAppLaunchPath(long projectId, String currentScreenName) {
-        return ServerLayout.WEBAPP_SERVLET_BASE + "/" + ServerLayout.WEBAPP_FILE + "/" + projectId + "/" + "LiveWebApp" + "/" + currentScreenName;
+        return ServerLayout.WEBAPP_SERVLET_BASE + "/" + ServerLayout.WEBAPP_FILE + "/" + projectId + "/" + BUILD_TARGET_LIVEWEBAPP + "/" + currentScreenName;
         // return  ServerLayout.ODE_BASEURL + ServerLayout.WEBAPP_SERVLET_BASE + "/"+  ServerLayout.WEBAPP_FILE + "/" + projectId + "/" + "LiveWebApp" + "/" + currentScreenName;
 
     }

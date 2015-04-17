@@ -11,6 +11,7 @@ import static junit.framework.Assert.fail;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.storage.UnauthorizedAccessException;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -135,7 +136,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
      
     // Test the call using the mocked build - no scm/bky files = no html, so should get exception
     try {
-      exporter.exportProjectBuildOutputFile(USER_ID, projectId, "web");
+      exporter.exportProjectBuildOutputFile(USER_ID, projectId, ServerLayout.BUILD_TARGET_WEB);
       fail();
     } catch (IllegalArgumentException ex) {
       // We expect to get an IllegalArgumentException
