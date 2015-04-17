@@ -233,9 +233,10 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
           '(document.getElementById(\"' + name + '\").onclick());' +
         '})()';
       } else if (methodName == 'SetDateToDisplay') {
-        var year = args[0];
-        var month = args[1];
-        var day = args[2];
+        // Hacky way to drop the decimal if a decimal value is passed in
+        var year = parseInt(args[0]).toString();
+        var month = parseInt(args[1]).toString();
+        var day = parseInt(args[2]).toString();
 
         // Array to handle the number of days possible in specified month
         // Leap year is factored in later on
@@ -329,9 +330,9 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
 
       // Sets the time
       } else if (methodName == 'SetTimeToDisplay') {
-        // hours are from 0-24
-        var hour = args[0];
-        var minute = args[1];
+        // Hacky way to drop the decimal
+        var hour = parseInt(args[0]).toString();
+        var minute = parseInt(args[1]).toString();
 
         // HOURS - '00' to '23'
         if (parseInt(hour) < 0) {
