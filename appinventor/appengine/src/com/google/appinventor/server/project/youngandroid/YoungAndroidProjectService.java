@@ -6,25 +6,37 @@
 
 package com.google.appinventor.server.project.youngandroid;
 
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.annotation.Nullable;
+
+import org.json.JSONException;
+
 import com.google.appengine.api.utils.SystemProperty;
-import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.CrashReport;
-import com.google.appinventor.server.FileExporter;
-import com.google.appinventor.server.FileExporterImpl;
 import com.google.appinventor.server.Server;
-import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.project.CommonProjectService;
-import com.google.appinventor.server.project.utils.Security;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.properties.json.JSONParser;
-import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.*;
+import com.google.appinventor.shared.rpc.project.NewProjectParameters;
+import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.RawFile;
+import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
@@ -43,28 +55,6 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import com.google.common.io.CharStreams;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.annotation.Nullable;
 
 /**
  * Provides support for Young Android projects.
@@ -551,19 +541,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param assetFileIds An optional array to return asset files in
    *
    * @return true the build succeeded, false otherwise
+   * @throws IOException 
    */
   public Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException {
     boolean isLiveWebAppBuild = target.equalsIgnoreCase(ServerLayout.BUILD_TARGET_LIVEWEBAPP);
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + "/" + target + "/";
+    ArrayList<String> referencedAssets = new ArrayList<String>();
 
     LOG.log(Level.FINE, "Building output, target = " + target);
-
-    if (assetFileIds != null)
-    {
-      // Start with no referenced assets.
-      assetFileIds.clear();
-    }
 
     // Search storage for project source.
     // Find the Javascript and JSON files.
@@ -643,19 +629,34 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // Build the html for this screen
         StitchResult screenResult = Shell.stitchBuildHTML(projectName, screenName, screenJavaScript, screenComponentJSON, isLiveWebAppBuild, "assets/");
         LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());
-        if (assetFileIds != null)
+        
+        // Keep track of our asset files (and for QRCode build, copy them to their own target location)
+        for (String assetFileId : screenResult.assetFiles)
         {
-          // If the caller wants to keep track of the asset ids....
-          for (String assetFileId : screenResult.assetFiles)
+          // Add any new asset references
+          if ((assetFileId != null) && !assetFileId.isEmpty() && !referencedAssets.contains(assetFileId))
           {
-            // Add any new asset references
-            if ((assetFileId != null) && !assetFileId.isEmpty() && !assetFileIds.contains(assetFileId))
+            LOG.log(Level.INFO, "   Asset file = " + assetFileId);
+            referencedAssets.add(assetFileId);
+
+            // For a QRCode build, we copy the referenced assets over so
+            // they are isolated from user designer changes.  Note that this
+            // step is unnecessary for zip and live web app build.
+            if (target.equalsIgnoreCase(ServerLayout.BUILD_TARGET_QRCODE))
             {
-              LOG.log(Level.INFO, "   Asset file = " + assetFileId);
-              assetFileIds.add(assetFileId);
+              // Note that the storage layer specifically looks for "assets" to determine if a file
+              // should be stored as a blob (and different storage limits can apply)
+              String newAssetFileId = outputFileDir + "assets/" + StorageUtil.basename(assetFileId);
+              byte[] contents = storageIo.downloadRawFile(userId, projectId, assetFileId);
+
+              LOG.log(Level.INFO, "   Copying to " + newAssetFileId + ", size = " + contents.length);
+              
+              storageIo.addOutputFilesToProject(userId, projectId, newAssetFileId);
+              storageIo.uploadRawFileForce(projectId, newAssetFileId, userId, contents);
             }
           }
         }
+        
         LOG.log(Level.FINEST, "Built " + builtHtmlFileId + " : " + screenResult.html);
 
         // Save built file (add the id as an output file, then add the contents for that id)
@@ -669,8 +670,19 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       LOG.log(Level.FINE, "JSONException details:", e);
 
       throw e;
+    } 
+    
+    if (assetFileIds != null)
+    {
+      // If the caller passed in a array, then fill it with
+      // the discovered assets.
+      assetFileIds.clear();
+      for (String asset : referencedAssets)
+      {
+        assetFileIds.add(asset);
+      }
     }
-
+    
     // Html files are built and stored - return to client.
     // Return success for build result
     return true;
