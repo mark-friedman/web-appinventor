@@ -68,7 +68,7 @@ public class Shell {
     htmlStringBuilder.append("</title>\n");
     
     // Including Bootstrap Library - Sudeep
-    htmlStringBuilder.append("<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n");
+    htmlStringBuilder.append("<link rel=\"stylesheet\" href=\"/bootstrap/bootstrap.min.css\">\n");
       
 
     // inject css from the components
@@ -83,6 +83,11 @@ public class Shell {
     
       // inject css for bootstrap and components
       htmlStringBuilder.append("<style>\n");
+      htmlStringBuilder.append("html,body\n");
+      htmlStringBuilder.append("{\n");
+      htmlStringBuilder.append("height : 100%;\n");
+      htmlStringBuilder.append("margin : 0px;\n");
+      htmlStringBuilder.append("}\n");
       htmlStringBuilder.append(".container-fluid\n");
       htmlStringBuilder.append("{\n");
       htmlStringBuilder.append("padding-left : 0px;\n");
@@ -90,6 +95,7 @@ public class Shell {
       htmlStringBuilder.append("margin-right : 0px;\n");
       htmlStringBuilder.append("margin-left : 0px;\n");
       htmlStringBuilder.append("width : 100%;\n");
+      htmlStringBuilder.append("height : 100%;\n");
       htmlStringBuilder.append("}\n");
       
       for (String css : componentPackage.css) {
