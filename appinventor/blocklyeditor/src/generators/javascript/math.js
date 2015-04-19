@@ -570,7 +570,7 @@ Blockly.JavaScript['math_is_a_number'] = function() {
 
 
   //checks whether the type of the argument returns "number"
-  var code = '(' + '((typeof' + argument + ') == "number" ) )';
+  var code = '(' + '((typeof ' + argument + ') == "number" ) )';
 
   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
 };

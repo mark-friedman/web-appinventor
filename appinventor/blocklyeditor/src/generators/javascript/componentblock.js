@@ -68,6 +68,9 @@ Blockly.JavaScript.component_event = function() {
     case 'AfterTimeSet':
       JSEvent = 'addEventListener(\"change\", ';
       break;
+    case 'OtherPlayerStarted':
+      JSEvent = 'addEventListener(\"_otherPlayerStarted\",';
+      break;
     default:
       break;
   }
@@ -85,12 +88,10 @@ Blockly.JavaScript.component_event = function() {
     body = null;
   }
 
-  //Concatenate the body
   code = code + body;
 
-
   //Finalize
-  if (this.eventName == 'AfterTimeSet') {
+  if (this.eventName == 'AfterTimeSet' || this.eventName == 'OtherPlayerStarted') {
     code = code + '});';
   } else {
     code = code + '};';
@@ -378,6 +379,7 @@ Blockly.JavaScript.methodHelper = function(methodBlock, name, methodName, generi
         '})()';
       } else if (methodName == 'Start') {
         var code = '(function() { ' +
+          'playStarted(' + name + '); ' +
           '(document.getElementById(\"' + name + '\").play());' +
         '})()';
       } else if (methodName == 'Stop') {
@@ -480,6 +482,31 @@ Blockly.JavaScript.component_set_get = function() {
   }
 }
 
+// useLabel: 0 or 1, depending on whether the property affects the label or not
+Blockly.JavaScript.codeHelper = function(elementId, useLabel) {
+  var code = 'document.getElementById(\"';
+  // var elementId = elementCode.match(/"(.*?)"/)[1];
+  // if element has a label, address it
+  /*if ((useLabel == 1) &&
+      (elementId.indexOf("DatePicker") > -1) ||
+      (elementId.indexOf("ImagePicker") > -1) ||
+      (elementId.indexOf("ListPicker") > -1) ||
+      (elementId.indexOf("TimePicker") > -1) ||
+      (elementId.indexOf("CheckBox") > -1)) {
+  */
+  if ((useLabel == 1) &&
+      ((elementId.indexOf("DatePicker")  > -1) ||
+       (elementId.indexOf("ImagePicker") > -1) ||
+       (elementId.indexOf("ListPicker")  > -1) ||
+       (elementId.indexOf("TimePicker")  > -1) ||
+       (elementId.indexOf("CheckBox")    > -1))  ) {
+    code += 'label';
+  }
+  code += elementId + '\")';
+
+  return code;
+}
+
 /**
  * Returns a function that takes no arguments, generates JavaScript code for setting a component property
  * and returns the code string.
@@ -498,11 +525,11 @@ Blockly.JavaScript.setproperty = function() {
   // Generate code for the body
   var bodyCode = Blockly.JavaScript.valueToCode(this, 'VALUE', Blockly.JavaScript.ORDER_NONE /*TODO:?*/);
 
-  // Initialize code to call this block instance in the dom
-  var elementCode = 'document.getElementById(\"' + this.instanceName + '\")';
+  // // Initialize code to call this block instance in the dom
+  // var elementCode = 'document.getElementById(\"' + this.instanceName + '\")';
 
   // Call helper function
-  var code = Blockly.JavaScript.setPropertyHelper(elementCode, propertyName, bodyCode, this.typeName);
+  var code = Blockly.JavaScript.setPropertyHelper(this.instanceName, propertyName, bodyCode, this.typeName);
 
   return code;
 }
@@ -517,7 +544,12 @@ Blockly.JavaScript.setproperty = function() {
  */
 Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyCode, typeName) {
 
-  var code;
+  var code = '';
+  // use code2 for labels
+  // e.g., hidden should make hidden both the component and its label
+  var code2 = '';
+  // use code3 to store code for use in both code and code2
+  var code3 = '';
 
   // Check if the body code is numeric, if it change keep it as numeric
   var isnum = /^\d+$/.test(bodyCode);
@@ -525,35 +557,36 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     bodyCode = parseInt(bodyCode);
   }
 
-  // Check the elementCode generated and identify if it needs to be modified to handle
-  // Identify the elementId that is located between the quotes
-  var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)
-    || (elementId.indexOf("ImagePicker") > -1) || (elementId.indexOf("TimePicker") > -1))
-    && (propertyName == 'Text')) {
-    code = 'document.getElementById(\"' + 'label' + elementId + '\")';
-  }
-  else {
-    code = elementCode;
-  }
+  // // Check the elementCode generated and identify if it needs to be modified to handle
+  // // Identify the elementId that is located between the quotes
+  // var elementId = elementCode.match(/"(.*?)"/)[1];
+  // if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)
+  //   || (elementId.indexOf("ImagePicker") > -1) || (elementId.indexOf("TimePicker") > -1))
+  //   && (propertyName == 'Text')) {
+  //   code = 'document.getElementById(\"' + 'label' + elementId + '\")';
+  // }
+  // else {
+  //   code = elementCode;
+  // }
 
   // Switch block
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
     case 'text':
-      if (typeName == 'TextBox' || typeName == "DatePicker" || typeName == "ListPicker" || typeName == "PasswordTextBox") {
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      if (typeName == 'TextBox' || typeName == "PasswordTextBox") {
         code += '.value = ' + bodyCode + ';';
-      // else if (typeName == 'CheckBox')
-      //   code += '.input = ' + bodyCode + ';';
       }
       else {
         code += '.innerHTML = ' + bodyCode + ';';
       }
       break;
     case 'backgroundcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.backgroundColor = ' + bodyCode + ';';
       break;
     case 'height':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.height = ';
       code += '(function() { ' +
         'var code = \"\"; ' +
@@ -570,6 +603,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       '})();';
       break;
     case 'heightpercent':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.height = ';
       code += '(function() { ' +
         'var code = \"\"; ' +
@@ -586,6 +620,8 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       '})();';
       break;
     case 'width':
+      // this isn't even supported by the design surface as of 4/17
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.width = ';
       code += '(function() { ' +
         'var code = \"\"; ' +
@@ -602,6 +638,8 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       '})();';
       break;
     case 'widthpercent':
+      // currently the designer surface adjusts the width of the picker
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.width = ';
       code += '(function() { ' +
         'var code = \"\"; ' +
@@ -618,12 +656,15 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       '})();';
       break;
     case 'fontbold':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.fontWeight = (' + bodyCode + ' ? \"bold\" : \"normal\");';
       break;
     case 'fontitalic':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.fontStyle = (' + bodyCode + ' ? \"italic\" : \"normal\");';
       break;
     case 'fontsize':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.fontSize = ';
       code += '(function() { ' +
         'var code = \"\"; ' +
@@ -640,24 +681,37 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       '})();';
       break;
     case 'textcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.color = ' + bodyCode + ';';
       break;
     case 'visible':
-      code += '.style.visibility = (' + bodyCode + ' ? \"visible\" : \"hidden\");';
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code2 += Blockly.JavaScript.codeHelper(elementCode, 0);
+      code3 += '.style.visibility = (' + bodyCode + ' ? \"visible\" : \"hidden\");';
+      code += code3;
+      code2 += code3;
       break;
     case 'hasmargins':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += 'style.margin = (' + bodyCode + ' ? \"1px\" : \"0px\");';
       break;
     case 'checked':
+      code += Blockly.JavaScript.codeHelper(elementCode, 0);
       code += '.checked = ' + bodyCode + ';';
       break;
     case 'enabled':
-      code += '.disabled = ' + '!' + bodyCode + ';';
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code2 += Blockly.JavaScript.codeHelper(elementCode, 0);
+      code3 += '.disabled = ' + '!' + bodyCode + ';';
+      code += code3;
+      code2 += code3;
       break;
     case 'hint':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.placeholder = ' + bodyCode + ';';
       break;
     case 'elementsfromstring':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       var newCode = 'var values = ' + bodyCode + '.split(\",\");';
       newCode += 'var listItems = \"\";';
       newCode += 'for(var i=0; i<values.length; i++){';
@@ -666,35 +720,44 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code = newCode;
       break;
     case 'minvalue':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.min = ' + bodyCode + ';';
       break;
     case 'maxvalue':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.max = ' + bodyCode + ';';
       break;
     case 'thumbposition':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value = ' + bodyCode + ';';
       break;
     case 'thumbenabled':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.disabled = ' + '!' + bodyCode + ';';
       break;
-    //case 'image':
-    //  code += '.src = ' + bodyCode + ';';
-    //case 'showfeedback':
-    //  code += '.showfeedback = ' + bodyCode + ';';
-    // case 'multiline':
-    //   code += "";
-    //   break;
+    case 'image':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.style.backgroundImage = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
+      break;
+    case 'picture':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.src = \"assets/' + eval(bodyCode) + '\";';
+      break;
     case 'volume':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.volume = ' + eval(bodyCode / 100) + ';';
       break;
     case 'source':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.src = ' + bodyCode + ';';
       break;
     case 'loop':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.loop = ' + bodyCode + ';';
       break;
     //TODO - GET FULL SCREEN WORKING
     case 'fullscreen':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       var elemCode = code;
       var fsCode = '(function() { ' +
       // Enter full screen mode based on bodyCode boolean result
@@ -725,18 +788,19 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
         code = fsCode;
         break;
     case 'numbersonly': //april13
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       if(bodyCode){  //april13
         code += '.type = \"number\";'; //april13
       } else{  //april13
         code += '.type = \"text\";'; //april13
       }
       break; //april13
-    case 'image':  //april14
-      code += '.style.backgroundImage = ' + bodyCode + ';';  //april14
-      break;
     //case 'showfeedback':
+    //  code += Blockly.JavaScript.codeHelper(elementCode, 1);
     //  code += '.showfeedback = ' + bodyCode + ';';
+    //  break;
     case 'multiline': //april13
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       var oldChild = code;
       code = 'var parent = ' + oldChild + '.parentNode;';
       code += 'var newChild = document.createElement( ' ;
@@ -748,7 +812,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     default:
       break;
   }
-  return code;
+  return code + code2;
 }
 
 /**
@@ -776,9 +840,10 @@ Blockly.JavaScript.genericSetproperty = function() {
 
   var elementCode = Blockly.JavaScript.valueToCode(this, 'COMPONENT', Blockly.JavaScript.ORDER_NONE);
   var bodyCode = Blockly.JavaScript.valueToCode(this, 'VALUE', Blockly.JavaScript.ORDER_NONE /*TODO:?*/);
+  var elementId = elementCode.match(/"(.*?)"/)[1];
 
   // Call helper function
-  var code = Blockly.JavaScript.setPropertyHelper(elementCode, propertyName, bodyCode, this.typeName);
+  var code = Blockly.JavaScript.setPropertyHelper(elementId, propertyName, bodyCode, this.typeName);
 
   return code;
 }
@@ -800,7 +865,7 @@ Blockly.JavaScript.getproperty = function(instanceName) {
   var elementCode = 'document.getElementById(\"' + this.instanceName + '\")';
 
   // Call helper function
-  var code = '(' + Blockly.JavaScript.getPropertyHelper(elementCode, propertyName, this.typeName) + ')';
+  var code = '(' + Blockly.JavaScript.getPropertyHelper(this.instanceName, propertyName, this.typeName) + ')';
 
   // var code = Blockly.JavaScript.YAIL_GET_PROPERTY
   //   + Blockly.JavaScript.YAIL_QUOTE
@@ -821,114 +886,148 @@ Blockly.JavaScript.getproperty = function(instanceName) {
  */
 Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeName) {
 
-  var code;
+  var code = '';
+  // maybe use code2 and code3 to handle width/height
+  // of both the object and it's label.
 
   // Check the elementCode generated and identify if it needs to be modified to handle
   // Identify the elementId that is located between the quotes
-  var elementId = elementCode.match(/"(.*?)"/)[1];
-  if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1)
-    || (elementId.indexOf("ImagePicker") > -1) || (elementId.indexOf("TimePicker") > -1))
-    && (propertyName == 'Text')) {
-    code = 'document.getElementById(\"' + 'label' + elementId + '\")';
-  }
-  else {
-    code = elementCode;
-  }
+  // var elementId = elementCode.match(/"(.*?)"/)[1];
+  // if (((elementId.indexOf("DatePicker") > -1) || (elementId.indexOf("CheckBox") > -1) || (elementId.indexOf("ImagePicker") > -1))
+  //   && ((propertyName == 'Text') || (propertyName == 'Image'))) {
+  //   code = 'document.getElementById(\"' + 'label' + elementId + '\")';
+  // }
+  // else {
+  //   code = elementCode;
+  // }
 
   // Switch block
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
     case 'text':
-      if (typeName == 'TextBox' || typeName == "DatePicker" || typeName == "ListPicker" || typeName == "PasswordTextBox") {
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      if (typeName == 'TextBox' || typeName == "PasswordTextBox") {
         code += '.value';
-      // else if (typeName == 'CheckBox')
-      //   code += '.input';
       }
       else {
         code += '.innerHTML';
       }
       break;
     case 'backgroundcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.backgroundColor';
       break;
     case 'height':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.height';
       break;
     case 'width':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.width';
       break;
     case 'fontbold':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.fontWeight == \"bold\"';
       break;
     case 'fontitalic':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.fontStyle == \"italic\"';
       break;
     case 'fontsize':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.fontSize';
       break;
     case 'textcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.color';
       break;
     case 'visible':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.visibility == \"visible\"';
       break;
     case 'hasmargins':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.style.margin != \"0px\"';
       break;
     case 'checked':
+      code += Blockly.JavaScript.codeHelper(elementCode, 0);
       code += '.checked';
       break;
     case 'enabled':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.disabled != true';
       break;
     case 'hint':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.placeholder';
       break;
     case 'minvalue':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.min';
       break;
     case 'maxvalue':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.max';
       break;
     case 'thumbposition':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value';
       break;
     case 'thumbenabled':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.disabled != true';
       break;
     case 'image':
-      code += ".value";
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.style.backgroundImage';
+      // returns "url(blahblahblah/what_you_want)"
+      // so we need to trim 'url(' and ')'
+      code += '.slice(4,-1)';
+      // now we trim the blahblahblah
+      code += '.split(\"/\")';
+      // and grab what_you_want
+      code += '.slice(-1)[0]';
       break;
-    //case 'image':
-    //  code += '.src';
+    case 'picture':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.src';
+      // returns "http://blahblah/image"
+      // so the following code pears the blahblah
+      code += '.split(\"/\")';
+      code += '.slice(-1)[0]';
+      break;
     //case 'showfeedback' :
+    //  code += Blockly.JavaScript.codeHelper(elementCode, 1);
     //  code += '.showfeedback';
+    //  break;
     // case 'multiline':
+    //   code += Blockly.JavaScript.codeHelper(elementCode, 1);
     //   code += '';
     //   break;
     case 'source':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.src';
       break;
     case 'isplaying':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.paused != true';
       break;
     case 'loop':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.loop';
       break;
     case 'numbersonly': //april13
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.type';  //april13
       break;            //april13
-    case 'image':       //april14
-      code += '.style.backgroundImage';  //april14
-      break; //april14
-    //case 'showfeedback' :
-    //  code += '.showfeedback';
     case 'multiline':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       var stringCode = '' + code; //april13
       code = ("textarea" == stringCode.match(/textarea/)); //april13
       code = '' + code; //april13
       break;
     case 'fullscreen':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       var elemCode = code;
       var fsCode = '(function() { ' +
         'var fsBool = ' +
@@ -941,23 +1040,29 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       code = fsCode;
       break;
     case 'hour':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value.substring(0,2)';
       break;
     case 'minute':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value.substring(3,5)';
       break;
 
     // Format expected from datepicker -> YYYY-MM-DD
     case 'year':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value.substring(0,4)';
       break;
     case 'month':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value.substring(5,7)';
       break;
     case 'day':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.value.substring(8,10)';
       break;
     case 'monthintext':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
       var elemCode = code;
       var dateCode = '(function() { ' +
         'var months = [\"January\", \"February\", \"March\", \"April\", \"May\", \"June\", \"July\", \"August\", \"September\", \"October\", \"November\", \"December\"]; ' +
@@ -997,7 +1102,9 @@ Blockly.JavaScript.genericGetproperty = function(typeName) {
 
   // Initialize the code for the element
   var elementCode = Blockly.JavaScript.valueToCode(this, 'COMPONENT', Blockly.JavaScript.ORDER_NONE);
-  var code = '(' + Blockly.JavaScript.getPropertyHelper(elementCode, propertyName, this.typeName) + ')';
+  var elementId = elementCode.match(/"(.*?)"/)[1];
+
+  var code = '(' + Blockly.JavaScript.getPropertyHelper(elementId, propertyName, this.typeName) + ')';
 
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 }

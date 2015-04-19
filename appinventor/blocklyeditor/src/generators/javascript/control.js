@@ -64,9 +64,9 @@ Blockly.JavaScript['controls_choose'] = function() {
   var test = Blockly.JavaScript.valueToCode(this, 'TEST', Blockly.JavaScript.ORDER_NONE)  || Blockly.JavaScript.YAIL_FALSE;
   var thenReturn = Blockly.JavaScript.valueToCode(this, 'THENRETURN', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
   var elseReturn = Blockly.JavaScript.valueToCode(this, 'ELSERETURN', Blockly.JavaScript.ORDER_NONE)  || Blockly.JavaScript.YAIL_FALSE;
-  
-  var code = 
-    '(function() { ' + 
+
+  var code =
+    '(function() { ' +
       'if ' + test + ' { ' + 'return ' + thenReturn + ';} ' + 'else { ' + 'return ' + elseReturn + ';} ' +
     '})()';
 
@@ -93,11 +93,11 @@ Blockly.JavaScript['controls_forEach'] = function() {
   var loopIndexName = Blockly.JavaScript.YAIL_LOCAL_VAR_TAG + this.getFieldValue('VAR');
   var listCode = Blockly.JavaScript.valueToCode(this, 'LIST', Blockly.JavaScript.ORDER_NONE); // || emptyListCode;
   var bodyCode = Blockly.JavaScript.statementToCode(this, 'DO', Blockly.JavaScript.ORDER_NONE); // ||  Blockly.JavaScript.YAIL_FALSE;
-  
+
   // Wrap the for-each loop within a function and execute
   var code = '(' +
     'function() { ' +
-      listCode + '.forEach(function(' + loopIndexName + ') { ' + 
+      listCode + '.forEach(function(' + loopIndexName + ') { ' +
         bodyCode +
           '}) ' +
       '})()';
@@ -122,13 +122,13 @@ Blockly.JavaScript['controls_forRange'] = function() {
   loopIndexName = loopIndexName.substr(1);
 
   // Create the for loop to be used
-  var code = 
-      'for (var '  + loopIndexName + '=' + startCode + '; ' + 
-        loopIndexName + '<=' + endCode + ';' + 
+  var code =
+      'for (var '  + loopIndexName + '=' + startCode + '; ' +
+        loopIndexName + '<=' + endCode + ';' +
         loopIndexName +  '=' + loopIndexName + '+' + stepCode + ') { ' +
-        bodyCode + 
+        bodyCode +
       '}';
-  
+
   return code;
 };
 
@@ -142,10 +142,10 @@ Blockly.JavaScript['controls_while'] = function() {
   var toDo = Blockly.JavaScript.statementToCode(this, 'DO') || Blockly.JavaScript.YAIL_FALSE;
   // var code = Blockly.JavaScript.YAIL_WHILE + test + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_BEGIN + toDo + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
 
-  // Create the while loop  
-  var code = 
+  // Create the while loop
+  var code =
     'while (' + test + ') {' +
-      toDo + 
+      toDo +
     '}';
 
   return code;
@@ -173,11 +173,11 @@ Blockly.JavaScript['controls_do_then_return'] = function() {
 Blockly.JavaScript['controls_eval_but_ignore'] = function() {
   var toEval = Blockly.JavaScript.valueToCode(this, 'VALUE', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
   // var code = Blockly.JavaScript.YAIL_BEGIN + toEval + Blockly.JavaScript.YAIL_SPACER + '"ignored"' + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  
+
   // Wrap the string to be evaluated and return nothing
   var code = '(' +
     'function() { ' +
-      toEval + '; ' + 
+      toEval + '; ' +
     '})()';
 
   return code;
@@ -188,92 +188,195 @@ Blockly.JavaScript['controls_eval_but_ignore'] = function() {
 //   return ['*the-null-value*', Blockly.JavaScript.ORDER_NONE];
 // };
 
+
+
+// SCREEN MANAGEMENT
+// The DOMs local storage will be utilized to maintain key-values
+// -> window.sessionStorage
+
 Blockly.JavaScript['controls_openAnotherScreen'] = function() {
   // Open another screen
-  // May require this to be tossed into a runtime library
-  var code = 'document.location.href = ';
 
   // argument which represents the new screen address
   var argument0 = Blockly.JavaScript.valueToCode(this, 'SCREEN', Blockly.JavaScript.ORDER_NONE) || null;
-  code = code + '\"' + argument0.substring(1,argument0.length - 1) + '.html' + '\"';
+  argument0 = '\"' + argument0.substring(1,argument0.length - 1) + '.html' + '\"';
+
+  // Lambda function to handle storage and screen switch
+  // Function has no returns
+  var code = '(function() { ' +
+
+    // If the current screen is the first screen, create the stack
+    'if (window.sessionStorage.getItem(\"_stack\") == undefined) { ' +
+    '   var screenStack = []; ' +
+    '   screenStack.push(document.title + \".html\"); ' +
+
+    '}  else { ' +
+    // Fetched value from the key is returned as a string so split it and convert to array
+    '   screenStack = window.sessionStorage.getItem(\"_stack\"); ' +
+    '   screenStack = screenStack.split(\",\"); ' +
+    '   screenStack.push(document.title + \".html\"); ' +
+    '} ' +
+
+    // This key for the stack is hard coded in and must change in all functions that use it
+    // if a change to it is implemented
+    'window.sessionStorage.setItem(\"_stack\", screenStack); ' +
+
+    // Do the screen switch
+    'document.location.href = ' + argument0 + '; ' +
+
+  '})()';
+
   return code;
-
-// "screen1".html
-
-  // var argument0 = Blockly.JavaScript.valueToCode(this, 'SCREEN', Blockly.JavaScript.ORDER_NONE) || null;
-  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "open-another-screen" + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + argument0 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-  // code = code + "text" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "open another screen" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  // return code;
 };
 
-// Blockly.JavaScript['controls_openAnotherScreenWithStartValue'] = function() {
-//   // Open another screen with start value
-//   var argument0 = Blockly.JavaScript.valueToCode(this, 'SCREENNAME', Blockly.JavaScript.ORDER_NONE) || null;
-//   var argument1 = Blockly.JavaScript.valueToCode(this, 'STARTVALUE', Blockly.JavaScript.ORDER_NONE) || null;
-    
-//   // Open another screen
-//   // This routine will also create a global value that is passed to this screen
+Blockly.JavaScript['controls_openAnotherScreenWithStartValue'] = function() {
+  // Open another screen with start value
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'SCREENNAME', Blockly.JavaScript.ORDER_NONE) || null;
+  var argument1 = Blockly.JavaScript.valueToCode(this, 'STARTVALUE', Blockly.JavaScript.ORDER_NONE) || null;
 
+  // Open another screen
+  // This routine will also create a global value that is passed to this screen
+  // The variable is stored in the sessionStorage
+  var targetScreenName = argument0;
+  argument0 = '\"' + argument0.substring(1,argument0.length - 1) + '.html' + '\"';
 
-//   // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "open-another-screen-with-start-value" + Blockly.JavaScript.YAIL_SPACER;
-//   // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-//   // code = code + argument0 + Blockly.JavaScript.YAIL_SPACER + argument1 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-//   // code = code + "text any" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-//   // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "open another screen with start value" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   return code;
-// };
+  // Lambda function to handle storage and screen switch
+  // Function has no returns
+  var code = '(function() { ' +
 
-// Blockly.JavaScript['controls_getStartValue'] = function() {
-//   // Get start value
-//   var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "get-start-value" + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-//   code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "get start value" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
-// };
+    // Store the variable into storage using the targetScreen's name as an identifier
+    'window.sessionStorage.setItem(' + targetScreenName + '+ \"StartKey\", ' + argument1 + '); ' +
+
+    // If the current screen is the first screen, create the stack
+    'if (window.sessionStorage.getItem(\"_stack\") == undefined) { ' +
+    '   var screenStack = []; ' +
+    '   screenStack.push(document.title + \".html\"); ' +
+
+    '}  else { ' +
+    // Fetched value from the key is returned as a string so split it and convert to array
+    '   screenStack = window.sessionStorage.getItem(\"_stack\"); ' +
+    '   screenStack = screenStack.split(\",\"); ' +
+    '   screenStack.push(document.title + \".html\"); ' +
+    '} ' +
+
+    // This key for the stack is hard coded in and must change in all functions that use it
+    // if a change to it is implemented
+    'window.sessionStorage.setItem(\"_stack\", screenStack); ' +
+
+    // Do the screen switch
+    'document.location.href = ' + argument0 + '; ' +
+
+  '})()';
+
+  return code;
+};
+
+Blockly.JavaScript['controls_getStartValue'] = function() {
+  // Fetches the start value for this screen
+  var code = '(function() { ' +
+    'var startValue = window.sessionStorage.getItem(document.title + \"StartKey\"); ' +
+    'return startValue; ' +
+  '})();';
+
+  return [ code, Blockly.JavaScript.ORDER_ATOMIC ];
+};
 
 Blockly.JavaScript['controls_closeScreen'] = function() {
   // Close screen
-  var code = 'window.close();';
 
-  // var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "close-screen" + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-  // code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-  // code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-  // code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "close screen" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
+  // Lambda function to handle the screen closing
+  // Screen closing represents the back button and if current screen is the first screen
+  // the window will close
+  // Function has no returns
+  var code = '(function() { ' +
+
+    // Wipe the key-values that is pertinent for this current screen because it is closing
+    'window.sessionStorage.removeItem(document.title + \"StartKey\"); ' +
+    'window.sessionStorage.removeItem(document.title + \"ReturnKey\"); ' +
+
+    // Fetch the stored stack
+    'screenStack = window.sessionStorage.getItem(\"_stack\"); ' +
+
+    // Check if this screen is the very first screen
+    'if (screenStack == undefined) { ' +
+    ' window.close(); ' +
+    ' return; ' +
+    '} ' +
+
+    // Check if this current screen is the last screen
+    'if (screenStack.length == 0) { ' +
+    ' window.close(); ' +
+    ' return; ' +
+    '} ' +
+
+    // It is not the very first screen so a value exists for the key, split the return
+    'screenStack = screenStack.split(\",\"); ' +
+
+    // Fetch the previous screens URL
+    'var targetScreen = screenStack.pop(); ' +
+
+    // Push the remaining history back into storage
+    'window.sessionStorage.setItem(\"_stack\", screenStack); ' +
+
+    // Do the screen switch
+    'document.location.href = targetScreen; ' +
+
+  '})()';
+
   return code;
 };
 
-// Blockly.JavaScript['controls_closeScreenWithValue'] = function() {
-//   // Close screen with value
-//   var argument0 = Blockly.JavaScript.valueToCode(this, 'SCREEN', Blockly.JavaScript.ORDER_NONE) || null;
-//   var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "close-screen-with-value" + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + argument0 + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-//   code = code + "any" + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "close screen with value" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   return code;
-// };
+Blockly.JavaScript['controls_closeScreenWithValue'] = function() {
+  // Close screen with value
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'SCREEN', Blockly.JavaScript.ORDER_NONE) || null;
 
-// Blockly.JavaScript['controls_closeApplication'] = function() {
-//   // Close application
-//   var code = Blockly.JavaScript.YAIL_CALL_YAIL_PRIMITIVE + "close-application" + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_OPEN_COMBINATION + Blockly.JavaScript.YAIL_LIST_CONSTRUCTOR + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   code = code + Blockly.JavaScript.YAIL_SPACER + Blockly.JavaScript.YAIL_QUOTE + Blockly.JavaScript.YAIL_OPEN_COMBINATION;
-//   code = code + Blockly.JavaScript.YAIL_CLOSE_COMBINATION + Blockly.JavaScript.YAIL_SPACER;
-//   code = code + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + "close application" + Blockly.JavaScript.YAIL_DOUBLE_QUOTE + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
-//   return code;
-// };
+   var code = '(function() { ' +
+
+    // Wipe the key-values that is pertinent for this current screen because it is closing
+    'window.sessionStorage.removeItem(document.title + \"StartKey\"); ' +
+    'window.sessionStorage.removeItem(document.title + \"ReturnKey\"); ' +
+
+    // Fetch the stored stack
+    'screenStack = window.sessionStorage.getItem(\"_stack\"); ' +
+
+    // Check if this screen is the very first screen
+    'if (screenStack == undefined) { ' +
+    ' window.close(); ' +
+    ' return; ' +
+    '} ' +
+
+    // Check if this current screen is the last screen
+    'if (screenStack.length == 0) { ' +
+    ' window.close(); ' +
+    ' return; ' +
+    '} ' +
+
+    // It is not the very first screen so a value exists for the key, split the return
+    'screenStack = screenStack.split(\",\"); ' +
+
+    // Fetch the previous screens URL
+    'var targetScreen = screenStack.pop(); ' +
+
+    // Push a return variable identifiable by the previous screen
+    'targetScreenName = targetScreen.substring(0, targetScreen.length-5); ' +
+    'window.sessionStorage.setItem(targetScreenName + \"ReturnKey\", ' + argument0 + '); ' +
+
+    // Push the remaining history back into storage
+    'window.sessionStorage.setItem(\"_stack\", screenStack); ' +
+
+    // Do the screen switch
+    'document.location.href = targetScreen; ' +
+
+  '})()';
+
+  return code;
+};
+
+Blockly.JavaScript['controls_closeApplication'] = function() {
+  // Close application
+  var code = 'window.close();';
+  return code;
+};
 
 // Blockly.JavaScript['controls_getPlainStartText'] = function() {
 //   // Get plain start text
