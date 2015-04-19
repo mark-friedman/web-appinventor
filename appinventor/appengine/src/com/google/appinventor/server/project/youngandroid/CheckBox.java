@@ -122,29 +122,15 @@ public class CheckBox extends Component{
     sb.append("#div_"+this.getName()+"\n");
     sb.append("{\n");
     if(!this.getBackgroundColor().equals(""))
-      sb.append(" background : "+this.getBackgroundColor()+";\n");
-    sb.append(" float: left;\n");    
+      sb.append(" background : "+this.getBackgroundColor()+";\n");   
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
-    if(this.getWidth().equalsIgnoreCase("-2"))
-      sb.append(" width : 100%;\n");
-    else if(this.getWidth().charAt(0)=='-')
-      sb.append(" width : "+this.getWidth().substring(2)+"%;\n");
-    else
-      sb.append(" width : "+this.getWidth()+"px;\n");
-
-    if(this.getHeight().equalsIgnoreCase("-2"))
-      sb.append(" height : 100%;\n");
-    else if(this.getHeight().charAt(0)=='-')
-      sb.append(" height : "+this.getHeight().substring(2)+"%;\n");
-    else
-      sb.append(" height : "+this.getHeight()+"px;\n");
-
+    sb.append(" width :"+this.getWidth()+";\n" );
+    sb.append(" height :"+this.getHeight()+";\n" );
     sb.append("}\n");
-    // System.out.println(sb.toString().valueOf(sb));
 
     return sb.toString().valueOf(sb);
   }
@@ -234,10 +220,20 @@ public class CheckBox extends Component{
         this.setVisible(value);
         break;
       case "Width":
-          this.setWidth(value);
+        if(value.equalsIgnoreCase("-2"))
+          this.setWidth("100%");
+        else if(value.charAt(0)=='-')
+          this.setWidth(value.substring(2)+"%;\n");
+        else
+          this.setWidth(value+"px;\n");
         break;
       case "Height":
-        this.setHeight(value);
+        if(value.equalsIgnoreCase("-2"))
+          this.setHeight("100%");
+        else if(value.charAt(0)=='-')
+          this.setHeight(value.substring(2)+"%;\n");
+        else
+          this.setHeight(value+"px;\n");
         break;
       case "Enabled":
         this.setEnabled(value);
