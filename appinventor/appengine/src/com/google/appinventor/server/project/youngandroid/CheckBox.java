@@ -119,39 +119,31 @@ public class CheckBox extends Component{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#"+this.getName()+"\n");
+    sb.append("#div_"+this.getName()+"\n");
     sb.append("{\n");
-
     if(!this.getBackgroundColor().equals(""))
       sb.append(" background : "+this.getBackgroundColor()+";\n");
+    sb.append(" float: left;\n");    
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
-    sb.append(" width : "+this.getWidth()+";\n");
-    sb.append(" height : "+this.getHeight()+";\n");
+    if(this.getWidth().equalsIgnoreCase("-2"))
+      sb.append(" width : 100%;\n");
+    else if(this.getWidth().charAt(0)=='-')
+      sb.append(" width : "+this.getWidth().substring(2)+"%;\n");
+    else
+      sb.append(" width : "+this.getWidth()+"px;\n");
+
+    if(this.getHeight().equalsIgnoreCase("-2"))
+      sb.append(" height : 100%;\n");
+    else if(this.getHeight().charAt(0)=='-')
+      sb.append(" height : "+this.getHeight().substring(2)+"%;\n");
+    else
+      sb.append(" height : "+this.getHeight()+"px;\n");
 
     sb.append("}\n");
-
-    sb.append("#label_"+this.getName()+"\n");
-    sb.append("{\n");
-    
-    if(!this.getBackgroundColor().equals(""))
-      sb.append(" background : "+this.getBackgroundColor()+";\n");
-    sb.append(" font-size : "+this.getFontSize()+"px;\n");
-    sb.append(" font-weight : "+this.getFontBold()+";\n");
-    sb.append(" font-style : "+this.getFontItalic()+";\n");
-    sb.append(" font-family : "+this.getFontTypeface()+";\n");
-    sb.append(" color : "+this.getTextColor()+";\n");
-    sb.append(" width : "+this.getWidth()+";\n");
-    sb.append(" height : "+this.getHeight()+";\n");
-
-    sb.append("}\n");
-
-
-
-
     // System.out.println(sb.toString().valueOf(sb));
 
     return sb.toString().valueOf(sb);
@@ -237,24 +229,10 @@ public class CheckBox extends Component{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
-          this.setWidth("100%");
-        else if(value.charAt(0)=='-')
-          this.setWidth(value.substring(2)+"%");
-        else
-          this.setWidth(value+"px");
+          this.setWidth(value);
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
-          this.setHeight("100%");
-        else if(value.charAt(0)=='-')
-          this.setHeight(value.substring(2)+"%");
-        else
-          this.setHeight(value+"px");
+        this.setHeight(value);
         break;
       case "Enabled":
         this.setEnabled(value);
