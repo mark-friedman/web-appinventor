@@ -152,6 +152,9 @@ public class CheckBox extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div");
+    sb.append(" id = "+"\""+"div_"+this.getName()+"\"");
+    sb.append(">");
     sb.append("<input"); 
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = \"checkbox\"");
@@ -164,13 +167,15 @@ public class CheckBox extends Component{
       sb.append(" hidden");
 
     sb.append(">");
+    sb.append("</input>");
 
     sb.append("<label");
     sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label>");
-    sb.append("</input>"); 
+
+    sb.append("</div>");
 
     return sb.toString().valueOf(sb);
   }
