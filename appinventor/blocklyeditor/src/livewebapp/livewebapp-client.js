@@ -349,7 +349,7 @@ Blockly.liveWebAppClient = (function(){
   }
 	
 	
-  addMesaageListener = function(){
+  addMessageResponseListener = function(){
    window.addListener(receiveMessage);
  }
   receiveMessage = function(event){ 
