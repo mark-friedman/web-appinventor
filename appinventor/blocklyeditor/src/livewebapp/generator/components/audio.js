@@ -10,7 +10,7 @@ goog.require('Blockly.Generator');
 
 Blockly.AudioJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
         "}else {"+
         "var div = document.createElement(\"div\");" +

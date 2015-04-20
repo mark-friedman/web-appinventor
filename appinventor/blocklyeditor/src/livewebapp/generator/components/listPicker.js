@@ -10,10 +10,11 @@ goog.require('Blockly.Generator');
 
 Blockly.ListPickerJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
         "}else {"+
         "var div = document.createElement(\"div\");" +
+        "div.setAttribute(\"id\",\"div_" + component.$Name + "\");" +
             "var listView = document.createElement(\"select\");" +
             "listView.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "var label = document.createElement(\"Label\");" +
@@ -21,11 +22,14 @@ Blockly.ListPickerJsGenerator.generateJSForAddingComponent = function(component)
             "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
             "div.appendChild(label);" +
             "div.appendChild(listView);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"";
 };
 
 Blockly.ListPickerJsGenerator.generateJSForRemovingComponent = function(component){
-        return     "var node = document.getElementById(\"" + component.$Name + "\");" +
+        return     "var previous =document.getElementById(\"" + component.$Name + "\").previousElementSibling;"+
+            "previous.remove();"+
+            "var node = document.getElementById(\"" + component.$Name + "\");" +
                    "if(node.parentNode){" +
                    "  node.parentNode.removeChild(node);"+
                    "}";
@@ -43,67 +47,80 @@ Blockly.ListPickerJsGenerator.setProperties = function(component, propName, prop
      switch(propName) {
          case "FontBold":
              if(propValue == "False"){
-               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontWeight = \"normal\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontWeight = \"normal\";";
              }else{
-               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style. = \"bold\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style. = \"bold\";";
              }
          case "FontItalic":
              if(propValue == "False"){
-               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontStyle = \"normal\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontStyle = \"normal\";";
              }else{
-               return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontStyle = \"italic\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontStyle = \"italic\";";
              }
          case "FontSize":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontSize = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.fontSize = \"" +
              Math.round(propValue) +"pt\";";
          case "FontTypeface":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.fontFamily = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                     getFontType(propValue) + "\";";
          case "Text":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.textContent=\"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").textContent=\"" +
                  propValue + "\";";
          case "TextColor":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.color = \"#" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"#" +
                     propValue.substring(4) + "\";";
          case "TextAlignment":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.textAlign = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.textAlign = \"" +
                                   getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.width = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getWidthSizeVal(propValue, component);
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.height = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getHeightSizeVal(propValue, component);
          case "BackgroundColor":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.backgroundColor = \"#" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.backgroundColor = \"#" +
                  propValue.substring(4) + "\";";
          case "Visible":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.visibility = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";"+
-              "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
+              "document.getElementById(\"div_" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";";
          case "Enabled":
-             return "document.getElementById(\"" + component.$Name + "\").disabled = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").disabled = \"" +
                  this.getEnabled(propValue) + "\";";
          case "ElementsFromString":
              return this.getList(propValue, component.$Name);
          case "Image":
-             return "document.getElementById(\"" + component.$Name + "\").previousElementSibling.style.backgroundImage = \"url(assets/" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.backgroundImage = \"url(assets/" +
                  (propValue) + ")\";";
          default:
              return "";
      }
     };
 
-Blockly.ListPickerJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.ListPickerJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+};
+
+Blockly.ListPickerJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
 };
 
 Blockly.ListPickerJsGenerator.getList = function(index, componentID) {

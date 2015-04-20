@@ -10,7 +10,7 @@ goog.require('Blockly.Generator');
 
 Blockly.ButtonJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-    "if (typeof(element) != 'undefined' && element != null) { +" +
+    "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload(true);" +
         "}else {"+
          "var div = document.createElement(\"div\");" +
@@ -71,11 +71,9 @@ Blockly.ButtonJsGenerator.setProperties = function(component, propName, propValu
             return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
                 this.getTextAlignment(propValue) + "\";";
         case "Width":
-            return "document.getElementById(\"" + component.$Name + "\").style.width = \""
-                + this.getSizeVal(propValue) + "\";";
+            return this.getWidthSizeVal(propValue, component);
         case "Height":
-            return "document.getElementById(\"" + component.$Name + "\").style.height = \"" +
-                this.getSizeVal(propValue) + "\";";
+            return this.getHeightSizeVal(propValue, component);
         case "Shape":
             return "document.getElementById(\"" + component.$Name + "\").style.Shape = \"" +
                 this.getShape(propValue) + "\";";
@@ -93,15 +91,30 @@ Blockly.ButtonJsGenerator.setProperties = function(component, propName, propValu
     }
 };
 
-Blockly.ButtonJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.ButtonJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+};
+
+Blockly.ButtonJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
 };
 
 

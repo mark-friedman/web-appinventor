@@ -10,7 +10,7 @@ goog.require('Blockly.Generator');
 
 Blockly.ImageJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
         "}else {"+
          "var div = document.createElement(\"div\");" +
@@ -40,11 +40,9 @@ Blockly.ImageJsGenerator.setProperties = function(component, propName, propValue
     switch(propName) {
 
         case "Width":
-            return "document.getElementById(\"" + component.$Name + "\").style.width = \""
-                + this.getSizeVal(propValue) + "\";";
+            return this.getWidthSizeVal(propValue, component);
         case "Height":
-            return "document.getElementById(\"" + component.$Name + "\").style.height = \""
-                + this.getSizeVal(propValue) + "\";";
+            return this.getHeightSizeVal(propValue, component);
         case "Visible":
             return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                 this.getVisibility(propValue) + "\";";
@@ -56,15 +54,30 @@ Blockly.ImageJsGenerator.setProperties = function(component, propName, propValue
 };
 
 
-Blockly.ImageJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.ImageJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+};
+
+Blockly.ImageJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
 };
 
 Blockly.ImageJsGenerator.getAddImageJS = function(componentName, propVal) {

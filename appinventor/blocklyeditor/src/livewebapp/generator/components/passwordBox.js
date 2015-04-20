@@ -10,7 +10,7 @@ goog.require('Blockly.Generator');
 
 Blockly.PasswordBoxJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
         "}else {"+
         "var div = document.createElement(\"div\");" +
@@ -59,7 +59,7 @@ Blockly.PasswordBoxJsGenerator.setProperties = function(component, propName, pro
              return "document.getElementById(\"" + component.$Name + "\").style.fontFamily = \"" +
                     this.getFontType(propValue) + "\";";
          case "Text":
-             return "document.getElementById(\"" + component.$Name + "\").innerHTML = \"" + propValue + "\";";
+             return "document.getElementById(\"" + component.$Name + "\").value = \"" + propValue + "\";";
          case "TextColor":
              return "document.getElementById(\"" + component.$Name + "\").style.color = \"#" +
                     propValue.substring(4) + "\";";
@@ -67,11 +67,9 @@ Blockly.PasswordBoxJsGenerator.setProperties = function(component, propName, pro
              return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getWidthSizeVal(propValue, component);
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").style.height = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getHeightSizeVal(propValue, component);
          case "Hint":
              return "document.getElementById(\"" + component.$Name + "\").style.title = \"" + propValue + "\";";
          default:
@@ -79,15 +77,30 @@ Blockly.PasswordBoxJsGenerator.setProperties = function(component, propName, pro
      }
     };
 
-Blockly.PasswordBoxJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.PasswordBoxJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+};
+
+Blockly.PasswordBoxJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
 };
 
 Blockly.PasswordBoxJsGenerator.getFontType = function(index) {
