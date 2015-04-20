@@ -83,7 +83,7 @@ public class Slider extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     sb.append("<input"); 
 
     sb.append(" id = "+"\""+this.getName()+"\"");
@@ -100,7 +100,7 @@ public class Slider extends Component{
     sb.append(" value = "+this.getThumbPosition());
     sb.append(">");
     sb.append("</input>"); 
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 

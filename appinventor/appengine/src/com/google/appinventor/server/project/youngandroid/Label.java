@@ -144,9 +144,9 @@ public class Label extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<label");
     sb.append(" id = "+"\""+this.getName()+"\"");
-
 
     if(this.getVisible().equals("False"))
       sb.append(" hidden");
@@ -154,7 +154,7 @@ public class Label extends Component{
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 

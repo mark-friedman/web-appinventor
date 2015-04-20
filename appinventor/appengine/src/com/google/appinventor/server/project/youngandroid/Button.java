@@ -192,6 +192,7 @@ public class Button extends ImageComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<button");
     sb.append(" id = "+"\""+this.getName()+"\"");
 
@@ -204,7 +205,7 @@ public class Button extends ImageComponent{
     sb.append(">");
     sb.append(this.getText());
     sb.append("</button>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 

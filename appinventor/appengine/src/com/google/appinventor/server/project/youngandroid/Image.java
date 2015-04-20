@@ -82,10 +82,11 @@ public class Image extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
 
+    sb.append("<div>");
     sb.append("<img");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
-
+  
 
     if(this.getVisible().equals("False"))
       sb.append(" hidden");
@@ -93,7 +94,7 @@ public class Image extends ImageComponent{
     sb.append(">");
 
     sb.append("</img>"); 
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }

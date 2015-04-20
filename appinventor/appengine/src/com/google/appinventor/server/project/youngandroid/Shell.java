@@ -124,17 +124,14 @@ public class Shell {
 
     htmlStringBuilder.append("</head>\n");
     //including id for body - Sudeep
-    htmlStringBuilder.append("<body id = \""+ screenName+"\">\n");
-    //Included bootstrap code - Sudeep
-    htmlStringBuilder.append("<div class=\"container-fluid\">\n");
+    htmlStringBuilder.append("<body id = \""+ screenName+" class=\"container-fluid\""+"\">\n");
+    
     // inject html from the components
 
     for (String html : componentPackage.bodyHtml) {
       htmlStringBuilder.append(html + "\n");
     }     
  
-  
-    htmlStringBuilder.append("</div>\n");
     htmlStringBuilder.append("</body>\n");
     htmlStringBuilder.append("</html>");    // end of page building
     

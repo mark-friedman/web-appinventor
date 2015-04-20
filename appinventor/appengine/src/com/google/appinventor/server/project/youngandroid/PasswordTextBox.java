@@ -144,7 +144,7 @@ public class PasswordTextBox extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     sb.append("<input"); 
 
     sb.append(" id = "+"\""+this.getName()+"\"");
@@ -161,7 +161,7 @@ public class PasswordTextBox extends Component{
 
 
     sb.append("</input>"); 
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }

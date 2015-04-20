@@ -15,7 +15,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class TextBox extends Component{
 
-  String backgroundColor = "none";
+  String backgroundColor = "";
   String fontSize = "14";
   String fontBold = "none";
   String fontItalic = "none";
@@ -164,7 +164,7 @@ public class TextBox extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     if(this.getMultiline().equalsIgnoreCase("True"))
       sb.append("<textarea");
     else
@@ -185,7 +185,7 @@ public class TextBox extends Component{
       sb.append("</textarea>");
     else
       sb.append("</input>"); 
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }
