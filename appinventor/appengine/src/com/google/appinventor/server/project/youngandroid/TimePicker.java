@@ -187,7 +187,7 @@ public class TimePicker extends ImageComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     sb.append("<label");
     sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
@@ -205,7 +205,7 @@ public class TimePicker extends ImageComponent{
       sb.append(" hidden");
 
     sb.append("/>");
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }

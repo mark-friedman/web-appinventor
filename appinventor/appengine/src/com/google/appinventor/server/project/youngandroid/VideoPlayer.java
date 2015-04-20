@@ -78,6 +78,7 @@ public class VideoPlayer extends SourceComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<video controls");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
@@ -88,7 +89,7 @@ public class VideoPlayer extends SourceComponent{
     sb.append(">");
     sb.append("Your browser does not support HTML5 video.");
     sb.append("</video>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 

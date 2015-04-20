@@ -187,6 +187,9 @@ public class ListPicker extends ImageComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div");
+    sb.append(" id = "+"\""+"div_"+this.getName()+"\"");
+    sb.append(">");
     sb.append("<label");
     sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
    
@@ -209,6 +212,7 @@ public class ListPicker extends ImageComponent{
 
     sb.append(">");
     
+    
     String[] elements=this.getElementsFromString().split(",");
     for(String element : elements)
     {
@@ -221,7 +225,7 @@ public class ListPicker extends ImageComponent{
     }
     
     sb.append("</select>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
@@ -307,9 +311,7 @@ public class ListPicker extends ImageComponent{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -317,9 +319,7 @@ public class ListPicker extends ImageComponent{
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
             this.setHeight(value.substring(2)+"%");

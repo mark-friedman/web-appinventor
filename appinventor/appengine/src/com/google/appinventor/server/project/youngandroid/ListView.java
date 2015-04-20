@@ -94,7 +94,9 @@ public class ListView extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div");
+    sb.append(" id = "+"\""+"div_"+this.getName()+"\"");
+    sb.append(">");
     sb.append("<ul");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(">");
@@ -110,7 +112,7 @@ public class ListView extends Component{
       sb.append(" hidden");
 
     sb.append("</ul>"); 
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }
@@ -149,9 +151,7 @@ public class ListView extends Component{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+       if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -159,9 +159,7 @@ public class ListView extends Component{
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
             this.setHeight(value.substring(2)+"%");

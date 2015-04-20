@@ -56,6 +56,7 @@ public class Player extends SourceComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<audio");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = "+"\""+this.getType()+"\"");
@@ -65,7 +66,7 @@ public class Player extends SourceComponent{
     sb.append(">");
     sb.append("Your browser does not support HTML5 audio.");
     sb.append("</audio>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
