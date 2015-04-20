@@ -10,7 +10,7 @@ goog.require('Blockly.Generator');
 
 Blockly.ListPickerJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { " +
+        "if (typeof(element) != 'undefined' && element !== null) { " +
         "location.reload();" +
         "}else {"+
         "var div = document.createElement(\"div\");" +
@@ -23,17 +23,13 @@ Blockly.ListPickerJsGenerator.generateJSForAddingComponent = function(component)
             "div.appendChild(label);" +
             "div.appendChild(listView);" +
             "document.body.appendChild(div);}"+
-        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\""+
+        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\";"+
         this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.ListPickerJsGenerator.generateJSForRemovingComponent = function(component){
         return     "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
-            "previous.remove();"+
-            "var node = document.getElementById(\"" + component.$Name + "\");" +
-                   "if(node.parentNode){" +
-                   "  node.parentNode.removeChild(node);"+
-                   "}";
+            "previous.remove();";
     };
 
 Blockly.ListPickerJsGenerator.generateJSForPropertyChange = function(component,propertyName,propertyValue){
@@ -101,12 +97,11 @@ Blockly.ListPickerJsGenerator.setProperties = function(component, propName, prop
              else
                  return "";
          case "ItemTextColor":
-             if(component.hasOwnProperty("ElementsFromString"))
-                return this.generateJSForRemovingComponent(component) + this.generateJSForAddingComponent(component) +
-                    + this.getList(component);
-             else
-                return "";
+            return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"" +
+                propValue.substring(4) + "\";";
          case "Title":
+                 return this.getTitleList(component);
+         case "Selection":
              if(component.hasOwnProperty("ElementsFromString"))
                  return this.generateJSForRemovingComponent(component) + this.generateJSForAddingComponent(component) +
                      + this.getList(component);
@@ -122,12 +117,12 @@ Blockly.ListPickerJsGenerator.getWidthSizeVal = function(index, component) {
         return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"auto\";";
     else if(index == "-2")
         return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"100%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
         return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
         return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.ListPickerJsGenerator.getHeightSizeVal = function(index, component) {
@@ -140,7 +135,7 @@ Blockly.ListPickerJsGenerator.getHeightSizeVal = function(index, component) {
         return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index+"px\";";
     else
         return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.ListPickerJsGenerator.getList = function(component) {
@@ -151,16 +146,13 @@ Blockly.ListPickerJsGenerator.getList = function(component) {
         listJS=listJS+ "var opt = document.createElement(\"option\");"+
         "opt.value=\""+component["Title"] +"\";"+
         "opt.setAttribute(\"disabled\",\"true \");";
-        //if(component.hasOwnProperty('Selection')){
-        //    if(component["Selection"]==component["Title"])
-        //        listJS+= "opt.setAttribute(\"selected\",\"true\");";
-        //}
-        //if(component.hasOwnProperty('ItemBackgroundColor')){
-        //    listJS+= "opt.setAttribute(\"backgroundColor\",\""+component["ItemBackgroundColor"].substring(4) + "\");";
-        //}
-        //if(component.hasOwnProperty('ItemTextColor')){
-        //    listJS+= "opt.setAttribute(\"color\",\""+component["ItemTextColor"].substring(4)+ "\");";
-        //}
+        if(component.hasOwnProperty('Selection')){
+            if(component["Selection"]==component["Title"])
+                listJS+= "opt.setAttribute(\"selected\",\"true\");";
+        }
+        if(component.hasOwnProperty('ItemBackgroundColor')){
+            listJS+= "opt.setAttribute(\"backgroundColor\",\""+component["ItemBackgroundColor"].substring(4) + "\");";
+        }
         listJS+="var listName=document.getElementById(\""+component.$Name+"\");"+
         "listName.appendChild(opt);";
     }
@@ -168,16 +160,29 @@ Blockly.ListPickerJsGenerator.getList = function(component) {
         listJS=listJS+ "var opt = document.createElement(\"option\");"+
         "opt.text =\"" +listVals[i]+"\";"+
         "opt.value =\""+listVals[i]+"\";";
-        //if(component.hasOwnProperty('Selection')){
-        //    if(component["Selection"]==listVals[i])
-        //        listJS+= "opt.setAttribute(\"selected\",\"true \");";
-        //}
-        //if(component.hasOwnProperty('ItemBackgroundColor')){
-        //    listJS+= "opt.setAttribute(\"backgroundColor\",\""+component["ItemBackgroundColor"].substring(4) + "\");";
-        ////}
-        //if(component.hasOwnProperty('ItemTextColor')){
-        //    listJS+= "opt.setAttribute(\"color\",\""+component["ItemTextColor"].substring(4)+ "\");";
-        //}
+        if(component.hasOwnProperty('Selection')){
+            if(component["Selection"]==listVals[i])
+                listJS+= "opt.setAttribute(\"selected\",\"true \");";
+        }
+        if(component.hasOwnProperty('ItemBackgroundColor')){
+            listJS+= "opt.setAttribute(\"backgroundColor\",\""+component["ItemBackgroundColor"].substring(4) + "\");";
+        }
+        listJS+="var listName=document.getElementById(\""+component.$Name+"\");"+
+        "listName.appendChild(opt);";
+    }
+    return listJS;
+};
+
+Blockly.ListPickerJsGenerator.getTitleList = function(component) {
+    var listJS="";
+    if(component.hasOwnProperty('Title')){
+        listJS=listJS+ "var opt = document.createElement(\"option\");"+
+        "opt.value=\""+component["Title"] +"\";"+
+        "opt.setAttribute(\"disabled\",\"true \");";
+        if(component.hasOwnProperty('Selection')){
+            if(component["Selection"]==component["Title"])
+                listJS+= "opt.setAttribute(\"selected\",\"true\");";
+        }
         listJS+="var listName=document.getElementById(\""+component.$Name+"\");"+
         "listName.appendChild(opt);";
     }

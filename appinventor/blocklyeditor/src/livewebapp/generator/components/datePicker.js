@@ -30,11 +30,7 @@ Blockly.DatePickerJsGenerator.generateJSForAddingComponent = function(component)
 
 Blockly.DatePickerJsGenerator.generateJSForRemovingComponent = function(component){
         return     "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
-            "previous.remove();"+
-                "var node = document.getElementById(\"" + component.$Name + "\");" +
-                   "if(node.parentNode){" +
-                   "  node.parentNode.removeChild(node);"+
-                   "}";
+            "previous.remove();";
     };
 
 Blockly.DatePickerJsGenerator.generateJSForPropertyChange = function(component,propertyName,propertyValue){
@@ -117,12 +113,12 @@ Blockly.DatePickerJsGenerator.getHeightSizeVal = function(index, component) {
         return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"auto\";";
     else if(index == "-2")
         return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"100%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
         return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index+"px\";";
     else
         return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
 };
 
 

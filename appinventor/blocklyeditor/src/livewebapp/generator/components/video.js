@@ -61,12 +61,12 @@ Blockly.VideoJsGenerator.getWidthSizeVal = function(index, component) {
         return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
     else if(index == "-2")
         return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
-            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
         return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
         return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.VideoJsGenerator.getHeightSizeVal = function(index, component) {
@@ -74,12 +74,12 @@ Blockly.VideoJsGenerator.getHeightSizeVal = function(index, component) {
         return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
     else if(index == "-2")
         return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
-            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
         return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
     else
         return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\"";
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.VideoJsGenerator.getVideoSourceJS= function(componentName, propVal) {
