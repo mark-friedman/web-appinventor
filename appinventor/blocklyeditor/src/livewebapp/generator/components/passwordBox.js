@@ -18,7 +18,8 @@ Blockly.PasswordBoxJsGenerator.generateJSForAddingComponent = function(component
             "passwrd.setAttribute(\"type\",\"password\");" +
             "passwrd.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "div.appendChild(passwrd);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 

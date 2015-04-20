@@ -17,7 +17,8 @@ Blockly.ImageJsGenerator.generateJSForAddingComponent = function(component){
             "var img = document.createElement(\"img\");" +
             "img.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "div.appendChild(img);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 

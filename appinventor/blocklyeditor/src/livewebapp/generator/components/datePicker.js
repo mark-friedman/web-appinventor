@@ -19,16 +19,17 @@ Blockly.DatePickerJsGenerator.generateJSForAddingComponent = function(component)
             "datefield.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "datefield.setAttribute(\"type\", \"date\");" +
             "var label = document.createElement(\"Label\");" +
-            "label.setAttribute(\"htmlFor\",\"" + component.$Name + "\");" +
+            "label.setAttribute(\"id\",\"label_" + component.$Name + "\");" +
             "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
             "div.appendChild(label);" +
             "div.appendChild(datefield);" +
             "document.body.appendChild(div);}"+
-        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"";
+        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\""+
+         this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
     };
 
 Blockly.DatePickerJsGenerator.generateJSForRemovingComponent = function(component){
-        return     "var previous =document.getElementById(\"" + component.$Name + "\").previousElementSibling;"+
+        return     "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
             "previous.remove();"+
                 "var node = document.getElementById(\"" + component.$Name + "\");" +
                    "if(node.parentNode){" +
@@ -64,7 +65,7 @@ Blockly.DatePickerJsGenerator.setProperties = function(component, propName, prop
              return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                     this.getFontType(propValue) + "\";";
          case "Text":
-             return "document.getElementById(\"div_" + component.$Name + "\").textContent=\""
+             return "document.getElementById(\"label_" + component.$Name + "\").textContent=\""
                  + propValue + "\";";
          case "TextColor":
              return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"#" +

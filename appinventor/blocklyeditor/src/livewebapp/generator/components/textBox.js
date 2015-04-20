@@ -22,7 +22,8 @@ Blockly.TextBoxJsGenerator.generateJSForAddingComponent = function(component){
         "div.appendChild(txt);" +
         "document.body.appendChild(div);"+
          "}");
-    return txtBox;
+    return txtBox+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 

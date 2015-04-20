@@ -17,7 +17,8 @@ Blockly.ListViewJsGenerator.generateJSForAddingComponent = function(component){
             "var listView = document.createElement(\"ul\");" +
             "listView.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "div.appendChild(listView);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.ListViewJsGenerator.generateJSForRemovingComponent = function(component){

@@ -17,16 +17,17 @@ Blockly.CheckBoxJsGenerator.generateJSForAddingComponent = function(component){
             "checkBox.setAttribute(\"type\",\"checkbox\");" +
             "checkBox.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "var label = document.createElement(\"Label\");" +
-            "label.setAttribute(\"htmlFor\",\"" + component.$Name + "\");" +
+            "label.setAttribute(\"id\",\"label_" + component.$Name + "\");" +
             "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
             "div.appendChild(checkBox);" +
             "div.appendChild(label);" +
             "document.body.appendChild(div);}"+
-            "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"";
+            "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"" +
+           this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.CheckBoxJsGenerator.generateJSForRemovingComponent = function(component){
-    return     "var previous =document.getElementById(\"div_" + component.$Name + "\").nextElementSibling;"+
+    return     "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
             "previous.remove();"+
         "var node = document.getElementById(\"" + component.$Name + "\");" +
         "if(node.parentNode){" +
@@ -62,7 +63,7 @@ Blockly.CheckBoxJsGenerator.setProperties = function(component, propName, propVa
             return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                 this.getFontType(propValue) + "\";";
         case "Text":
-            return "document.getElementById(\"div_" + component.$Name + "\").textContent=\""
+            return "document.getElementById(\"label_" + component.$Name + "\").textContent=\""
                 + propValue + "\";";
         case "TextColor":
             return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"#" +

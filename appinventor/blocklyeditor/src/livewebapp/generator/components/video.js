@@ -17,7 +17,8 @@ Blockly.VideoJsGenerator.generateJSForAddingComponent = function(component){
             "video.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "video.setAttribute(\"controls\",\"controls\");" +
             "div.appendChild(video);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 

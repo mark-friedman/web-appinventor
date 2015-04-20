@@ -18,16 +18,17 @@ Blockly.ListPickerJsGenerator.generateJSForAddingComponent = function(component)
             "var listView = document.createElement(\"select\");" +
             "listView.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "var label = document.createElement(\"Label\");" +
-            "label.setAttribute(\"id\",\"" + component.Uuid + "\");" +
+            "label.setAttribute(\"id\",\"label_" + component.$Name + "\");" +
             "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
             "div.appendChild(label);" +
             "div.appendChild(listView);" +
             "document.body.appendChild(div);}"+
-        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"";
+        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\""+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.ListPickerJsGenerator.generateJSForRemovingComponent = function(component){
-        return     "var previous =document.getElementById(\"" + component.$Name + "\").previousElementSibling;"+
+        return     "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
             "previous.remove();"+
             "var node = document.getElementById(\"" + component.$Name + "\");" +
                    "if(node.parentNode){" +
@@ -64,10 +65,10 @@ Blockly.ListPickerJsGenerator.setProperties = function(component, propName, prop
              return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                     getFontType(propValue) + "\";";
          case "Text":
-             return "document.getElementById(\"div_" + component.$Name + "\").textContent=\"" +
+             return "document.getElementById(\"label_" + component.$Name + "\").textContent=\"" +
                  propValue + "\";";
          case "TextColor":
-             return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"#" +
+             return "document.getElementById(\"label_" + component.$Name + "\").style.color = \"#" +
                     propValue.substring(4) + "\";";
          case "TextAlignment":
              return "document.getElementById(\"div_" + component.$Name + "\").style.textAlign = \"" +
@@ -88,10 +89,29 @@ Blockly.ListPickerJsGenerator.setProperties = function(component, propName, prop
              return "document.getElementById(\"div_" + component.$Name + "\").disabled = \"" +
                  this.getEnabled(propValue) + "\";";
          case "ElementsFromString":
-             return this.getList(propValue, component.$Name);
+             return this.generateJSForRemovingComponent(component) + this.generateJSForAddingComponent(component) +
+                 this.getList(component);
          case "Image":
              return "document.getElementById(\"div_" + component.$Name + "\").style.backgroundImage = \"url(assets/" +
                  (propValue) + ")\";";
+         case "ItemBackgroundColor":
+             if(component.hasOwnProperty("ElementsFromString"))
+                 return this.generateJSForRemovingComponent(component) + this.generateJSForAddingComponent(component) +
+                     this.getList(component);
+             else
+                 return "";
+         case "ItemTextColor":
+             if(component.hasOwnProperty("ElementsFromString"))
+                return this.generateJSForRemovingComponent(component) + this.generateJSForAddingComponent(component) +
+                    + this.getList(component);
+             else
+                return "";
+         case "Title":
+             if(component.hasOwnProperty("ElementsFromString"))
+                 return this.generateJSForRemovingComponent(component) + this.generateJSForAddingComponent(component) +
+                     + this.getList(component);
+             else
+                 return "";
          default:
              return "";
      }
@@ -123,15 +143,42 @@ Blockly.ListPickerJsGenerator.getHeightSizeVal = function(index, component) {
             "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
 };
 
-Blockly.ListPickerJsGenerator.getList = function(index, componentID) {
-    var listVals= index.split(",");
+Blockly.ListPickerJsGenerator.getList = function(component) {
+    var listVals= component.ElementsFromString.split(",");
     var i;
     var listJS="";
+    if(component.hasOwnProperty('Title')){
+        listJS=listJS+ "var opt = document.createElement(\"option\");"+
+        "opt.value=\""+component["Title"] +"\";"+
+        "opt.setAttribute(\"disabled\",\"true \");";
+        //if(component.hasOwnProperty('Selection')){
+        //    if(component["Selection"]==component["Title"])
+        //        listJS+= "opt.setAttribute(\"selected\",\"true\");";
+        //}
+        //if(component.hasOwnProperty('ItemBackgroundColor')){
+        //    listJS+= "opt.setAttribute(\"backgroundColor\",\""+component["ItemBackgroundColor"].substring(4) + "\");";
+        //}
+        //if(component.hasOwnProperty('ItemTextColor')){
+        //    listJS+= "opt.setAttribute(\"color\",\""+component["ItemTextColor"].substring(4)+ "\");";
+        //}
+        listJS+="var listName=document.getElementById(\""+component.$Name+"\");"+
+        "listName.appendChild(opt);";
+    }
     for (i = 0; i < listVals.length; i++) {
         listJS=listJS+ "var opt = document.createElement(\"option\");"+
         "opt.text =\"" +listVals[i]+"\";"+
-        "opt.value =\""+listVals[i]+"\";"+
-        "var listName=document.getElementById(\""+componentID+"\");"+
+        "opt.value =\""+listVals[i]+"\";";
+        //if(component.hasOwnProperty('Selection')){
+        //    if(component["Selection"]==listVals[i])
+        //        listJS+= "opt.setAttribute(\"selected\",\"true \");";
+        //}
+        //if(component.hasOwnProperty('ItemBackgroundColor')){
+        //    listJS+= "opt.setAttribute(\"backgroundColor\",\""+component["ItemBackgroundColor"].substring(4) + "\");";
+        ////}
+        //if(component.hasOwnProperty('ItemTextColor')){
+        //    listJS+= "opt.setAttribute(\"color\",\""+component["ItemTextColor"].substring(4)+ "\");";
+        //}
+        listJS+="var listName=document.getElementById(\""+component.$Name+"\");"+
         "listName.appendChild(opt);";
     }
     return listJS;

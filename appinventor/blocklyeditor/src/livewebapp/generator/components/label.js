@@ -20,7 +20,9 @@ Blockly.LabelJsGenerator.generateJSForAddingComponent = function(component){
         "btn.appendChild(txt);" +
         "div.appendChild(btn);" +
         "document.body.appendChild(div);"+
-        "}";
+        "}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component)+
+     this.getBorder(component, "True");
 };
 
 

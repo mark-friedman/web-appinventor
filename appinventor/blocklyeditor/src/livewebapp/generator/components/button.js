@@ -6,6 +6,7 @@ goog.provide('Blockly.ButtonJsGenerator');
 
 goog.require('Blockly.Generator');
 
+
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.ButtonJsGenerator.generateJSForAddingComponent = function(component){
@@ -20,7 +21,7 @@ Blockly.ButtonJsGenerator.generateJSForAddingComponent = function(component){
             "btn.appendChild(txt);" +
             "div.appendChild(btn);" +
             "document.body.appendChild(div);"+
-        "}";
+        "}"+  this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 

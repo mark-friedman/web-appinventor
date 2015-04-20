@@ -19,16 +19,17 @@ Blockly.TimePickerJsGenerator.generateJSForAddingComponent = function(component)
             "timefield.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "timefield.setAttribute(\"type\", \"time\");" +
             "var label = document.createElement(\"Label\");" +
-            "label.setAttribute(\"htmlFor\",\"" + component.$Name + "\");" +
+            "label.setAttribute(\"id\",\"label_" + component.$Name + "\");" +
             "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
             "div.appendChild(label);" +
             "div.appendChild(timefield);" +
             "document.body.appendChild(div);}"+
-        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"";
+        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\""+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.TimePickerJsGenerator.generateJSForRemovingComponent = function(component){
-        return    "var previous =document.getElementById(\"" + component.$Name + "\").previousElementSibling;"+
+        return    "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
             "previous.remove();"+
             "var node = document.getElementById(\"" + component.$Name + "\");" +
                    "if(node.parentNode){" +
@@ -47,43 +48,43 @@ Blockly.TimePickerJsGenerator.setProperties = function(component, propName, prop
      switch(propName) {
          case "FontBold":
              if(propValue == "False"){
-               return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.fontWeight = \"normal\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontWeight = \"normal\";";
              }else{
-               return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.fontWeight = \"bold\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontWeight = \"bold\";";
              }
          case "FontItalic":
              if(propValue == "False"){
-               return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.fontStyle = \"normal\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontStyle = \"normal\";";
              }else{
-               return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.fontStyle = \"italic\";";
+               return "document.getElementById(\"div_" + component.$Name + "\").style.fontStyle = \"italic\";";
              }
          case "FontSize":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.fontSize = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.fontSize = \"" +
              Math.round(propValue) +"pt\";";
          case "FontTypeface":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.fontFamily = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                     this.getFontType(propValue) + "\";";
          case "Text":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.textContent=\"" +
+             return "document.getElementById(\"label_" + component.$Name + "\").textContent=\"" +
                  propValue + "\";";
          case "TextColor":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.color = \"#" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"#" +
                     propValue.substring(4) + "\";";
          case "TextAlignment":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.textAlign = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
              return this.getWidthSizeVal(propValue, component);
          case "Height":
              return this.getHeightSizeVal(propValue, component);
          case "BackgroundColor":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.backgroundColor = \"#" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.backgroundColor = \"#" +
                  propValue.substring(4) + "\";";
          case "Shape":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.Shape = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.Shape = \"" +
                  this.getShape(propValue) + "\";";
          case "Visible":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.visibility = \"" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";"+
                  "document.getElementById(\"div_" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";";
@@ -91,7 +92,7 @@ Blockly.TimePickerJsGenerator.setProperties = function(component, propName, prop
              return "document.getElementById(\"div_" + component.$Name + "\").disabled = \"" +
                  this.getEnabled(propValue) + "\";";
          case "Image":
-             return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.backgroundImage = \"url(assets/" +
+             return "document.getElementById(\"div_" + component.$Name + "\").style.backgroundImage = \"url(assets/" +
                  (propValue) + ")\";";
          default:
              return "";
@@ -100,28 +101,28 @@ Blockly.TimePickerJsGenerator.setProperties = function(component, propName, prop
 
 Blockly.TimePickerJsGenerator.getWidthSizeVal = function(index, component) {
     if(index == "-1")
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.width = \"auto\";";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"auto\";";
     else if(index == "-2")
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.width = \"100%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.display = \"block\"";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
     else if(index.indexOf("-")<0)
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.width =\""+ index+"px\";";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.width =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.display = \"block\"";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
 };
 
 Blockly.TimePickerJsGenerator.getHeightSizeVal = function(index, component) {
     if(index == "-1")
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.height = \"auto\";";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"auto\";";
     else if(index == "-2")
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.height = \"100%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.display = \"block\"";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
     else if(index.indexOf("-")<0)
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.height =\""+ index+"px\";";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index+"px\";";
     else
-        return "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.height =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"div_" + component.$Name + "\").previousElementSibling.style.display = \"block\"";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\"";
 };
 
 Blockly.TimePickerJsGenerator.getVisibility = function(index) {
