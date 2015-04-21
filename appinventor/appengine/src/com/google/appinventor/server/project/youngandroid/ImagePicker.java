@@ -125,20 +125,9 @@ public class ImagePicker extends ImageComponent{
     this.type = type;
   } 
 
-  private String generateCSSforComponent()
+  private String generateCSSforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-
-    if(!this.getBackgroundColor().equals(""))
-      sb.append(" background : "+this.getBackgroundColor()+";\n");
-    sb.append(" text-align : "+this.getTextAlign()+";\n");
-    sb.append(" font-size : "+this.getFontSize()+"px;\n");
-    sb.append(" font-weight : "+this.getFontBold()+";\n");      
-    sb.append(" font-style : "+this.getFontItalic()+";\n");
-    sb.append(" font-family : "+this.getFontTypeface()+";\n");
-    sb.append(" color : "+this.getTextColor()+";\n");
-    sb.append(" border-radius : "+this.getShape()+";\n");
-    sb.append("}\n");
 
     sb.append("#"+"label_"+this.getName()+"\n");
     sb.append("{\n");
@@ -159,12 +148,23 @@ public class ImagePicker extends ImageComponent{
     return sb.toString().valueOf(sb);
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div");
-    sb.append(" id = "+"\""+"div_"+this.getName()+"\"");
-    sb.append(">");
+    if(hasParent==null)
+    	sb.append("<div id=\"div_"+this.getName()+"\" style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
     sb.append("<label");
     sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
 
@@ -179,7 +179,7 @@ public class ImagePicker extends ImageComponent{
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = \"file\"");
     sb.append(" accept = \"image/*\"");
-
+    sb.append(" style = \"display : inline;\"");
     if(this.getEnabled().equals("False"))
       sb.append(" disabled");
 
@@ -192,7 +192,7 @@ public class ImagePicker extends ImageComponent{
     return sb.toString().valueOf(sb);
   }
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties,Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
@@ -290,8 +290,8 @@ public class ImagePicker extends ImageComponent{
         break;
       }
     }
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
-    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
+    componentInfo.css.add(generateCSSforComponent(hasParent));
     componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
     return componentInfo;
 

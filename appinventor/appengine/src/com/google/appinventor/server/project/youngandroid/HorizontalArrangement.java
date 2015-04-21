@@ -108,13 +108,16 @@ public void setVerticalAlign(String verticalAlign) {
 	this.verticalAlign = verticalAlign;
 }
 
-private String generateCSSforComponent(ArrayList<String> containedCssList)
+private String generateCSSforComponent(ArrayList<String> containedCssList,Boolean hasParent)
 {
   StringBuilder sb = new StringBuilder();
   sb.append("#"+this.getName()+"\n");
   sb.append("{\n");	
-  sb.append(" width : "+this.getWidth()+";\n");
-  sb.append(" height : "+this.getHeight()+";\n");
+  if(hasParent==null)
+	  sb.append(" width : auto;\n");
+  else
+	  sb.append(" width : 100%;\n");
+  sb.append(" height : auto;\n");
   //sb.append(" position : absolute;\n");
   sb.append(" text-align : "+this.getHorizontalAlign()+";\n");
   sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not work for now!
@@ -127,9 +130,24 @@ private String generateCSSforComponent(ArrayList<String> containedCssList)
   return sb.toString().valueOf(sb);
 }
 
-private String generateHTMLforComponent(ArrayList<String> containedHtmlList)
+private String generateHTMLforComponent(ArrayList<String> containedHtmlList, Boolean hasParent)
 {
   StringBuilder sb = new StringBuilder();
+  if(hasParent==null)
+  {}
+  else if(hasParent==true)
+  {
+  	sb.append("<div class=\"col-md-10\"");
+  	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+  	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+  }
+  else
+  {
+  	sb.append("<div class=\"row-md-10\"");
+  	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+  	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+  }
+  
   sb.append("<div class=\"row\" id = \""+this.getName()+"\"");
   if(this.getVisible().equals("False")){
     sb.append(" hidden");
@@ -137,22 +155,19 @@ private String generateHTMLforComponent(ArrayList<String> containedHtmlList)
   sb.append(">\n");
   if(!containedHtmlList.isEmpty())
   {
-  int span=12/containedHtmlList.size();
   for(String str:containedHtmlList)
   {
-    sb.append("<div class=\"col-md-"+span+"\">\n");
-	//sb.append("<div class=\"col-md-1\">\n");
     sb.append(str);
-    sb.append("</div>\n");
   }
   }
   sb.append("</div>");
-  
+  if(hasParent!=null)
+	  sb.append("</div>");  
   return sb.toString().valueOf(sb);
 }
 
 
-public ParseResult getComponentString(Map<String,JSONValue> properties)
+public ParseResult getComponentString(Map<String,JSONValue> properties, Boolean hasParent)
   {
   ParseResult componentInfo = new ParseResult();
    for(String property:properties.keySet())
@@ -172,9 +187,7 @@ public ParseResult getComponentString(Map<String,JSONValue> properties)
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equals("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
           this.setWidth(value.substring(2)+"%");
@@ -182,9 +195,7 @@ public ParseResult getComponentString(Map<String,JSONValue> properties)
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equals("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
           this.setHeight(value.substring(2)+"%");
@@ -223,11 +234,11 @@ public ParseResult getComponentString(Map<String,JSONValue> properties)
     if(properties.containsKey("$Components"))
     {
       JSONArray componentsArray= properties.get("$Components").asArray();
-      childrenResults=new Parse().parseComponents(componentsArray, this.assetSrcPrefix);
+      childrenResults=new Parse().parseComponents(componentsArray, this.assetSrcPrefix, true);
     }
 
-    componentInfo.bodyHtml.add(generateHTMLforComponent(childrenResults.bodyHtml));
-    componentInfo.css.add(generateCSSforComponent(childrenResults.css));
+    componentInfo.bodyHtml.add(generateHTMLforComponent(childrenResults.bodyHtml,hasParent));
+    componentInfo.css.add(generateCSSforComponent(childrenResults.css,hasParent));
     componentInfo.assetFiles =  childrenResults.assetFiles; 
 
     return componentInfo;

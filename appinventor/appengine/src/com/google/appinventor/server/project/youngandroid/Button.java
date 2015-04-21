@@ -1,6 +1,10 @@
 package com.google.appinventor.server.project.youngandroid;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.Map;
+
+import javax.imageio.ImageIO;
 
 import com.google.appinventor.shared.properties.json.JSONValue;
 
@@ -27,11 +31,12 @@ public class Button extends ImageComponent{
   String image = "";
   String shape = "0px";
   String text = "";
-  String textAlign = "left";
+  String textAlign = "center";
   String textColor = "#000000";
   String visible = "true";
-  String width = "auto";
-  String height = "auto";	
+  String width = "120px";
+  String height = "auto";
+
   
   String name = "";
   String type = "Button";
@@ -166,7 +171,7 @@ public class Button extends ImageComponent{
     this.type  =  type;
   }
 
-  private String generateCSSforComponent()
+  private String generateCSSforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
     sb.append("#"+this.getName()+"\n");
@@ -175,12 +180,14 @@ public class Button extends ImageComponent{
     if(!this.getBackgroundColor().equals(""))
       sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" font-size : "+this.getFontSize()+"px;\n");
-    sb.append(" font-weight : "+this.getFontBold()+";\n");		
-    sb.append(" width : "+this.getWidth()+";\n");
-    sb.append(" height : "+this.getHeight()+";\n");
+    sb.append(" font-weight : "+this.getFontBold()+";\n");	
+    //sb.append(" width : 100%;\n");
+    //sb.append(" height : 100%;\n");
+    sb.append(" min-height : 16px;\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
     sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
+    sb.append(" background-size: 100% 100%;");
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" border-radius : "+this.getShape()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
@@ -189,11 +196,24 @@ public class Button extends ImageComponent{
     return sb.toString().valueOf(sb);
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div>");
-    sb.append("<button");
+    if(hasParent==null)
+    	sb.append("<div style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    sb.append("<button class=\"default-component-size\"");
     sb.append(" id = "+"\""+this.getName()+"\"");
 
     if(this.getEnabled().equals("False"))
@@ -204,12 +224,12 @@ public class Button extends ImageComponent{
 
     sb.append(">");
     sb.append(this.getText());
-    sb.append("</button>");
+    sb.append("</button>\n");
     sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties,Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
@@ -308,8 +328,8 @@ public class Button extends ImageComponent{
         break;
       }
     }
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
-    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
+    componentInfo.css.add(generateCSSforComponent(hasParent));
     componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
     return componentInfo;
 

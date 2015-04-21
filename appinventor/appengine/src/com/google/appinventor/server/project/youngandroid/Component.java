@@ -13,7 +13,7 @@ public abstract class Component {
   {
   }
   
-  public abstract ParseResult getComponentString(Map<String,JSONValue> componentsMap);
+  public abstract ParseResult getComponentString(Map<String,JSONValue> componentsMap, Boolean hasParent);
 
 }
 
