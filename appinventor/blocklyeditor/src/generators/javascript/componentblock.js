@@ -47,6 +47,7 @@ Blockly.JavaScript.component_event = function() {
       break;
     case 'Changed':
       JSEvent = 'onchange = ';
+      break;
     case 'TouchDown':
       JSEvent = 'onmousedown = ';
       break;
@@ -485,7 +486,12 @@ Blockly.JavaScript.component_set_get = function() {
   }
 }
 
-// useLabel: 0 or 1, depending on whether the property affects the label or not
+/**
+ *  Helper function that returns the appropriate document.getElementById
+ *  That is, it determines whether to get the component or its label.
+ *  @param {String} elementId   : The current element to set the property for
+ *  @param {Integer} useLabel   : 0 or 1, (false or true)
+ *  @return {String} code       : the appropriate "document.getElementById"
 Blockly.JavaScript.codeHelper = function(elementId, useLabel) {
   var code = 'document.getElementById(\"';
   // var elementId = elementCode.match(/"(.*?)"/)[1];
