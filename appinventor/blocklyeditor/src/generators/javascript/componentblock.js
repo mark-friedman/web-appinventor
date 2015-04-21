@@ -60,7 +60,10 @@ Blockly.JavaScript.component_event = function() {
       JSEvent = 'onchange = ';
       break;
     case 'AfterPicking':
-      JSEvent = 'onselect = ';
+      JSEvent = 'onchange = ';
+      break;
+    case 'BeforePicking':
+      JSEvent = 'onclick = ';
       break;
     case 'Completed':
       JSEvent = 'onended = ';
@@ -500,7 +503,7 @@ Blockly.JavaScript.codeHelper = function(elementId, useLabel) {
        (elementId.indexOf("ListPicker")  > -1) ||
        (elementId.indexOf("TimePicker")  > -1) ||
        (elementId.indexOf("CheckBox")    > -1))  ) {
-    code += 'label';
+    code += 'label_';
   }
   code += elementId + '\")';
 
@@ -573,11 +576,12 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
     case 'text':
-      code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      if (typeName == 'TextBox' || typeName == "PasswordTextBox") {
+      if (typeName == 'TextBox' || typeName == "PasswordTextBox" || typeName == "ListPicker") {
+        code += Blockly.JavaScript.codeHelper(elementCode, 0);
         code += '.value = ' + bodyCode + ';';
       }
       else {
+        code += Blockly.JavaScript.codeHelper(elementCode, 1);
         code += '.innerHTML = ' + bodyCode + ';';
       }
       break;
@@ -712,8 +716,11 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       break;
     case 'elementsfromstring':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      // add each list element as an item of array
       var newCode = 'var values = ' + bodyCode + '.split(\",\");';
+      // initialize an HTML string to represent list
       newCode += 'var listItems = \"\";';
+      // loop through array and add elements to list
       newCode += 'for(var i=0; i<values.length; i++){';
       newCode += 'listItems = listItems + \"<li>\" + values[i] + \"</li>\";}';
       newCode += '' + code + '.innerHTML = listItems;';
@@ -741,7 +748,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       break;
     case 'picture':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.src = \"assets/' + eval(bodyCode) + '\";';
+      code += '.src = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
       break;
     case 'volume':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -749,7 +756,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       break;
     case 'source':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.src = ' + bodyCode + ';';
+      code += '.src = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
       break;
     case 'loop':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -789,26 +796,93 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
         break;
     case 'numbersonly': //april13
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      if(bodyCode){  //april13
-        code += '.type = \"number\";'; //april13
-      } else{  //april13
-        code += '.type = \"text\";'; //april13
+      if(bodyCode){
+        code += '.type = \"number\";';
+      } else{
+        code += '.type = \"text\";';
       }
-      break; //april13
+      break;
     //case 'showfeedback':
     //  code += Blockly.JavaScript.codeHelper(elementCode, 1);
     //  code += '.showfeedback = ' + bodyCode + ';';
     //  break;
     case 'multiline': //april13
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      // if input is true, change tag to textarea tag
+      // if input is false, change tag to input tag
+      // set oldChild to the current element
       var oldChild = code;
       code = 'var parent = ' + oldChild + '.parentNode;';
+      //create a new element to be new child
       code += 'var newChild = document.createElement( ' ;
       code += bodyCode + ' ? \'textarea\' : \'input\'';
       code += ');';
-      code += 'newChild.id = \"' + elementId + '\";';
+      code += 'newChild.id = \"' + elementCode + '\";';
       code += 'parent.replaceChild(newChild,' + oldChild +');';
       break;
+    case 'itembackgroundcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.style.backgroundColor = ' + bodyCode + ';';
+      break;
+    case 'itemtextcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.style.color = ' + bodyCode + ';';
+      break;
+    case 'title':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.previousElementSibling.innerHTML = ' + bodyCode + ';';
+      break;
+    case 'selection':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      //select a child of an element
+      //get the children
+      code = 'var items = ' + elemCode + '.children;';
+      //loop through children
+      code += 'for (var i = 0; i<items.length; i++){';
+      //if the child's innerHTML matches the input
+      code += 'if(items[i].innerHTML==' + bodyCode + ')';
+      //create new child that is a copy of old but with selected attribute as true
+      code += '{ var newItem = document.createElement(\"option\");';
+      code += 'newItem.innerHTML = items[i].innerHTML;';
+      //set selected attribute to true
+      code += 'newItem.selected = \"true\";';
+      code += '' + elemCode + '.replaceChild(newItem,items[i]);';
+      code += 'break;}};';
+      break;
+    case 'selectionindex':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      code = 'var items = ' + elemCode + '.children;';
+      //create new child that is a copy of old but with selected attribute as true
+      code += 'var newItem = document.createElement(\"option\");';
+      //get HTML of item at input index for new element
+      code += 'newItem.innerHTML = items[' + bodyCode + '-1].innerHTML;';
+      code += 'newItem.selected = \"true\";';
+      code += '' + elemCode + '.replaceChild';
+      code += '(newItem,items[' + bodyCode + '-1]);';
+      break;
+    case 'elements':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      //sets new elements from an input list
+      //items is a list of old child elements
+      code = 'var items =' + elemCode + '.children;';
+      code += 'var l = items.length;';
+      //loop through old children and remove them
+      code += 'for (var i=0; i<l; i++){';
+      code += '' + elemCode + '.removeChild(items[i]);};';
+      //loop through new children and set them as children
+      code += 'for (var i=0; i<' + bodyCode + '.length; i++){';
+      code += 'var newItem = document.createElement(\"option\");';
+      code += 'newItem.innerHTML = ' + bodyCode + '[i];';
+      code += '' + elemCode + '.appendChild(newItem);';
+      code += '};';
+      break;
+    case 'textsize':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      code = 'var x = ' + elemCode + '.children;';
+      code += 'for (i=0; i<x.length; i++){';
+      code += 'x[i].style.fontSize = \"' + bodyCode +'%\";};';
+      break;
+
     default:
       break;
   }
@@ -905,11 +979,12 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
     case 'text':
-      code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      if (typeName == 'TextBox' || typeName == "PasswordTextBox") {
+      if (typeName == 'TextBox' || typeName == "PasswordTextBox" || typeName == 'ListPicker') {
+        code += Blockly.JavaScript.codeHelper(elementCode, 0);
         code += '.value';
       }
       else {
+        code += Blockly.JavaScript.codeHelper(elementCode, 1);
         code += '.innerHTML';
       }
       break;
@@ -1000,10 +1075,6 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
     //  code += Blockly.JavaScript.codeHelper(elementCode, 1);
     //  code += '.showfeedback';
     //  break;
-    // case 'multiline':
-    //   code += Blockly.JavaScript.codeHelper(elementCode, 1);
-    //   code += '';
-    //   break;
     case 'source':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.src';
@@ -1016,15 +1087,68 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.loop';
       break;
-    case 'numbersonly': //april13
+    case 'numbersonly':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.type';  //april13
-      break;            //april13
+      code += '.type';
+      break;
     case 'multiline':
+      code = '(function() { ';
+      //get all elements with textarea tags
+      code += 'var elements = document.getElementsByTagName(\"TEXTAREA\");';
+      //loop through and see if their ids match the current element's id
+      code += 'for (i=0; i<elements.length; i++){';
+      code += 'if(elements[i].id==\"' + elementCode +'\"){';
+      code +=  'return true;};';
+      code +=  '}; return false;';
+      code +=  '})()';
+      break;
+    case 'itembackgroundcolor':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      var stringCode = '' + code; //april13
-      code = ("textarea" == stringCode.match(/textarea/)); //april13
-      code = '' + code; //april13
+      code += '.style.backgroundColor';
+      break;
+    case 'itemtextcolor':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.style.color';
+      break;
+    case 'title':
+      code += Blockly.JavaScript.codeHelper(elementCode, 1);
+      code += '.previousElementSibling.innerHTML';
+      break;
+    case 'selection':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      code = '(function() {var items = ' + elemCode + '.children;';
+      // loop through children and return the selected child
+      code += 'for (var i = 0; i<items.length; i++){';
+      code += 'if(items[i].selected){';
+      code +=   'return items[i].innerHTML;}';
+      code += '}; return \"\"})()';
+      break;
+    case 'selectionindex':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      code = '(function() {var items = ' + elemCode + '.children;';
+      code += 'var index = 0;';
+      // loop through children and return index of selected child
+      code += 'while (index<items.length){';
+      code += 'if(items[index].selected){';
+      code +=   'return (index+1);}';
+      code +=   'index++;';
+      code += '}; return index;})()';
+      break;
+    case 'elements':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      code = '(function() {var items = ' + elemCode + '.children;';
+      code += 'var elementList = [];';
+      //loop through children and add each child to array (represents list)
+      code += 'for (i=0; i<items.length; i++){';
+      code +=   'elementList[i] = items[i].innerHTML;};';
+      code += 'return elementList;})()';
+      break;
+    case 'textsize':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
+      code = '(function() {var x = ' + elemCode + '.children;';
+      code += 'if(x.length>0){var s = x[0].style.fontSize;';
+      code += 'return s.substring(0,s.length-1);};';
+      code += 'return 100;})()';
       break;
     case 'fullscreen':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -1072,6 +1196,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       '})()';
       code = dateCode;
       break;
+
     default:
       break;
   }
