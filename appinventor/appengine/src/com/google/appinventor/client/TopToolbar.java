@@ -144,7 +144,7 @@ public class TopToolbar extends Composite {
               new BuildToZipAction()));
       buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
               new BarcodeAction()));
-      if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
+      if (AppInventorFeatures.hasJSGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
           buildItems.add(null);
       buildItems.add(new DropDownItem(WIDGET_NAME_GENERATE_JAVASCRIPT, MESSAGES.toJavaScript(),
               new GenerateJavaScriptAction()));
@@ -269,10 +269,10 @@ public class TopToolbar extends Composite {
     public void execute() {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
-        String target = "web";
+        String target = ServerLayout.BUILD_TARGET_QRCODE;
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateJavaScriptCommand(
-                new BuildWebCommand(target, new ShowBarcodeCommand(target))));
+                new BuildCommand(target, new ShowBarcodeCommand(target))));
 //        updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -300,7 +300,10 @@ public class TopToolbar extends Composite {
         }
       } else {
         //If we are in the designer view.
-        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE + ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + Ode.getInstance().getCurrentYoungAndroidProjectId());
+        Downloader.getInstance().download(
+            ServerLayout.DOWNLOAD_SERVLET_BASE +
+            ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" +
+            Ode.getInstance().getCurrentYoungAndroidProjectId());
       }
     }
 
@@ -355,17 +358,16 @@ public class TopToolbar extends Composite {
             ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
             if (projectRootNode != null) {
                 //String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-                String target = "web";    // TODO: We need a new type of project service and project node.
+                String target = ServerLayout.BUILD_TARGET_WEB;
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
-                                new BuildWebCommand(target,
-                                        new DownloadWebOutputCommand(target))));
-//	        updateBuildButton(true);
+                                // Download web output will build the html and zip it up
+                                new DownloadWebOutputCommand(target)
+                                ));
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
                         new Command() {
                             @Override
                             public void execute() {
-//	                updateBuildButton(false);
                             }
                         });
             }
@@ -382,7 +384,7 @@ public class TopToolbar extends Composite {
 
                 ChainableCommand cmd = new SaveAllEditorsCommand(
                         new GenerateJavaScriptCommand(
-                                new BuildWebCommand("LiveWebApp",
+                                new BuildCommand(ServerLayout.BUILD_TARGET_LIVEWEBAPP,
                                         new LaunchLiveWebAppCommand(null))));
 
                 cmd.startExecuteChain(Tracking.PROJECT_ACTION_LAUNCH_LIVE_WEB_APP, projectRootNode);
@@ -519,25 +521,26 @@ public class TopToolbar extends Composite {
    */
   public void updateFileMenuButtons(int view) {
     if (view == 0) {  // We are in the Projects view
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
-          Ode.getInstance().getProjectManager().getProjects() == null);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.webAppMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.buildHTMLOutputMenuItem(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.toJavaScript(), false);
     } else { // We have to be in the Designer/Blocks view
-      fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.webAppMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.buildHTMLOutputMenuItem(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.toJavaScript(), true);
     }
     updateKeystoreFileMenuButtons();
   }

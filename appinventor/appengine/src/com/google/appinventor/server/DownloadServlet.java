@@ -19,7 +19,10 @@ import com.google.appinventor.shared.storage.StorageUtil;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
@@ -111,7 +114,9 @@ public class DownloadServlet extends OdeServlet {
         uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_OUTPUT);
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String target = (uriComponents.length > TARGET_INDEX) ? uriComponents[TARGET_INDEX] : null;
-        downloadableFile = fileExporter.exportProjectOutputFile(userId, projectId, target);
+        
+        // Get the exportable output file for the build, ie: a zip file
+        downloadableFile = fileExporter.exportProjectBuildOutputFile(userId, projectId, target);
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_SOURCE)) {
         // Download project source files as a zip.
@@ -208,6 +213,8 @@ public class DownloadServlet extends OdeServlet {
       throw CrashReport.createAndLogError(LOG, req, "user=" + userId, e);
     }
 
+    LOG.info("file name = " + downloadableFile.getFileName());
+    
     String fileName = downloadableFile.getFileName();
     byte[] content = downloadableFile.getContent();
 
@@ -215,6 +222,7 @@ public class DownloadServlet extends OdeServlet {
     resp.setStatus(HttpServletResponse.SC_OK);
     resp.setHeader("content-disposition", "attachment; filename=\"" + fileName + "\"");
     resp.setContentType(StorageUtil.getContentTypeForFilePath(fileName));
+    
     resp.setContentLength(content.length);
 
     // Attach download data

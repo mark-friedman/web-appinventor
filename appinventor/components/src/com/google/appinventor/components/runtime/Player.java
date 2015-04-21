@@ -271,32 +271,32 @@ public final class Player extends AndroidNonvisibleComponent
     }
   }
 
-  /**
-   * Gets the policy whether playing should only work in foreground.
-   *
-   * @return playOnlyInForeground
-   */
-  @SimpleProperty(
-      description = "If true, the player will pause playing when leaving the current screen; " +
-          "if false (default option), the player continues playing"+
-          " whenever the current screen is displaying or not.",
-      category = PropertyCategory.BEHAVIOR)
-  public boolean PlayOnlyInForeground() {
-    return playOnlyInForeground;
-  }
+  // /**
+  //  * Gets the policy whether playing should only work in foreground.
+  //  *
+  //  * @return playOnlyInForeground
+  //  */
+  // @SimpleProperty(
+  //     description = "If true, the player will pause playing when leaving the current screen; " +
+  //         "if false (default option), the player continues playing"+
+  //         " whenever the current screen is displaying or not.",
+  //     category = PropertyCategory.BEHAVIOR)
+  // public boolean PlayOnlyInForeground() {
+  //   return playOnlyInForeground;
+  // }
 
-  /**
-   * Sets the property PlayOnlyInForeground to true or false.
-   *
-   * @param shouldForeground determines whether plays only in foreground or always.
-   */
-  @DesignerProperty(
-      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
-  @SimpleProperty
-  public void PlayOnlyInForeground(boolean shouldForeground) {
-    playOnlyInForeground = shouldForeground;
-  }
+  // /**
+  //  * Sets the property PlayOnlyInForeground to true or false.
+  //  *
+  //  * @param shouldForeground determines whether plays only in foreground or always.
+  //  */
+  // @DesignerProperty(
+  //     editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  //     defaultValue = "False")
+  // @SimpleProperty
+  // public void PlayOnlyInForeground(boolean shouldForeground) {
+  //   playOnlyInForeground = shouldForeground;
+  // }
 
   /**
    * Plays the media.  If it was previously paused, the playing is resumed.
@@ -369,14 +369,14 @@ public final class Player extends AndroidNonvisibleComponent
     focusOn = false;
   }
 
-  //  TODO: Reconsider whether vibrate should be here or in a separate component.
-  /**
-   * Vibrates for specified number of milliseconds.
-   */
-  @SimpleFunction
-  public void Vibrate(long milliseconds) {
-    vibe.vibrate(milliseconds);
-  }
+  // //  TODO: Reconsider whether vibrate should be here or in a separate component.
+  // /**
+  //  * Vibrates for specified number of milliseconds.
+  //  */
+  // @SimpleFunction
+  // public void Vibrate(long milliseconds) {
+  //   vibe.vibrate(milliseconds);
+  // }
 
   @SimpleEvent(description = "The PlayerError event is no longer used. " +
       "Please use the Screen.ErrorOccurred event instead.",

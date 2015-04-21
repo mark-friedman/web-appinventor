@@ -11,7 +11,9 @@ import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.project.RawFile;
+import com.google.appinventor.shared.storage.StorageUtil;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +72,7 @@ public class BuildOutputServlet extends OdeServlet {
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
 
-    RawFile downloadableFile;
+    RawFile downloadableFile = null;
 
     String nonceValue = null;
 
@@ -107,17 +109,29 @@ public class BuildOutputServlet extends OdeServlet {
       {
         // No more path segments, so this url ends with just the file name
         fileId = uriComponents[FOLDER_KEY_INDEX];
-        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), "web", fileId);
+        downloadableFile = fileExporter.exportProjectOutputFile(nonce.getUserId(), nonce.getProjectId(), ServerLayout.BUILD_TARGET_QRCODE, fileId);
       } 
       else if (uriComponents.length >= FOLDER_KEY_INDEX + 1)
       {
         // Pick up the path segment and file name
         String folderKey = uriComponents[FOLDER_KEY_INDEX];
+        
         // Check that the path segment is the asset folder (ie: we limit what we serve up)
         if (folderKey.equalsIgnoreCase(ASSET_IDENTIFIER))
         {
           fileId = ASSET_IDENTIFIER + "/" + uriComponents[FOLDER_KEY_INDEX+1];
-          downloadableFile = fileExporter.exportFile(nonce.getUserId(), nonce.getProjectId(), fileId);
+          
+          // Find the asset file in the assets folder for the QRCode build
+          String isolatedFilePath = "build/" + ServerLayout.BUILD_TARGET_QRCODE + "/" + ASSET_IDENTIFIER + "/" + StorageUtil.basename(fileId);
+          try {
+            downloadableFile = fileExporter.exportFile(nonce.getUserId(), nonce.getProjectId(), isolatedFilePath);
+          }
+          catch (IOException | IllegalStateException e)
+          {
+            LOG.log(Level.INFO, "Could not find assets file for QRCode build: " + isolatedFilePath);
+            resp.sendError(resp.SC_NOT_FOUND, "Asset file not found: " + fileId);
+            return;
+          }    
         }
         else {
           resp.sendError(resp.SC_NOT_FOUND, "Unrecognized path segment: " + folderKey);

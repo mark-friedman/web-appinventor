@@ -20,9 +20,8 @@ public final class AppInventorFeatures {
     return true;
   }
 
-  public static boolean hasYailGenerationOption() {
-    // Set this to true if you want the Package for Phone button to include an option to just
-    // generate Yail
+  public static boolean hasJSGenerationOption() {
+    // Set this to true if you want an option to just generate JavaScript
     return true;
   }
 

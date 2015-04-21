@@ -51,18 +51,18 @@ public final class Button extends ButtonBase {
     EventDispatcher.dispatchEvent(this, "Click");
   }
 
-  @Override
-  public boolean longClick() {
-    // Call the users Click event handler. Note that we distinguish the longclick() abstract method
-    // implementation from the LongClick() event handler method.
-    return LongClick();
-  }
+  // @Override
+  // public boolean longClick() {
+  //   // Call the users Click event handler. Note that we distinguish the longclick() abstract method
+  //   // implementation from the LongClick() event handler method.
+  //   return LongClick();
+  // }
 
-  /**
-   * Indicates a user has long clicked on the button.
-   */
-  @SimpleEvent(description = "User held the button down.")
-  public boolean LongClick() {
-    return EventDispatcher.dispatchEvent(this, "LongClick");
-  }
+  // /**
+  //  * Indicates a user has long clicked on the button.
+  //  */
+  // @SimpleEvent(description = "User held the button down.")
+  // public boolean LongClick() {
+  //   return EventDispatcher.dispatchEvent(this, "LongClick");
+  // }
 }

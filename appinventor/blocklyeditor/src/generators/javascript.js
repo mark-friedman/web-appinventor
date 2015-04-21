@@ -139,6 +139,21 @@ Blockly.JavaScript.getFormJavaScript = function(formJson, packageName, forRepl) 
   // Beginning of JS
   code.push('window.onload = function() { ');
 
+  // FUNCTIONS TO BE PLACED IN A LIBRARY LATER
+  code.push(
+    'function playStarted(playerName) { ' +
+    ' var _event = new Event(\"_otherPlayerStarted\"); ' +
+    ' var audioElements = document.getElementsByTagName(\"audio\"); ' +
+    ' for (var i = 0; i < audioElements.length; i++) { ' +
+    '   var currElem = audioElements[i]; ' +
+    // playerName.id even though just the name is passed in because the dom thinks
+    // that its referencing the pointer to the element and the the string literal
+    '   if (playerName.id != currElem.id && currElem.currentTime > 0 && !currElem.ended) { ' +
+    '     currElem.dispatchEvent(_event); ' +
+    '   } ' +
+    ' } ' +
+    '};');
+
   // Generate JavaScript code for all the Global blocks in the map
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {

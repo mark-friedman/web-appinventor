@@ -121,10 +121,10 @@ public class DatePicker extends ButtonBase {
     customDate = true;
   }
 
-  @SimpleFunction(description="Launches the DatePicker popup.")
-  public void LaunchPicker() {
-    click();
-  }
+  // @SimpleFunction(description="Launches the DatePicker popup.")
+  // public void LaunchPicker() {
+  //   click();
+  // }
 
   /**
    * Overriding method from superclass to show the date picker dialog when the button is clicked
