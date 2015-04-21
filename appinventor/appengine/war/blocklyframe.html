@@ -67,19 +67,20 @@
         window.parent.ReplState.phoneState = {}; <!-- Reset the phone state when we are reloaded -->
 
 
+        var projectName = formName.split("_")[0];
 
         if (window.parent.liveWebAppClient === undefined) {
 
-            createLiveWebApp(formName);
-            console.log('created new web app client');
+            createLiveWebApp(projectName);
+            console.log('created new web app client : '+projectName);
 
         }else{
 
-            if(window.parent.liveWebAppClient.getProject() == formName){
-                console.log('using old web app client');
+            if(window.parent.liveWebAppClient.getProject() == projectName){
+                console.log('using old web app client : '+projectName);
             }else{
                 createLiveWebApp(formName);
-                console.log('switched project :created new web app client');
+                console.log('switched project :created new web app client : '+projectName);
             }
 
 
@@ -95,24 +96,11 @@
 
       function createLiveWebApp(projectName){
          var liveWebAppClient = Blockly.liveWebAppClient;
-         window.parent.liveWebAppClient = liveWebAppClient
+         window.parent.liveWebAppClient = liveWebAppClient;
          liveWebAppClient.setProject(projectName);
+		 liveWebAppClient.addMessageResponseListener();
       }
-	  window.addListener(receiveMessage);
-function receiveMessage(event){ 
-console.log(event.data);
-
-var json = goog.json.parse(event.data);
-					console.log("json.status"+json.status);
-					
-					console.log("json"+json);
-                    if (json.status == 'OK') {
-						console.log("json.values"+json.values);                        
-						Blockly.ReplMgr.processRetvals([json.values]);
-                    }else if(json.status == 'BAD'){
-					console.log("json.values"+json.values);   
-					}
- }
+	
  
     </script>
   </head>
