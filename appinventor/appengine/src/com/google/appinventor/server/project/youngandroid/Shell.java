@@ -126,6 +126,10 @@ public class Shell {
     //including id for body - Sudeep
     htmlStringBuilder.append("<body id = \""+ screenName+" class=\"container-fluid\""+"\">\n");
     
+    // include jquery library
+    htmlStringBuilder
+    .append("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js\"></script>\n");
+    
     // inject html from the components
 
     for (String html : componentPackage.bodyHtml) {
