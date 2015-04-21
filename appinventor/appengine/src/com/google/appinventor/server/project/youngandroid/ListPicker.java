@@ -354,7 +354,4 @@ public class ListPicker extends ImageComponent{
     return componentInfo;
 
   }
-  
-
-  
 }
