@@ -118,7 +118,7 @@ public class Shell {
       htmlStringBuilder.append("<script type=\"text/javascript\" src=\"/livewebapp/livewebapp.js\"></script>\n");
       htmlStringBuilder.append("<script type=\"text/javascript\">\n");
       htmlStringBuilder.append("liveWebApp.addClientListener(receiveMessage);\n");
-      htmlStringBuilder.append("function receiveMessage(event){  }\n");
+      htmlStringBuilder.append("function receiveMessage(event){ eval(event.data); }\n");
       htmlStringBuilder.append("</script>\n");
     }
 
