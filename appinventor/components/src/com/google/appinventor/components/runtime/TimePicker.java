@@ -104,10 +104,10 @@ public class TimePicker extends ButtonBase {
     }
   }
 
-  @SimpleFunction(description="Launches the TimePicker popup.")
-  public void LaunchPicker(){
-    click();
-  }
+  // @SimpleFunction(description="Launches the TimePicker popup.")
+  // public void LaunchPicker(){
+  //   click();
+  // }
 
   @Override
   public void click() {

@@ -273,12 +273,12 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    * @return left color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
-  @SimpleProperty(
-      description = "The color of slider to the left of the thumb.",
-      category = PropertyCategory.APPEARANCE)
-  public int ColorLeft() {
-    return leftColor;
-  }
+    // @SimpleProperty(
+    //     description = "The color of slider to the left of the thumb.",
+    //     category = PropertyCategory.APPEARANCE)
+    // public int ColorLeft() {
+    //   return leftColor;
+    // }
 
   /**
    * Specifies the color of the slider bar to the left of the thumb as an alpha-red-green-blue
@@ -288,13 +288,13 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    * @param argb background color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = initialLeftColorString)
-  @SimpleProperty
-  public void ColorLeft(int argb) {
-    leftColor = argb;
-    setSliderColors();
-  }
+  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+  //     defaultValue = initialLeftColorString)
+  // @SimpleProperty
+  // public void ColorLeft(int argb) {
+  //   leftColor = argb;
+  //   setSliderColors();
+  // }
 
   /**
    * Returns the color of the slider bar to the right of the thumb, as an alpha-red-green-blue
@@ -304,12 +304,12 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    * @return right color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
-  @SimpleProperty(
-      description = "The color of slider to the left of the thumb.",
-      category = PropertyCategory.APPEARANCE)
-  public int ColorRight() {
-    return rightColor;
-  }
+  // @SimpleProperty(
+  //     description = "The color of slider to the left of the thumb.",
+  //     category = PropertyCategory.APPEARANCE)
+  // public int ColorRight() {
+  //   return rightColor;
+  // }
 
   /**
    * Specifies the color of the slider bar to the right of the thumb as an alpha-red-green-blue
@@ -319,13 +319,13 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    * @param argb background color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
-      defaultValue = initialRightColorString)
-  @SimpleProperty
-  public void ColorRight(int argb) {
-    rightColor = argb;
-    setSliderColors();
-  }
+  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+  //     defaultValue = initialRightColorString)
+  // @SimpleProperty
+  // public void ColorRight(int argb) {
+  //   rightColor = argb;
+  //   setSliderColors();
+  // }
 
   @Override
   public View getView() {
@@ -373,23 +373,23 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
    *
    * @return height in pixels
    */
-  @Override
-  public int Height() {
-    //NOTE(kashi01): overriding and removing the annotation, because we don't want to give user
-    //ability to change the slider height and don't want display this in our block editor
-    return getView().getHeight();
-  }
+  // @Override
+  // public int Height() {
+  //   //NOTE(kashi01): overriding and removing the annotation, because we don't want to give user
+  //   //ability to change the slider height and don't want display this in our block editor
+  //   return getView().getHeight();
+  // }
 
   /**
    * Specifies the component's vertical height, measured in pixels.
    *
    * @param height in pixels
    */
-  @Override
-  public void Height(int height) {
-    //NOTE(kashi01): overriding and removing the annotation, because we don't want to give user
-    //ability to change the slider height and don't want display this in our block editor
-    container.setChildHeight(this, height);
-  }
+  // @Override
+  // public void Height(int height) {
+  //   //NOTE(kashi01): overriding and removing the annotation, because we don't want to give user
+  //   //ability to change the slider height and don't want display this in our block editor
+  //   container.setChildHeight(this, height);
+  // }
 
 }

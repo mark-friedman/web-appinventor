@@ -492,6 +492,7 @@ Blockly.JavaScript.component_set_get = function() {
  *  @param {String} elementId   : The current element to set the property for
  *  @param {Integer} useLabel   : 0 or 1, (false or true)
  *  @return {String} code       : the appropriate "document.getElementById"
+ */
 Blockly.JavaScript.codeHelper = function(elementId, useLabel) {
   var code = 'document.getElementById(\"';
   // var elementId = elementCode.match(/"(.*?)"/)[1];
@@ -582,9 +583,19 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
   // Cases will handle the property name changes that is identified
   switch (propertyName.toLowerCase()) {
     case 'text':
-      if (typeName == 'TextBox' || typeName == "PasswordTextBox" || typeName == "ListPicker") {
+      if (typeName == 'TextBox' || typeName == "PasswordTextBox") {
         code += Blockly.JavaScript.codeHelper(elementCode, 0);
         code += '.value = ' + bodyCode + ';';
+      }
+      else if (typeName == 'ListPicker') {
+        code3 += Blockly.JavaScript.codeHelper(elementCode, 0);
+        code += "var oldValueIndex = " + code3 + ".selectedIndex;";
+        code += "var newValue = document.createElement(\"OPTION\");";
+        code += "newValue.setAttribute(\"value\", " + bodyCode + ");";
+        code += "var newValueText = document.createTextNode(" + bodyCode + ");";
+        code += "newValue.appendChild(newValueText);";
+        code += code3 + ".replaceChild(newValue, " + code3 + ".childNodes[oldValueIndex]);";
+        code += code3 + ".selectedIndex = oldValueIndex;";
       }
       else {
         code += Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -836,7 +847,8 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       break;
     case 'title':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.previousElementSibling.innerHTML = ' + bodyCode + ';';
+      //code += '.previousElementSibling.innerHTML = ' + bodyCode + ';';
+      code += '.innerHTML = ' + bodyCode + ';';
       break;
     case 'selection':
       var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -887,6 +899,57 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code = 'var x = ' + elemCode + '.children;';
       code += 'for (i=0; i<x.length; i++){';
       code += 'x[i].style.fontSize = \"' + bodyCode +'%\";};';
+      break;
+    case 'animation':
+      var elemCode = Blockly.JavaScript.codeHelper(elementCode, 0);
+      code = 'var stringInput = ' + bodyCode + '.toLowerCase();';
+      //track parent in order to replace old image with clone
+      code += 'var parent =' + elemCode + '.parentNode;';
+
+      //clone eventually replaces animated image  
+      code += 'var clone = ' + elemCode + '.cloneNode();';
+
+      //following line is needed in order set the position
+      code += elemCode + '.style.position = \"relative\";';
+      
+      //deal with moving cases
+      code += 'if(stringInput!=\"stop\"){';
+      // variable holds direction of motion; default is right
+      code +=  'var direction = 1;';
+      // variable holds speed; default is medium (not slow or fast)
+      code +=   'var speed = 5;';
+      //if moving left, switch signs of direction
+      code +='if(stringInput.match(/left/)==\"left\"){';
+      code +=     'direction = -1;};';
+      // if slow, decrease speed
+      code +='if(stringInput.match(/slow/)==\"slow\"){';
+      code +=      'speed = 1;};';
+      // if fast, increase speed
+      code +='if(stringInput.match(/fast/)==\"fast\"){';
+      code +=       'speed = 9;};';
+      // initialize start position
+      code += 'var x =  0 - (2*' + elemCode + '.width);';
+      code += 'if(stringInput.match(/left/)==\"left\"){';
+      code += 'x = screen.width ;};';
+      
+      //doAnimate moves image across screen
+      code += 'var doAnimate = setInterval(function(){' ;
+      code += 'x = x + (direction * speed);';
+      code += elemCode + '.style.left = x + \"px\" ;},10);';
+
+      //setTimeout stops the image from moving forever
+      code += 'setTimeout(function(){clearInterval(doAnimate);';
+      // replaceChild resets image
+      code += 'parent.replaceChild(clone,'+elemCode+');},';
+      code += '(10*(2*' + elemCode + '.width + screen.width)';
+      code += '/speed));';
+
+      //run command to animate image
+      code += 'doAnimate;';
+
+      code += '};';
+
+
       break;
 
     default:
@@ -1098,6 +1161,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       code += '.type';
       break;
     case 'multiline':
+      var elementCode = Blockly.JavaScript.codeHelper(elementCode, 1);
       code = '(function() { ';
       //get all elements with textarea tags
       code += 'var elements = document.getElementsByTagName(\"TEXTAREA\");';
@@ -1118,7 +1182,8 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'title':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.previousElementSibling.innerHTML';
+      //code += '.previousElementSibling.innerHTML';
+      code += '.innerHTML';
       break;
     case 'selection':
       var elemCode = Blockly.JavaScript.codeHelper(elementCode, 1);

@@ -119,20 +119,20 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
   }
 
-  @DesignerProperty(
-    editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = DEFAULT_ENABLED ? "True" : "False")
-  @SimpleProperty
-  public void ShowFilterBar(boolean showFilter) {
-    this.showFilter = showFilter;
-  }
+  // @DesignerProperty(
+  //   editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  //   defaultValue = DEFAULT_ENABLED ? "True" : "False")
+  // @SimpleProperty
+  // public void ShowFilterBar(boolean showFilter) {
+  //   this.showFilter = showFilter;
+  // }
 
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Returns current state of ShowFilterBar indicating if " +
-          "Search Filter Bar will be displayed on ListPicker or not")
-  public boolean ShowFilterBar() {
-    return showFilter;
-  }
+  // @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+  //     description = "Returns current state of ShowFilterBar indicating if " +
+  //         "Search Filter Bar will be displayed on ListPicker or not")
+  // public boolean ShowFilterBar() {
+  //   return showFilter;
+  // }
 
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)

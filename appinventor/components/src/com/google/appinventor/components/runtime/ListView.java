@@ -174,34 +174,34 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     super.Width(width);
   }
 
-  /**
-   * Sets true or false to determine whether the search filter box is displayed in the ListView
-   *
-   * @param showFilter set the visibility according to this input
-   */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = DEFAULT_ENABLED ? "True" : "False")
-  @SimpleProperty(description = "Sets visibility of ShowFilterBar. True will show the bar, " +
-      "False will hide it.")
-  public void ShowFilterBar(boolean showFilter) {
-    this.showFilter = showFilter;
-    if (showFilter) {
-      txtSearchBox.setVisibility(View.VISIBLE);
-    }
-    else {
-      txtSearchBox.setVisibility(View.GONE);
-    }
-  }
+  // /**
+  //  * Sets true or false to determine whether the search filter box is displayed in the ListView
+  //  *
+  //  * @param showFilter set the visibility according to this input
+  //  */
+  // @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+  //     defaultValue = DEFAULT_ENABLED ? "True" : "False")
+  // @SimpleProperty(description = "Sets visibility of ShowFilterBar. True will show the bar, " +
+  //     "False will hide it.")
+  // public void ShowFilterBar(boolean showFilter) {
+  //   this.showFilter = showFilter;
+  //   if (showFilter) {
+  //     txtSearchBox.setVisibility(View.VISIBLE);
+  //   }
+  //   else {
+  //     txtSearchBox.setVisibility(View.GONE);
+  //   }
+  // }
 
-  /**
-   * Returns true or false depending on the visibility of the Filter bar element
-   * @return true or false (visibility)
-   */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "Returns current state of ShowFilterBar for visibility.")
-  public boolean ShowFilterBar() {
-    return showFilter;
-  }
+  // /**
+  //  * Returns true or false depending on the visibility of the Filter bar element
+  //  * @return true or false (visibility)
+  //  */
+  // @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+  //     description = "Returns current state of ShowFilterBar for visibility.")
+  // public boolean ShowFilterBar() {
+  //   return showFilter;
+  // }
 
   /**
    * Set a list of text elements to build a ListView
