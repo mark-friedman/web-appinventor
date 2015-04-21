@@ -72,7 +72,7 @@ public class BuildOutputServlet extends OdeServlet {
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
 
-    RawFile downloadableFile;
+    RawFile downloadableFile = null;
 
     String nonceValue = null;
 
@@ -115,11 +115,23 @@ public class BuildOutputServlet extends OdeServlet {
       {
         // Pick up the path segment and file name
         String folderKey = uriComponents[FOLDER_KEY_INDEX];
+        
         // Check that the path segment is the asset folder (ie: we limit what we serve up)
         if (folderKey.equalsIgnoreCase(ASSET_IDENTIFIER))
         {
           fileId = ASSET_IDENTIFIER + "/" + uriComponents[FOLDER_KEY_INDEX+1];
-          downloadableFile = fileExporter.exportFile(nonce.getUserId(), nonce.getProjectId(), fileId);
+          
+          // Find the asset file in the assets folder for the QRCode build
+          String isolatedFilePath = "build/" + ServerLayout.BUILD_TARGET_QRCODE + "/" + ASSET_IDENTIFIER + "/" + StorageUtil.basename(fileId);
+          try {
+            downloadableFile = fileExporter.exportFile(nonce.getUserId(), nonce.getProjectId(), isolatedFilePath);
+          }
+          catch (IOException | IllegalStateException e)
+          {
+            LOG.log(Level.INFO, "Could not find assets file for QRCode build: " + isolatedFilePath);
+            resp.sendError(resp.SC_NOT_FOUND, "Asset file not found: " + fileId);
+            return;
+          }    
         }
         else {
           resp.sendError(resp.SC_NOT_FOUND, "Unrecognized path segment: " + folderKey);
