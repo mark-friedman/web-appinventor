@@ -6,6 +6,11 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class TimePicker extends ImageComponent{
 
+  public TimePicker(String assetPrefix) {
+    super(assetPrefix);
+  }
+
+
   String backgroundColor = "";
   String fontSize = "14";
   String fontBold = "none";
@@ -157,10 +162,10 @@ public class TimePicker extends ImageComponent{
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#"+"label"+this.getName()+"\n");
+    sb.append("#"+"label_"+this.getName()+"\n");
     sb.append("{\n");
-
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" font-weight : "+this.getFontBold()+";\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
@@ -182,9 +187,9 @@ public class TimePicker extends ImageComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     sb.append("<label");
-    sb.append(" id = "+"\""+"label"+this.getName()+"\"");
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label> ");
@@ -200,15 +205,15 @@ public class TimePicker extends ImageComponent{
       sb.append(" hidden");
 
     sb.append("/>");
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }
   
   
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -306,9 +311,10 @@ public class TimePicker extends ImageComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = null;
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
+
     return componentInfo;
   }
   

@@ -14,11 +14,15 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class Screen extends ImageComponent{
 
+  public Screen(String assetPrefix) {
+    super(assetPrefix);
+  }
+
   String backgroundColor = "";
   String backgroundImage = "";
   String horizontalAlign = "left";
   String verticalAlign = "0%";
-  String scrollable = "";
+  String scrollable = "false";
   String name = "";
   String title = "";
   String type = "Form";
@@ -101,7 +105,7 @@ public String getBackgroundColor() {
       sb.append(" background : "+this.getBackgroundColor()+";\n");
     }
     sb.append(" background-size : cover;\n");
-    sb.append(" background-image : url(assets/"+this.getPrefixedSrc(this.getBackgroundImage())+");\n");
+    sb.append(" background-image : url("+this.getPrefixedSrc(this.getBackgroundImage())+");\n");
     //sb.append(" position : absolute;\n");
     sb.append(" text-align : "+this.getHorizontalAlign()+";\n");
     sb.append(" top : "+this.getVerticalAlign()+";\n");//Will not work for now!
@@ -122,9 +126,10 @@ public String getBackgroundColor() {
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
+    
     for(String property:properties.keySet())
     {
       if(!property.equals("$Components")){
@@ -188,9 +193,11 @@ public String getBackgroundColor() {
       }
     }
     }
-    componentInfo[0] = "";//generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getBackgroundImage()); 
+    
+    componentInfo = new ParseResult();
+    componentInfo.bodyHtml.add("");//generateHTMLforComponent();
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getBackgroundImage())); 
     return componentInfo;
 
   }

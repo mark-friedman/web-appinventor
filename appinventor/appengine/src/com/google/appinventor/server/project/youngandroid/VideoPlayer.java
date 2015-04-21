@@ -1,9 +1,14 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class VideoPlayer extends SourceComponent{
+
+  public VideoPlayer(String assetPrefix) {
+    super(assetPrefix);
+ }
 
   String visible = "true";
   String source = "";
@@ -73,6 +78,7 @@ public class VideoPlayer extends SourceComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<video controls");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
@@ -83,13 +89,13 @@ public class VideoPlayer extends SourceComponent{
     sb.append(">");
     sb.append("Your browser does not support HTML5 video.");
     sb.append("</video>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -105,9 +111,7 @@ public class VideoPlayer extends SourceComponent{
         this.setSource(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -115,9 +119,7 @@ public class VideoPlayer extends SourceComponent{
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
             this.setHeight(value.substring(2)+"%");
@@ -140,9 +142,9 @@ public class VideoPlayer extends SourceComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getSource()); 
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getSource())); 
     return componentInfo;
 
   }

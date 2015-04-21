@@ -6,6 +6,10 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 
 public class ImagePicker extends ImageComponent{
 
+  public ImagePicker(String assetPrefix) {
+    super(assetPrefix);
+  }
+
   String backgroundColor = ""; 
   String enabled = "true";
   String fontSize = "14";
@@ -20,10 +24,10 @@ public class ImagePicker extends ImageComponent{
   String visible = "true";
   String width = "auto";
   String height = "auto";   
-    
+
   String name = "";
   String type = "ImagePicker";
-  
+
   public String getBackgroundColor() {
     return backgroundColor;
   }
@@ -120,32 +124,11 @@ public class ImagePicker extends ImageComponent{
   public void setType(String type) {
     this.type = type;
   } 
-  
+
   private String generateCSSforComponent()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("#Label"+this.getName());
-    sb.append("{\n");
-    
-    if(!this.getBackgroundColor().equals(""))
-    {
-      sb.append(" background : "+this.getBackgroundColor()+";\n");
-    }
-    
-    sb.append(" text-align : "+this.getTextAlign()+";\n");
-    sb.append(" font-size : "+this.getFontSize()+"px;\n");
-    sb.append(" font-weight : "+this.getFontBold()+";\n");      
-    sb.append(" font-style : "+this.getFontItalic()+";\n");
-    sb.append(" font-family : "+this.getFontTypeface()+";\n");
-    sb.append(" width : "+this.getWidth()+";\n");
-    sb.append(" height : "+this.getHeight()+";\n");
-    sb.append(" color : "+this.getTextColor()+";\n");
-    sb.append(" border-radius : "+this.getShape()+";\n");      
-    sb.append("}\n");
-    
-    sb.append("#"+this.getName()+"\n");
-    sb.append("{\n");
-    
+
     if(!this.getBackgroundColor().equals(""))
       sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
@@ -156,36 +139,47 @@ public class ImagePicker extends ImageComponent{
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" border-radius : "+this.getShape()+";\n");
     sb.append("}\n");
-    
-    sb.append("#"+"Label"+this.getName()+"\n");
+
+    sb.append("#"+"label_"+this.getName()+"\n");
     sb.append("{\n");
-    sb.append(" background : "+this.getBackgroundColor()+";\n");
+    if(!this.getBackgroundColor().equals(""))
+      sb.append(" background : "+this.getBackgroundColor()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
+    sb.append(" font-size : "+this.getFontSize()+"px;\n");
+    sb.append(" font-weight : "+this.getFontBold()+";\n");      
+    sb.append(" font-style : "+this.getFontItalic()+";\n");
+    sb.append(" font-family : "+this.getFontTypeface()+";\n");
+    sb.append(" width : "+this.getWidth()+";\n");
+    sb.append(" height : "+this.getHeight()+";\n");
     sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
+    sb.append(" border-radius : "+this.getShape()+";\n");
     sb.append("}\n");
 
     return sb.toString().valueOf(sb);
   }
-  
+
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div");
+    sb.append(" id = "+"\""+"div_"+this.getName()+"\"");
+    sb.append(">");
     sb.append("<label");
-    sb.append(" for = "+"\""+"Label"+this.getName()+"\"");
-   
+    sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
+
     if(this.getVisible().equals("False"))
       sb.append(" hidden");
-   
+
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label>");
-    
+
     sb.append("<input ");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = \"file\"");
     sb.append(" accept = \"image/*\"");
-    
+
     if(this.getEnabled().equals("False"))
       sb.append(" disabled");
 
@@ -194,13 +188,13 @@ public class ImagePicker extends ImageComponent{
 
     sb.append(">");
     sb.append("</input>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
-  
-  public String[] getComponentString(Map<String,JSONValue> properties)
+
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -267,22 +261,18 @@ public class ImagePicker extends ImageComponent{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
-            this.setWidth(value.substring(2)+"%");
+          this.setWidth(value.substring(2)+"%");
         else
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
-            this.setHeight(value.substring(2)+"%");
+          this.setHeight(value.substring(2)+"%");
         else
           this.setHeight(value+"px");
         break;
@@ -300,9 +290,9 @@ public class ImagePicker extends ImageComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getImage()); 
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
     return componentInfo;
 
   }

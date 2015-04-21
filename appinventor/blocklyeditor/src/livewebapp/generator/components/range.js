@@ -10,14 +10,15 @@ goog.require('Blockly.Generator');
 
 Blockly.RangeJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
         "}else {"+ "var div = document.createElement(\"div\");" +
             "var rangefield = document.createElement(\"input\");" +
             "rangefield.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "rangefield.setAttribute(\"type\", \"range\");" +
             "div.appendChild(rangefield);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.RangeJsGenerator.generateJSForRemovingComponent = function(component){
@@ -43,8 +44,7 @@ Blockly.RangeJsGenerator.setProperties = function(component, propName, propValue
          case "ThumbPosition":
              return "document.getElementById(\"" + component.$Name + "\").value = \"" + propValue + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \"" +
-                 this.getSizeVal(propValue) + "\";";
+             return this.getWidthSizeVal(propValue, component);
          case "Visible":
              return "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
                  this.getVisibility(propValue) + "\";";
@@ -57,15 +57,17 @@ Blockly.RangeJsGenerator.setProperties = function(component, propName, propValue
     };
 
 
-Blockly.RangeJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.RangeJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 
 

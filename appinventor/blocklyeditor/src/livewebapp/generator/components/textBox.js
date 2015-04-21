@@ -10,19 +10,20 @@ goog.require('Blockly.Generator');
 
 Blockly.TextBoxJsGenerator.generateJSForAddingComponent = function(component){
      var txtBox = "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
-        "}else {";
-        txtBox += "var div = document.createElement(\"div\");";
+        "}else {"+
+        "var div = document.createElement(\"div\");";
         if (component["MultiLine"] == "True")
-            txtBox = txtBox + "var txt = document.createElement(\"textarea\");";
+            txtBox = txtBox.concat("var txt = document.createElement(\"textarea\");");
         else
-            txtBox = txtBox + "var txt = document.createElement(\"input\");";
-        txtBox += "txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
+            txtBox = txtBox.concat("var txt = document.createElement(\"input\");");
+        txtBox = txtBox.concat("txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
         "div.appendChild(txt);" +
-        "document.body.appendChild(div);";
-        txtBox +=txtBox +"}";
-    return txtBox;
+        "document.body.appendChild(div);"+
+         "}");
+    return txtBox+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 
@@ -70,17 +71,30 @@ Blockly.TextBoxJsGenerator.setProperties = function(component, propName, propVal
              return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getWidthSizeVal(propValue, component);
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").style.height = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getHeightSizeVal(propValue, component);
          case "Hint":
              return "document.getElementById(\"" + component.$Name + "\").style.title = \"" + propValue + "\";";
-         //case "MultiLine":
-         //    if(propValue=="True")
-         //    return "document.getElementById(\"" + component.$Name + "\").style.rows = \"4\";"
-         //        + "document.getElementById(\"" + component.$Name + "\").style.cols = \" +50\";";
+         case "MultiLine":
+             var txtBox = "var node = document.getElementById(\"" + component.$Name + "\");" +
+                 "if(node.parentNode){" +
+                 "  node.parentNode.removeChild(node);"+
+                 "}";
+              txtBox += "var element =  document.getElementById(\""+component.$Name+"\");"+
+                 "if (typeof(element) != 'undefined' && element != null) { " +
+                 "location.reload();" +
+                 "}else {"+
+                 "var div = document.createElement(\"div\");";
+             if (component["MultiLine"] == "True")
+                 txtBox += "var txt = document.createElement(\"textarea\");";
+             else
+                 txtBox += "var txt = document.createElement(\"input\");";
+             txtBox += "txt.setAttribute(\"id\",\"" + component.$Name + "\");" +
+             "div.appendChild(txt);" +
+             "document.body.appendChild(div);";
+             txtBox += "}";
+             return txtBox;
          case "BackgroundColor":
              return "document.getElementById(\"" + component.$Name + "\").style.backgroundColor = \"#" +
                  propValue.substring(4) + "\";";
@@ -89,15 +103,30 @@ Blockly.TextBoxJsGenerator.setProperties = function(component, propName, propVal
      }
     };
 
-Blockly.TextBoxJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.TextBoxJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
+};
+
+Blockly.TextBoxJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.TextBoxJsGenerator.getFontType = function(index) {

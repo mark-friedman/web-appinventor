@@ -10,14 +10,19 @@ goog.require('Blockly.Generator');
 
 Blockly.LabelJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
-        "location.reload();" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
+        "location.reload(true);" +
         "}else {"+
-         "var div = document.createElement(\"div\");" +
-            "var label = document.createElement(\"Label\");" +
-            "label.setAttribute(\"id\",\"" + component.$Name + "\");" +
-            "div.appendChild(label);" +
-            "document.body.appendChild(div);}";
+        "var div = document.createElement(\"div\");" +
+        "var btn = document.createElement(\"Lable\");" +
+        "btn.setAttribute(\"id\",\"" + component.$Name + "\");" +
+        "var txt = document.createTextNode(\"" + component.Text + "\");" +
+        "btn.appendChild(txt);" +
+        "div.appendChild(btn);" +
+        "document.body.appendChild(div);"+
+        "}"+
+        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component)+
+     this.getBorder(component, "True");
 };
 
 
@@ -66,11 +71,9 @@ Blockly.LabelJsGenerator.setProperties = function(component, propName, propValue
              return "document.getElementById(\"" + component.$Name + "\").style.textAlign = \"" +
                                   this.getTextAlignment(propValue) + "\";";
          case "Width":
-             return "document.getElementById(\"" + component.$Name + "\").style.width = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getWidthSizeVal(propValue, component);
          case "Height":
-             return "document.getElementById(\"" + component.$Name + "\").style.height = \""
-                 + this.getSizeVal(propValue) + "\";";
+             return this.getHeightSizeVal(propValue, component);
          case "BackgroundColor":
              return "document.getElementById(\"" + component.$Name + "\").style.backgroundColor = \"#" +
                  propValue.substring(4) + "\";";
@@ -94,21 +97,37 @@ Blockly.LabelJsGenerator.setProperties = function(component, propName, propValue
 
 Blockly.LabelJsGenerator.getBorder = function(component, propValue) {
     if (propValue == "False") {
-        return "document.getElementById(\"" + component.$Name + "\").style.border = \"none\";";
+        return "document.getElementById(\"" + component.$Name + "\").style.margin = \"none\";";
     } else {
-        return "document.getElementById(\"" + component.$Name + "\").style.border = \"solid 1px\";";
+        return "document.getElementById(\"" + component.$Name + "\").style.margin = \"1px\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"inline-block\";";
     }
 };
 
-Blockly.LabelJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.LabelJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
+};
+
+Blockly.LabelJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.LabelJsGenerator.getMargins = function(index) {

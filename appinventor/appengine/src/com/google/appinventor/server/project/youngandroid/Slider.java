@@ -1,6 +1,7 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 
@@ -82,7 +83,7 @@ public class Slider extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     sb.append("<input"); 
 
     sb.append(" id = "+"\""+this.getName()+"\"");
@@ -99,14 +100,14 @@ public class Slider extends Component{
     sb.append(" value = "+this.getThumbPosition());
     sb.append(">");
     sb.append("</input>"); 
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
 
     for(String property:properties.keySet())
     {
@@ -129,9 +130,7 @@ public class Slider extends Component{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -155,9 +154,8 @@ public class Slider extends Component{
       }
     }
 
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = null;
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
 
     return componentInfo;
 

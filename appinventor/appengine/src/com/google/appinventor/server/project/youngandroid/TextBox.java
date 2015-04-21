@@ -1,6 +1,7 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 /**
@@ -163,7 +164,7 @@ public class TextBox extends Component{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
-
+    sb.append("<div>");
     if(this.getMultiline().equalsIgnoreCase("True"))
       sb.append("<textarea");
     else
@@ -184,14 +185,14 @@ public class TextBox extends Component{
       sb.append("</textarea>");
     else
       sb.append("</input>"); 
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -247,9 +248,7 @@ public class TextBox extends Component{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+       if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -257,9 +256,7 @@ public class TextBox extends Component{
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
             this.setHeight(value.substring(2)+"%");
@@ -286,9 +283,9 @@ public class TextBox extends Component{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = null;
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+ 
     return componentInfo;
 
   }

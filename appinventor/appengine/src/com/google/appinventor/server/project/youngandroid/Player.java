@@ -1,10 +1,15 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 
 public class Player extends SourceComponent{
+
+  public Player(String assetPrefix) {
+    super(assetPrefix);
+  }
 
   String loop = "false";
   String source = "";
@@ -51,6 +56,7 @@ public class Player extends SourceComponent{
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<audio");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = "+"\""+this.getType()+"\"");
@@ -60,13 +66,13 @@ public class Player extends SourceComponent{
     sb.append(">");
     sb.append("Your browser does not support HTML5 audio.");
     sb.append("</audio>");
-
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -98,9 +104,9 @@ public class Player extends SourceComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getSource()); 
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getSource())); 
     return componentInfo;
 
   }

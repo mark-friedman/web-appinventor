@@ -1,6 +1,7 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 /**
@@ -11,6 +12,10 @@ import com.google.appinventor.shared.properties.json.JSONValue;
  * @author veluru.k@husky.neu.edu (Veluru Kaushik)
  */
 public class Image extends ImageComponent{
+
+  public Image(String assetPrefix) {
+    super(assetPrefix);
+  }
 
   String source = "";
   String visible = "true";
@@ -77,10 +82,11 @@ public class Image extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
 
+    sb.append("<div>");
     sb.append("<img");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
-
+  
 
     if(this.getVisible().equals("False"))
       sb.append(" hidden");
@@ -88,15 +94,15 @@ public class Image extends ImageComponent{
     sb.append(">");
 
     sb.append("</img>"); 
-
+    sb.append("</div>");
     //System.out.println("HTML equivalent for button: "+sb.toString().valueOf(sb));
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
-    String asset = null;
+    ParseResult componentInfo = new ParseResult();
+    
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -104,7 +110,6 @@ public class Image extends ImageComponent{
       {
       case "Picture":
         this.setSource(value);
-        asset = value;
         break;
       case "$Name":
         this.setName(value);
@@ -116,9 +121,7 @@ public class Image extends ImageComponent{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -126,9 +129,7 @@ public class Image extends ImageComponent{
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+       if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
             this.setHeight(value.substring(2)+"%");
@@ -145,9 +146,9 @@ public class Image extends ImageComponent{
         break;
       }
     }
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = this.getPrefixedSrc(this.getSource());
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.assetFiles.add(this.getPrefixedSrc(this.getSource())); 
 
     return componentInfo;
 

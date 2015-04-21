@@ -8,26 +8,31 @@ goog.require('Blockly.Generator');
 
 Blockly.CheckBoxJsGenerator.generateJSForAddingComponent = function(component){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
-        "if (typeof(element) != 'undefined' && element != null) { +" +
+        "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
         "}else {"+
          "var div = document.createElement(\"div\");" +
+        "div.setAttribute(\"id\",\"div_" + component.$Name + "\");" +
             "var checkBox = document.createElement(\"input\");" +
             "checkBox.setAttribute(\"type\",\"checkbox\");" +
             "checkBox.setAttribute(\"id\",\"" + component.$Name + "\");" +
             "var label = document.createElement(\"Label\");" +
-            "label.setAttribute(\"htmlFor\",\"" + component.$Name + "\");" +
+            "label.setAttribute(\"id\",\"label_" + component.$Name + "\");" +
             "label.appendChild(document.createTextNode(\"" + component.Text + "\"));" +
             "div.appendChild(checkBox);" +
             "div.appendChild(label);" +
-            "document.body.appendChild(div);}";
+            "document.body.appendChild(div);}"+
+            "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"" +
+           this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 };
 
 Blockly.CheckBoxJsGenerator.generateJSForRemovingComponent = function(component){
-    return     "var node = document.getElementById(\"" + component.$Name + "\");" +
+    return     "var previous =document.getElementById(\"div_" + component.$Name + "\");"+
+            "previous.remove();"+
+        "var node = document.getElementById(\"" + component.$Name + "\");" +
         "if(node.parentNode){" +
         "  node.parentNode.removeChild(node);"+
-        "}";
+        "}"
 };
 
 Blockly.CheckBoxJsGenerator.generateJSForPropertyChange = function(component,propertyName,propertyValue){
@@ -41,63 +46,77 @@ Blockly.CheckBoxJsGenerator.setProperties = function(component, propName, propVa
     switch(propName) {
         case "FontBold":
             if(propValue == "False"){
-                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontWeight = \"normal\";";
+                return "document.getElementById(\"div_" + component.$Name + "\").style.fontWeight = \"normal\";";
             }else{
-                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontWeight = \"bold\";";
+                return "document.getElementById(\"div_" + component.$Name + "\").style.fontWeight = \"bold\";";
             }
         case "FontItalic":
             if(propValue == "False"){
-                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontStyle = \"normal\";";
+                return "document.getElementById(\"div_" + component.$Name + "\").style.fontStyle = \"normal\";";
             }else{
-                return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontStyle = \"italic\";";
+                return "document.getElementById(\"div_" + component.$Name + "\").style.fontStyle = \"italic\";";
             }
         case "FontSize":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontSize = \"" +
+            return "document.getElementById(\"div_" + component.$Name + "\").style.fontSize = \"" +
                 Math.round(propValue) +"pt\";";
         case "FontTypeface":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.fontFamily = \"" +
+            return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                 this.getFontType(propValue) + "\";";
         case "Text":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.textContent=\""
+            return "document.getElementById(\"label_" + component.$Name + "\").textContent=\""
                 + propValue + "\";";
         case "TextColor":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.color = \"#" +
+            return "document.getElementById(\"div_" + component.$Name + "\").style.color = \"#" +
                 propValue.substring(4) + "\";";
         case "Width":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.width = \""
-                + this.getSizeVal(propValue) + "\";";
+            return this.getWidthSizeVal(propValue, component);
         case "Height":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.height = \""
-                + this.getSizeVal(propValue) + "\";";
+            return this.getHeightSizeVal(propValue, component);
         case "Visible":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.visibility = \"" +
+            return "document.getElementById(\"div_" + component.$Name + "\").style.visibility = \"" +
                 this.getVisibility(propValue) + "\";"+
-                "document.getElementById(\"" + component.$Name + "\").style.visibility = \"" +
+                "document.getElementById(\"div_"+ component.$Name + "\").style.visibility = \"" +
                 this.getVisibility(propValue) + "\";";
         case "Enabled":
-            return "document.getElementById(\"" + component.$Name + "\").disabled = \"" +
+            return "document.getElementById(\"div_" + component.$Name + "\").disabled = \"" +
                 this.getEnabled(propValue) + "\";";
         case "Checked":
-            return "document.getElementById(\"" + component.$Name + "\").checked = \"" +
+            return "document.getElementById(\"div_" + component.$Name + "\").checked = \"" +
                 this.getChecked(propValue) + "\";";
         case "BackgroundColor":
-            return "document.getElementById(\"" + component.$Name + "\").nextElementSibling.style.backgroundColor = \"#" +
+            return "document.getElementById(\"div_" + component.$Name + "\").style.backgroundColor = \"#" +
                 propValue.substring(4) + "\";";
         default:
             return "";
     }
 };
 
-Blockly.CheckBoxJsGenerator.getSizeVal = function(index) {
-    if(index == "Automatic")
-        return "auto";
-    else if(index == "Fill Parent")
-        return "100%";
+Blockly.CheckBoxJsGenerator.getWidthSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width = \"100%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
-        return index+"px";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index+"px\";";
     else
-        return index.substring(3)+"%";
+        return "document.getElementById(\"div_" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
 };
+
+Blockly.CheckBoxJsGenerator.getHeightSizeVal = function(index, component) {
+    if(index == "-1")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"auto\";";
+    else if(index == "-2")
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height = \"100%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
+    else if(index.indexOf("-")<0)
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index+"px\";";
+    else
+        return "document.getElementById(\"div_" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+            "document.getElementById(\"div_" + component.$Name + "\").style.display = \"block\";";
+};
+
 
 Blockly.CheckBoxJsGenerator.getColor = function(index) {
     return index.replace(0, 4, "#");

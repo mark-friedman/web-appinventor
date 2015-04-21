@@ -1,6 +1,7 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import java.util.Map;
+
 import com.google.appinventor.shared.properties.json.JSONValue;
 
 /**
@@ -24,7 +25,7 @@ public class Label extends Component{
   String visible = "true";
   String width = "auto";
   String height = "auto";	
-  String hasMargins = "solid 1px";
+  String hasMargins = "true";
 
   String name = "";
   String type = "Label";
@@ -131,20 +132,21 @@ public class Label extends Component{
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" width : "+this.getWidth()+";\n");
     sb.append(" height : "+this.getHeight()+";\n");
-    sb.append(" border : "+this.getHasMargins()+";\n");
+    if(this.getHasMargins().equalsIgnoreCase("true"))
+    {
+      sb.append(" margin : 1px;\n");
+      sb.append(" display : inline-block;\n");
+    }
     sb.append("}\n");
-
-    // System.out.println(sthis.toString().valueOf(sb));
-
     return sb.toString().valueOf(sb);
   }
 
   private String generateHTMLforComponent()
   {
     StringBuilder sb = new StringBuilder();
+    sb.append("<div>");
     sb.append("<label");
     sb.append(" id = "+"\""+this.getName()+"\"");
-
 
     if(this.getVisible().equals("False"))
       sb.append(" hidden");
@@ -152,14 +154,13 @@ public class Label extends Component{
     sb.append(">");
     sb.append(this.getText());
     sb.append("</label>");
-
-    //System.out.println("HTML equivalent for button: "+sthis.toString().valueOf(sb));
+    sb.append("</div>");
     return sb.toString().valueOf(sb);
   }
 
-  public String[] getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties)
   {
-    String componentInfo[] = new String[3];
+    ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
     {
       String value = properties.get(property).asString().getString();
@@ -215,30 +216,23 @@ public class Label extends Component{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
-            this.setWidth(value.substring(2)+"%");
+          this.setWidth(value.substring(2)+"%");
         else
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+       if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
-            this.setHeight(value.substring(2)+"%");
+          this.setHeight(value.substring(2)+"%");
         else
           this.setHeight(value+"px");
         break;
       case "HasMargins":
-        if(value.equalsIgnoreCase("false"))
-        {
-          this.setHasMargins("none");
-        }
+        this.setHasMargins(value);
         break;
       case "Uuid":
         break;
@@ -251,9 +245,9 @@ public class Label extends Component{
       }
     }
 
-    componentInfo[0] = generateHTMLforComponent();
-    componentInfo[1] = generateCSSforComponent();
-    componentInfo[2] = null;
+    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.css.add(generateCSSforComponent());
+
     return componentInfo;
   }	
 }

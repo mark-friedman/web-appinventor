@@ -697,7 +697,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
                 for (String assetFileId : screenResult.assetFiles)
                 {
                   // Add any new asset references
-                  if ((assetFileId != null) && !assetFileIds.contains(assetFileId))
+                  if ((assetFileId != null) && !assetFileId.isEmpty() && !assetFileIds.contains(assetFileId))
                   {
                     LOG.log(Level.INFO, "   Asset file = " + assetFileId);
                     assetFileIds.add(assetFileId);
