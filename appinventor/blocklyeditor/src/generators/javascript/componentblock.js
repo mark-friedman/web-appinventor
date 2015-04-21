@@ -773,7 +773,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       break;
     case 'source':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.src = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
+      code += '.src = \"assets/' + eval(bodyCode) + '\";';
       break;
     case 'loop':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
