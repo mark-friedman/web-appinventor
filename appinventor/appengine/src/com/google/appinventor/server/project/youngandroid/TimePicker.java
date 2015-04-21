@@ -159,7 +159,7 @@ public class TimePicker extends ImageComponent{
     this.type = type;
   }
 
-  private String generateCSSforComponent()
+  private String generateCSSforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
     sb.append("#"+"label_"+this.getName()+"\n");
@@ -184,10 +184,23 @@ public class TimePicker extends ImageComponent{
     return sb.toString().valueOf(sb);
   }
   
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div>");
+    if(hasParent==null)
+    	sb.append("<div id=\"div_"+this.getName()+"\" style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
     sb.append("<label");
     sb.append(" id = "+"\""+"label_"+this.getName()+"\"");
     sb.append(">");
@@ -211,7 +224,7 @@ public class TimePicker extends ImageComponent{
   }
   
   
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties, Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
@@ -277,9 +290,7 @@ public class TimePicker extends ImageComponent{
         this.setVisible(value);
         break;
       case "Width":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setWidth("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setWidth("100%");
         else if(value.charAt(0)=='-')
             this.setWidth(value.substring(2)+"%");
@@ -287,9 +298,7 @@ public class TimePicker extends ImageComponent{
           this.setWidth(value+"px");
         break;
       case "Height":
-        if(value.equalsIgnoreCase("Automatic"))
-          this.setHeight("auto");
-        else if(value.equalsIgnoreCase("Fill Parent"))
+        if(value.equalsIgnoreCase("-2"))
           this.setHeight("100%");
         else if(value.charAt(0)=='-')
             this.setHeight(value.substring(2)+"%");
@@ -311,8 +320,8 @@ public class TimePicker extends ImageComponent{
         break;
       }
     }
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
-    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
+    componentInfo.css.add(generateCSSforComponent(hasParent));
     componentInfo.assetFiles.add(this.getPrefixedSrc(this.getImage())); 
 
     return componentInfo;

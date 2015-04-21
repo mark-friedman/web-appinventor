@@ -116,7 +116,7 @@ public class Label extends Component{
   }
 
 
-  private String generateCSSforComponent()
+  private String generateCSSforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
     sb.append("#"+this.getName()+"\n");
@@ -130,8 +130,8 @@ public class Label extends Component{
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
-    sb.append(" width : "+this.getWidth()+";\n");
-    sb.append(" height : "+this.getHeight()+";\n");
+    //sb.append(" width : "+this.getWidth()+";\n");
+    //sb.append(" height : "+this.getHeight()+";\n");
     if(this.getHasMargins().equalsIgnoreCase("true"))
     {
       sb.append(" margin : 1px;\n");
@@ -141,11 +141,24 @@ public class Label extends Component{
     return sb.toString().valueOf(sb);
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div>");
-    sb.append("<label");
+    if(hasParent==null)
+    	sb.append("<div style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    sb.append("<label class=\"default-component-size\"");
     sb.append(" id = "+"\""+this.getName()+"\"");
 
     if(this.getVisible().equals("False"))
@@ -158,7 +171,7 @@ public class Label extends Component{
     return sb.toString().valueOf(sb);
   }
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties, Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
@@ -245,8 +258,8 @@ public class Label extends Component{
       }
     }
 
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
-    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
+    componentInfo.css.add(generateCSSforComponent(hasParent));
 
     return componentInfo;
   }	

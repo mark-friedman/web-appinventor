@@ -75,10 +75,23 @@ public class VideoPlayer extends SourceComponent{
     return sb.toString().valueOf(sb);
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div>");
+    if(hasParent==null)
+    	sb.append("<div style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
     sb.append("<video controls");
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" src = "+"\""+this.getPrefixedSrc(this.getSource())+"\"");
@@ -93,7 +106,7 @@ public class VideoPlayer extends SourceComponent{
     return sb.toString().valueOf(sb);
   }
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties, Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
@@ -142,7 +155,7 @@ public class VideoPlayer extends SourceComponent{
         break;
       }
     }
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
     componentInfo.css.add(generateCSSforComponent());
     componentInfo.assetFiles.add(this.getPrefixedSrc(this.getSource())); 
     return componentInfo;

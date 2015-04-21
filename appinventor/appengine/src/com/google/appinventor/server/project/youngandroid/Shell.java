@@ -68,7 +68,7 @@ public class Shell {
     htmlStringBuilder.append("</title>\n");
     
     // Including Bootstrap Library - Sudeep
-    htmlStringBuilder.append("<link rel=\"stylesheet\" href=\"/bootstrap/bootstrap.min.css\">\n");
+    htmlStringBuilder.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"http://net4.ccs.neu.edu/home/tush1301/experiments/extraexps/bootstrap.min.css\">\n");
       
 
     // inject css from the components
@@ -85,6 +85,7 @@ public class Shell {
       htmlStringBuilder.append("<style>\n");
       htmlStringBuilder.append("html,body\n");
       htmlStringBuilder.append("{\n");
+      htmlStringBuilder.append("width : 100%;\n");
       htmlStringBuilder.append("height : 100%;\n");
       htmlStringBuilder.append("margin : 0px;\n");
       htmlStringBuilder.append("}\n");
@@ -97,7 +98,22 @@ public class Shell {
       htmlStringBuilder.append("width : 100%;\n");
       htmlStringBuilder.append("height : 100%;\n");
       htmlStringBuilder.append("}\n");
-      
+      htmlStringBuilder.append(".row\n");
+      htmlStringBuilder.append("{\n");
+      htmlStringBuilder.append("margin-right : 0px;\n");
+      htmlStringBuilder.append("margin-left : 0px;\n");
+      htmlStringBuilder.append("}\n");
+      htmlStringBuilder.append(".col\n");
+      htmlStringBuilder.append("{\n");
+      htmlStringBuilder.append("margin-right : 0px;\n");
+      htmlStringBuilder.append("margin-left : 0px;\n");
+      htmlStringBuilder.append("}\n");
+      htmlStringBuilder.append(".default-component-size\n");
+      htmlStringBuilder.append("{\n");
+      htmlStringBuilder.append("width : 100%;\n");
+      htmlStringBuilder.append("height : 100%;\n");
+      htmlStringBuilder.append("}\n");
+
       for (String css : componentPackage.css) {
         htmlStringBuilder.append(css + "\n");
       }
@@ -118,15 +134,15 @@ public class Shell {
       htmlStringBuilder.append("<script type=\"text/javascript\" src=\"/livewebapp/livewebapp.js\"></script>\n");
       htmlStringBuilder.append("<script type=\"text/javascript\">\n");
       htmlStringBuilder.append("liveWebApp.addClientListener(receiveMessage);\n");
-      htmlStringBuilder.append("function receiveMessage(event){  }\n");
+      htmlStringBuilder.append("function receiveMessage(event){ }\n");
       htmlStringBuilder.append("</script>\n");
     }
 
     htmlStringBuilder.append("</head>\n");
     //including id for body - Sudeep
-    htmlStringBuilder.append("<body id = \""+ screenName+" class=\"container-fluid\""+"\">\n");
-    
-    // include jquery library
+    htmlStringBuilder.append("<body id = \""+ screenName+"\" class=\"container-fluid\""+">\n");
+ // include jquery library
+  
     htmlStringBuilder
     .append("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js\"></script>\n");
     
