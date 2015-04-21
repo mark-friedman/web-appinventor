@@ -457,10 +457,10 @@ public final class VideoPlayer extends AndroidViewComponent implements
    * shown in fullscreen mode or not.
    * @return True if video is being shown in fullscreen. False otherwise.
    */
-  @SimpleProperty
-  public boolean FullScreen() {
-    return inFullScreen;
-  }
+  // @SimpleProperty
+  // public boolean FullScreen() {
+  //   return inFullScreen;
+  // }
 
   /**
    * Sets whether the video should be shown in fullscreen or not.

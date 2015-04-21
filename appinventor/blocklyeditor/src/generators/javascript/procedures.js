@@ -30,16 +30,18 @@ Blockly.JavaScript['procedures_defreturn'] = function() {
   var argPrefix = Blockly.JavaScript.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInJavaScript && this.arguments_.length != 0 ? "param_" : "");
   var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
+  args = args.split(" ");
+  args.toString();
   var procName = Blockly.JavaScript.YAIL_PROC_TAG + this.getFieldValue('NAME');
   var returnVal = Blockly.JavaScript.valueToCode(this, 'RETURN', Blockly.JavaScript.ORDER_NONE) || Blockly.JavaScript.YAIL_FALSE;
   // var code = Blockly.JavaScript.YAIL_DEFINE + Blockly.JavaScript.YAIL_OPEN_COMBINATION + procName
-  //     + Blockly.JavaScript.YAIL_SPACER + args + Blockly.JavaScript.YAIL_CLOSE_COMBINATION 
+  //     + Blockly.JavaScript.YAIL_SPACER + args + Blockly.JavaScript.YAIL_CLOSE_COMBINATION
   //     + Blockly.JavaScript.YAIL_SPACER + returnVal + Blockly.JavaScript.YAIL_CLOSE_COMBINATION;
- 
+
   // Define the procedure and its return
   var code = procName + ' = ' +
     'function(' + args + ') { ' +
-      'return ' + returnVal + ';' + 
+      'return ' + returnVal + ';' +
     '};';
 
   return code;
@@ -50,6 +52,8 @@ Blockly.JavaScript['procedures_defnoreturn'] = function() {
   var argPrefix = Blockly.JavaScript.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInJavaScript && this.arguments_.length != 0 ? "param_" : "");
   var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
+  args = args.split(" ");
+  args.toString();
   var procName = Blockly.JavaScript.YAIL_PROC_TAG + this.getFieldValue('NAME');
   var body = Blockly.JavaScript.statementToCode(this, 'STACK', Blockly.JavaScript.ORDER_NONE)  || Blockly.JavaScript.YAIL_FALSE;
   // var code = Blockly.JavaScript.YAIL_DEFINE + Blockly.JavaScript.YAIL_OPEN_COMBINATION + procName
@@ -59,7 +63,7 @@ Blockly.JavaScript['procedures_defnoreturn'] = function() {
   // Define the procedure
   var code = procName + ' = ' +
     'function(' + args + ') { ' +
-      body + 
+      body +
     '};';
 
   return code;
