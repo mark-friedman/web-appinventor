@@ -680,33 +680,33 @@ Blockly.Blocks['controls_closeApplication'] = {
   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_TITLE}]
 };
 
-Blockly.Blocks['controls_getPlainStartText'] = {
-  // Get plain start text
-  category: 'Control',
-  helpUrl: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
-  init: function () {
-    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
-    this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE);
-    this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE}]
-};
+// Blockly.Blocks['controls_getPlainStartText'] = {
+//   // Get plain start text
+//   category: 'Control',
+//   helpUrl: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
+//   init: function () {
+//     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+//     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.OUTPUT));
+//     this.appendDummyInput()
+//         .appendField(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE);
+//     this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
+//   },
+//   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE}]
+// };
 
-Blockly.Blocks['controls_closeScreenWithPlainText'] = {
-  // Close screen with plain text
-  category: 'Control',
-  helpUrl: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
-  init: function () {
-    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('TEXT')
-        .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
-        .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE)
-        .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    this.setPreviousStatement(true);
-    this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
-  },
-  typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE}]
-};
+// Blockly.Blocks['controls_closeScreenWithPlainText'] = {
+//   // Close screen with plain text
+//   category: 'Control',
+//   helpUrl: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
+//   init: function () {
+//     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
+//     this.appendValueInput('TEXT')
+//         .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
+//         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE)
+//         .appendField(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT)
+//         .setAlign(Blockly.ALIGN_RIGHT);
+//     this.setPreviousStatement(true);
+//     this.setTooltip(Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
+//   },
+//   typeblock: [{translatedName: Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE}]
+// };
