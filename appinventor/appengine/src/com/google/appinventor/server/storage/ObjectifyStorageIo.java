@@ -1393,20 +1393,21 @@ public class ObjectifyStorageIo implements  StorageIo {
                 fileCount.t++;
             }
             
-            // Add the bootstrap library to the zip output.
-            String bootstrapFileName = importFile.getFileName();
-            byte[] bootstrapData = importFile.getContent();
-            
-            if (bootstrapData == null) {
-              bootstrapData = new byte[0];
+            if (importFile != null) { // Add the bootstrap library to the zip output.
+                String bootstrapFileName = importFile.getFileName();
+                byte[] bootstrapData = importFile.getContent();
+                
+                if (bootstrapData == null) {
+                    bootstrapData = new byte[0];
+                }
+                else {
+                    out.putNextEntry(new ZipEntry(bootstrapFileName));
+                }
+                
+                out.write(bootstrapData, 0, bootstrapData.length);
+                out.closeEntry();
+                fileCount.t++;
             }
-            else {
-              out.putNextEntry(new ZipEntry(bootstrapFileName));
-            }
-            
-            out.write(bootstrapData, 0, bootstrapData.length);
-            out.closeEntry();
-            fileCount.t++;
             
         } catch (ObjectifyException e) {
             CrashReport.createAndLogError(LOG, null,
