@@ -34,7 +34,7 @@ public interface FileExporter {
    * @throws IllegalArgumentException if download request cannot be fulfilled
    *         (typically = build failed)
    */
-  RawFile exportProjectBuildOutputFile(String userId, long projectId, String target)
+  RawFile exportProjectBuildOutputFile(String userId, long projectId, String target, @Nullable RawFile importFile)
       throws IOException;
 
     /**
@@ -70,7 +70,8 @@ public interface FileExporter {
                                                   long projectId,
                                                   ArrayList<String> assetFileIds,
                                                   String zipName,
-                                                  boolean fatalError) throws IOException;
+                                                  boolean fatalError,
+                                                  @Nullable RawFile importFile) throws IOException;
 
 
   /**

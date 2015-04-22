@@ -16,13 +16,13 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.FileNameMap;
-import java.net.URLConnection;
 import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
@@ -89,7 +89,7 @@ public class DownloadServlet extends OdeServlet {
   // Content type for response header (to avoid security vulnerabilities)
   private static final String CONTENT_TYPE = "text/html; charset=utf-8";
 
-  private final FileExporter fileExporter = new FileExporterImpl();
+  private final FileExporter fileExporter = new FileExporterImpl();   
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -97,7 +97,7 @@ public class DownloadServlet extends OdeServlet {
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
 
-    RawFile downloadableFile;
+    RawFile downloadableFile = null;
 
     String userId = null;
 
@@ -114,9 +114,43 @@ public class DownloadServlet extends OdeServlet {
         uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_OUTPUT);
         long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String target = (uriComponents.length > TARGET_INDEX) ? uriComponents[TARGET_INDEX] : null;
+
+        String resourcePath = "/bootstrap/bootstrap.min.css";
+        String filePath = null;
+        RawFile importJs = null;
+
+        if ((target != null) && target.equalsIgnoreCase(ServerLayout.BUILD_TARGET_WEB) &&
+            (resourcePath != null) && !resourcePath.isEmpty())
+        {
+          // Translate the relative URI path to a server file system path.
+          ServletContext context = this.getServletContext(); 
+          if (context != null)
+          {
+            filePath = context.getRealPath(resourcePath);
+          }
+        }
+
+        try {
+          if (filePath != null)            
+          {            
+            LOG.info("file path is " + filePath);
+
+            ExportableBuildFile buildFile = new ExportableBuildFile(filePath, resourcePath);        
+            importJs = buildFile.getRawFile();
+
+            LOG.info("got raw file, size = " + importJs.getContent().length + ", name = " + importJs.getFileName());
+          }
+          else {
+            LOG.info("Could not map server path to file system path for " + resourcePath);
+          }
+        }
+        catch (FileNotFoundException e)
+        {
+          LOG.info("Did NOT get raw file contents for " + resourcePath);          
+        }
         
         // Get the exportable output file for the build, ie: a zip file
-        downloadableFile = fileExporter.exportProjectBuildOutputFile(userId, projectId, target);
+         downloadableFile = fileExporter.exportProjectBuildOutputFile(userId, projectId, target, importJs);
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_SOURCE)) {
         // Download project source files as a zip.
