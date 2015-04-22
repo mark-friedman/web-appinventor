@@ -913,7 +913,10 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += elemCode + '.style.position = \"relative\";';
       
       //deal with moving cases
-      code += 'if(stringInput!=\"stop\"){';
+      code += 'if((stringInput==\"scrollleftslow\")||';
+      code += '(stringInput==\"scrollleft\")||(stringInput==\"scrollleftfast\")||';
+      code += '(stringInput==\"scrollrightslow\")||(stringInput==\"scrollright\")||';
+      code += '(stringInput==\"scrollrightfast\")){';
       // variable holds direction of motion; default is right
       code +=  'var direction = 1;';
       // variable holds speed; default is medium (not slow or fast)
@@ -928,7 +931,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code +='if(stringInput.match(/fast/)==\"fast\"){';
       code +=       'speed = 9;};';
       // initialize start position
-      code += 'var x =  0 - (2*' + elemCode + '.width);';
+      code += 'var x =  0 - (' + elemCode + '.width);';
       code += 'if(stringInput.match(/left/)==\"left\"){';
       code += 'x = screen.width ;};';
       
