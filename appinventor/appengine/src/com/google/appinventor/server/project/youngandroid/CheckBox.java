@@ -24,7 +24,7 @@ public class CheckBox extends Component{
   String text = "";
   String textColor = "#000000";
   String visible = "true";
-  String width = "auto";
+  String width = "160px";
   String height = "auto";	
 
   String name = "";
@@ -116,7 +116,7 @@ public class CheckBox extends Component{
     this.type  =  type;
   }
 
-  private String generateCSSforComponent()
+  private String generateCSSforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
     sb.append("#div_"+this.getName()+"\n");
@@ -128,19 +128,30 @@ public class CheckBox extends Component{
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
     sb.append(" color : "+this.getTextColor()+";\n");
-    sb.append(" width :"+this.getWidth()+";\n" );
-    sb.append(" height :"+this.getHeight()+";\n" );
+    //sb.append(" width :"+this.getWidth()+";\n" );
+    //sb.append(" height :"+this.getHeight()+";\n" );
     sb.append("}\n");
 
     return sb.toString().valueOf(sb);
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div");
-    sb.append(" id = "+"\""+"div_"+this.getName()+"\"");
-    sb.append(">");
+    if(hasParent==null)
+    	sb.append("<div id=\"div_"+this.getName()+"\" style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    }
     sb.append("<input"); 
     sb.append(" id = "+"\""+this.getName()+"\"");
     sb.append(" type = \"checkbox\"");
@@ -166,7 +177,7 @@ public class CheckBox extends Component{
     return sb.toString().valueOf(sb);
   }
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties,Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
 
@@ -248,8 +259,8 @@ public class CheckBox extends Component{
       }
     }
 
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
-    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
+    componentInfo.css.add(generateCSSforComponent(hasParent));
 
     return componentInfo;
 

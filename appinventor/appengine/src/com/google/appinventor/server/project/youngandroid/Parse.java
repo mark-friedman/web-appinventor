@@ -56,11 +56,12 @@ public class Parse {
       Map<String,JSONValue> componentObj = propObj.getProperties();      
       JSONArray componentsArray = componentObj.get("$Components").asArray();
       
-      screenResult = new Parse().parseComponents(componentsArray, assetSrcPrefix);
+      //hasParent - null by default i.e. no parent components
+      screenResult = new Parse().parseComponents(componentsArray, assetSrcPrefix,null);
       
       //Adding Screen Component
       Screen screen = new Screen(assetSrcPrefix);      
-      ParseResult pageProperties= screen.getComponentString(componentObj);
+      ParseResult pageProperties= screen.getComponentString(componentObj,null);
       
       if (pageProperties != null)
       {
@@ -78,7 +79,10 @@ public class Parse {
     return screenResult;	
   }
 
- public ParseResult parseComponents(JSONArray componentsArray, String assetSrcPrefix)
+//hasParent - null (no parent component)
+//hasParent - false VerticalArrangement
+//hasParent - true HorizontalArrangement
+ public ParseResult parseComponents(JSONArray componentsArray, String assetSrcPrefix, Boolean hasParent)
  {
    ParseResult overallResult = new ParseResult();
    
@@ -165,7 +169,7 @@ public class Parse {
 
      if(componentTypeObj!= null)
      {
-       ParseResult componentInfo = componentTypeObj.getComponentString(pairs);
+       ParseResult componentInfo = componentTypeObj.getComponentString(pairs,hasParent);
        if (componentInfo != null)
        {
          // Fold component results into the overall result collections
@@ -185,14 +189,10 @@ public class Parse {
     try
     {
 
-      String jsonData="#|\n"
-    		  +"$JSON\n"
-    		  +"{\"YaVersion\":\"123\",\"Source\":\"Form\",\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\",\"$Version\":\"14\",\"Uuid\":\"0\",\"Title\":\"Screen1\",\"$Components\":[{\"$Name\":\"Button1\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"-756639649\",\"Text\":\"Text for Button1\"},{\"$Name\":\"CheckBox1\",\"$Type\":\"CheckBox\",\"$Version\":\"2\",\"Uuid\":\"-964925043\",\"Text\":\"Text for CheckBox1\"},{\"$Name\":\"CheckBox2\",\"$Type\":\"CheckBox\",\"$Version\":\"2\",\"Uuid\":\"-64342140\",\"Text\":\"Text for CheckBox2\"},{\"$Name\":\"Image1\",\"$Type\":\"Image\",\"$Version\":\"1\",\"Uuid\":\"741607737\"},{\"$Name\":\"Label1\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"864211034\",\"Text\":\"Text for Label1\"},{\"$Name\":\"Label2\",\"$Type\":\"Label\",\"$Version\":\"3\",\"Uuid\":\"1147955117\",\"Text\":\"Text for Label2\"},{\"$Name\":\"ListPicker1\",\"$Type\":\"ListPicker\",\"$Version\":\"9\",\"Uuid\":\"-83731464\",\"Text\":\"Text for ListPicker1\"},{\"$Name\":\"ListView1\",\"$Type\":\"ListView\",\"$Version\":\"4\",\"Uuid\":\"676572113\"},{\"$Name\":\"PasswordTextBox1\",\"$Type\":\"PasswordTextBox\",\"$Version\":\"3\",\"Uuid\":\"-1054925521\"},{\"$Name\":\"Slider1\",\"$Type\":\"Slider\",\"$Version\":\"2\",\"Uuid\":\"-2063028064\"},{\"$Name\":\"TextBox1\",\"$Type\":\"TextBox\",\"$Version\":\"5\",\"Uuid\":\"-1001760785\",\"Hint\":\"Hint for TextBox1\"},{\"$Name\":\"TimePicker1\",\"$Type\":\"TimePicker\",\"$Version\":\"2\",\"Uuid\":\"-833522790\",\"Text\":\"Text for TimePicker1\"}]}}"
-    		  +"\n|#";
-      
-
-        
-
+      String jsonData="#|\n"+
+    		  "$JSON\n"+
+    		  "{\"YaVersion\":\"123\",\"Source\":\"Form\",\"Properties\":{\"$Name\":\"Screen1\",\"$Type\":\"Form\",\"$Version\":\"14\",\"Uuid\":\"0\",\"Title\":\"Screen1\",\"$Components\":[{\"$Name\":\"Button1\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"-2122937867\",\"Text\":\"Text for Button1\"},{\"$Name\":\"HorizontalArrangement1\",\"$Type\":\"HorizontalArrangement\",\"$Version\":\"2\",\"Uuid\":\"1127460800\",\"Width\":\"-2\",\"$Components\":[{\"$Name\":\"Button2\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"910403406\",\"Text\":\"Text for Button2\",\"Width\":\"-1030\"},{\"$Name\":\"VerticalArrangement1\",\"$Type\":\"VerticalArrangement\",\"$Version\":\"2\",\"Uuid\":\"-688019623\",\"Width\":\"-1040\",\"$Components\":[{\"$Name\":\"Button3\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"1117809389\",\"Text\":\"Text for Button3\"},{\"$Name\":\"Button4\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"218831372\",\"Text\":\"Text for Button4\"}]},{\"$Name\":\"Button5\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"-1937641274\",\"Text\":\"Text for Button5\",\"Width\":\"-1030\"}]},{\"$Name\":\"VerticalArrangement2\",\"$Type\":\"VerticalArrangement\",\"$Version\":\"2\",\"Uuid\":\"357884109\",\"$Components\":[{\"$Name\":\"Button6\",\"$Type\":\"Button\",\"$Version\":\"6\",\"Uuid\":\"392138104\",\"Text\":\"Text for Button6\"}]}]}}"+
+    		  "\n|#";
       
       Parse parseObj = new Parse();
       ParseResult results = new ParseResult();

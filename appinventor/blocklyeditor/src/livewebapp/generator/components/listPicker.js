@@ -56,7 +56,7 @@ Blockly.ListPickerJsGenerator.setProperties = function(component, propName, prop
              }
          case "FontSize":
              return "document.getElementById(\"div_" + component.$Name + "\").style.fontSize = \"" +
-             Math.round(propValue) +"pt\";";
+             Math.round(propValue) +"px\";";
          case "FontTypeface":
              return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                     getFontType(propValue) + "\";";

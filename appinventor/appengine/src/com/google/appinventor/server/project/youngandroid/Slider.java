@@ -67,7 +67,7 @@ public class Slider extends Component{
     this.type = type;
   }
 
-  private String generateCSSforComponent()
+  private String generateCSSforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
     sb.append("#"+this.getName()+"\n");
@@ -80,10 +80,23 @@ public class Slider extends Component{
     return sb.toString().valueOf(sb);
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append("<div>");
+    if(hasParent==null)
+    	sb.append("<div style=\"width: "+this.getWidth()+";\">\n");
+    else if(hasParent)
+    {
+    	sb.append("<div class=\"col-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+";\">\n");
+    }
+    else
+    {
+    	sb.append("<div class=\"row-md-10\"");
+    	sb.append(" style=\"padding-left:0px; padding-right:0px;");
+    	sb.append(" width: "+this.getWidth()+";\">\n");
+    }
     sb.append("<input"); 
 
     sb.append(" id = "+"\""+this.getName()+"\"");
@@ -105,7 +118,7 @@ public class Slider extends Component{
   }
 
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties, Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
 
@@ -154,8 +167,8 @@ public class Slider extends Component{
       }
     }
 
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
-    componentInfo.css.add(generateCSSforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
+    componentInfo.css.add(generateCSSforComponent(hasParent));
 
     return componentInfo;
 

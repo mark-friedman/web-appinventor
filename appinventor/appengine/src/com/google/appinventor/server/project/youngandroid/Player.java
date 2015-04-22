@@ -53,7 +53,7 @@ public class Player extends SourceComponent{
     return "";
   }
 
-  private String generateHTMLforComponent()
+  private String generateHTMLforComponent(Boolean hasParent)
   {
     StringBuilder sb = new StringBuilder();
     sb.append("<div>");
@@ -70,7 +70,7 @@ public class Player extends SourceComponent{
     return sb.toString().valueOf(sb);
   }
 
-  public ParseResult getComponentString(Map<String,JSONValue> properties)
+  public ParseResult getComponentString(Map<String,JSONValue> properties,Boolean hasParent)
   {
     ParseResult componentInfo = new ParseResult();
     for(String property:properties.keySet())
@@ -104,7 +104,7 @@ public class Player extends SourceComponent{
         break;
       }
     }
-    componentInfo.bodyHtml.add(generateHTMLforComponent());
+    componentInfo.bodyHtml.add(generateHTMLforComponent(hasParent));
     componentInfo.css.add(generateCSSforComponent());
     componentInfo.assetFiles.add(this.getPrefixedSrc(this.getSource())); 
     return componentInfo;
