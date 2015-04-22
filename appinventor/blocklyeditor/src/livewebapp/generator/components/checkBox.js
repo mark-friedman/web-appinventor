@@ -58,7 +58,7 @@ Blockly.CheckBoxJsGenerator.setProperties = function(component, propName, propVa
             }
         case "FontSize":
             return "document.getElementById(\"div_" + component.$Name + "\").style.fontSize = \"" +
-                Math.round(propValue) +"pt\";";
+                Math.round(propValue) +"px\";";
         case "FontTypeface":
             return "document.getElementById(\"div_" + component.$Name + "\").style.fontFamily = \"" +
                 this.getFontType(propValue) + "\";";

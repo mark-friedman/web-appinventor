@@ -52,7 +52,7 @@ Blockly.ListViewJsGenerator.setProperties = function(component, propName, propVa
              }
          case "FontSize":
              return "document.getElementById(\"" + component.$Name + "\").style.fontSize = \"" +
-             Math.round(propValue) +"pt\";";
+             Math.round(propValue) +"px\";";
          case "FontTypeface":
              return "document.getElementById(\"" + component.$Name + "\").style.fontFamily = \"" +
                     getFontType(propValue) + "\";";
