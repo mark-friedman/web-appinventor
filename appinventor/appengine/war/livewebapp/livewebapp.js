@@ -130,11 +130,11 @@ var liveWebApp = (function(){
 	
 
     }
-	function buildJSONResponceToChangeTheScreen(javascript,status){
-		//this.response{"status":"OK","values":[{"type":"pushScreen","screen":"Screen2","status":"OK"}]}
-		 var res = javascript.split("\"");
-		 var screenName = res[1].replace('.html','') ;
-             console.log(screenName);			
+	function buildJSONResponceToChangeTheScreen(javascript,status){		
+		var res = javascript.split("document.location.href = '");
+		var screen = res[1].split(".html");
+		var screenName = screen[0] ;
+        console.log(screenName);				 
 		
 		 var jsonData = {};
         var fullData = {};        
