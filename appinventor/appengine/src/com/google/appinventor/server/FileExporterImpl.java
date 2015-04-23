@@ -37,7 +37,7 @@ public final class FileExporterImpl implements FileExporter {
   private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
 
   @Override
-  public RawFile exportProjectBuildOutputFile(String userId, long projectId, String target)
+  public RawFile exportProjectBuildOutputFile(String userId, long projectId, String target, @Nullable RawFile importFile)
       throws IOException {
     
     // Only the web target supported for build + download zip
@@ -58,7 +58,7 @@ public final class FileExporterImpl implements FileExporter {
           ProjectWebOutputZip zipFile = null;
           String fileName = projectName + ".zip";
 
-          zipFile = exportProjectWebOutputZip(userId, projectId, assetFileIds, fileName, true);
+          zipFile = exportProjectWebOutputZip(userId, projectId, assetFileIds, fileName, true, importFile);
 
           return zipFile.getRawFile(); 
         }
@@ -116,10 +116,12 @@ public final class FileExporterImpl implements FileExporter {
                                                          long projectId,
                                                          ArrayList<String> assetFileIds,
                                                          String zipName,
-                                                         boolean fatalError) throws IOException {
+                                                         boolean fatalError,
+                                                         @Nullable RawFile importFile) throws IOException {
         // bundle project output files as a zip
         if (storageIo instanceof ObjectifyStorageIo) {
-            return ((ObjectifyStorageIo)storageIo).exportProjectWebOutputZip(userId, projectId, assetFileIds, zipName, fatalError);
+            return ((ObjectifyStorageIo)storageIo).exportProjectWebOutputZip(userId,
+                projectId, assetFileIds, zipName, fatalError, importFile);
         } else {
             throw new IllegalArgumentException("Objectify only");
         }

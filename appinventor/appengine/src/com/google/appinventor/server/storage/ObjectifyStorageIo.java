@@ -43,13 +43,13 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteSource;
 import com.google.common.io.ByteStreams;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
 import java.io.ByteArrayOutputStream;
+
 
 // GCS imports
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
@@ -1258,7 +1258,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                                                          final long projectId,
                                                          final ArrayList<String> assetFileIds,
                                                          String zipName,
-                                                         final boolean fatalError) throws IOException {
+                                                         final boolean fatalError,
+                                                         @Nullable RawFile importFile) throws IOException {
         final Result<Integer> fileCount = new Result<Integer>();
         fileCount.t = 0;
         // We collect up all the file data for the project in a transaction but
@@ -1376,6 +1377,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                 } else {
                     data = fd.content;
                 }
+                
                 if (data == null) {     // This happens if file creation is interrupted
                     data = new byte[0];
                 }
@@ -1385,10 +1387,28 @@ public class ObjectifyStorageIo implements  StorageIo {
                 else {
                     out.putNextEntry(new ZipEntry(StorageUtil.basename(fileName)));
                 }
+                
                 out.write(data, 0, data.length);
                 out.closeEntry();
                 fileCount.t++;
             }
+            
+            if (importFile != null) { // Add the bootstrap library to the zip output.
+                String bootstrapFileName = importFile.getFileName();
+                byte[] bootstrapData = importFile.getContent();
+                
+                if (bootstrapData == null) {
+                    bootstrapData = new byte[0];
+                }
+                else {
+                    out.putNextEntry(new ZipEntry(bootstrapFileName));
+                }
+                
+                out.write(bootstrapData, 0, bootstrapData.length);
+                out.closeEntry();
+                fileCount.t++;
+            }
+            
         } catch (ObjectifyException e) {
             CrashReport.createAndLogError(LOG, null,
                     collectProjectErrorInfo(userId, projectId, fileName), e);

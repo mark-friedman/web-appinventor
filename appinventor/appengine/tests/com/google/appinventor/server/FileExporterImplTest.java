@@ -136,7 +136,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
      
     // Test the call using the mocked build - no scm/bky files = no html, so should get exception
     try {
-      exporter.exportProjectBuildOutputFile(USER_ID, projectId, ServerLayout.BUILD_TARGET_WEB);
+      exporter.exportProjectBuildOutputFile(USER_ID, projectId, ServerLayout.BUILD_TARGET_WEB, null);
       fail();
     } catch (IllegalArgumentException ex) {
       // We expect to get an IllegalArgumentException
@@ -145,7 +145,7 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
 
   public void testExportProjectOutputFileWithNonExistingTraget() throws IOException {
     try {
-      exporter.exportProjectBuildOutputFile(USER_ID, projectId, "target3");
+      exporter.exportProjectBuildOutputFile(USER_ID, projectId, "target3", null);
       fail();
     } catch (IllegalArgumentException e) {
       // expected

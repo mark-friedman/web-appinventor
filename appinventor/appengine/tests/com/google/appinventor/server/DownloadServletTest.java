@@ -125,7 +125,7 @@ public class DownloadServletTest {
   public void testDownloadProjectOutputFileWithoutTarget() throws IOException {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/1234");
-    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, null))
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, null, null))
         .andReturn(dummyBuiltFile);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -141,7 +141,7 @@ public class DownloadServletTest {
   public void testDownloadProjectOutputFileWithTarget() throws IOException {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/1234/target1");
-    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, "target1"))
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, "target1", null))
         .andReturn(dummyBuiltFile);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -158,7 +158,7 @@ public class DownloadServletTest {
     IllegalArgumentException expectedException = new IllegalArgumentException();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/12345");
-    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, 12345L, null))
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, 12345L, null, null))
         .andThrow(expectedException);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
@@ -176,7 +176,7 @@ public class DownloadServletTest {
     IllegalArgumentException expectedException = new IllegalArgumentException();
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-output/1234/target3");
-    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, "target3"))
+    expect(exporterMock.exportProjectBuildOutputFile(USER_ID, PROJECT_ID, "target3", null))
         .andThrow(expectedException);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();

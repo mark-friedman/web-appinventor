@@ -12,6 +12,7 @@ import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.ProjectWebOutputZip;
+import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 
@@ -511,7 +512,8 @@ public interface StorageIo {
                                                   long projectId,
                                                   ArrayList<String> assetFileIds,
                                                   String zipName,
-                                                  boolean fatalError) throws IOException;
+                                                  boolean fatalError,
+                                                  @Nullable RawFile importFile) throws IOException;
 
   /**
    *  Exports project files as a zip archive
