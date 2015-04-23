@@ -1149,7 +1149,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'image':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.style.backgroundImage';
+      code = 'window.getComputedStyle(' + code + ', false).backgroundImage';
       // returns "url(blahblahblah/what_you_want)"
       // so we need to trim 'url(' and ')'
       code += '.slice(4,-1)';
