@@ -186,8 +186,12 @@ public class Button extends ImageComponent{
     sb.append(" min-height : 16px;\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
-    sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
-    sb.append(" background-size: 100% 100%;");
+    
+    if(!this.getImage().equalsIgnoreCase(""))
+    {
+      sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
+      sb.append(" background-size: 100% 100%;");      
+    }
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" border-radius : "+this.getShape()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
