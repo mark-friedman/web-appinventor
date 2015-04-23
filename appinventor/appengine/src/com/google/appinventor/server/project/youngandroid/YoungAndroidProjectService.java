@@ -545,6 +545,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    */
   public Boolean build(String userId, long projectId, String target, @Nullable ArrayList<String> assetFileIds) throws JSONException {
     boolean isLiveWebAppBuild = target.equalsIgnoreCase(ServerLayout.BUILD_TARGET_LIVEWEBAPP);
+    boolean isQrCodeBuild = target.equalsIgnoreCase(ServerLayout.BUILD_TARGET_QRCODE);
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + "/" + target + "/";
     ArrayList<String> referencedAssets = new ArrayList<String>();
@@ -627,7 +628,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         LOG.log(Level.FINEST, screenComponentJSONFileId + ":  " + screenComponentJSON);
 
         // Build the html for this screen
-        StitchResult screenResult = Shell.stitchBuildHTML(projectName, screenName, screenJavaScript, screenComponentJSON, isLiveWebAppBuild, "assets/");
+        StitchResult screenResult =
+            Shell.stitchBuildHTML(projectName,
+            screenName,
+            screenJavaScript,
+            screenComponentJSON,
+            isLiveWebAppBuild,
+            isQrCodeBuild,
+            "assets/");
+        
         LOG.log(Level.INFO, "# Asset files found = " + screenResult.assetFiles.size());
         
         // Keep track of our asset files (and for QRCode build, copy them to their own target location)
@@ -642,17 +651,25 @@ public final class YoungAndroidProjectService extends CommonProjectService {
             // For a QRCode build, we copy the referenced assets over so
             // they are isolated from user designer changes.  Note that this
             // step is unnecessary for zip and live web app build.
-            if (target.equalsIgnoreCase(ServerLayout.BUILD_TARGET_QRCODE))
+            if (isQrCodeBuild)
             {
               // Note that the storage layer specifically looks for "assets" to determine if a file
               // should be stored as a blob (and different storage limits can apply)
               String newAssetFileId = outputFileDir + "assets/" + StorageUtil.basename(assetFileId);
-              byte[] contents = storageIo.downloadRawFile(userId, projectId, assetFileId);
+              try {
+                byte[] contents = storageIo.downloadRawFile(userId, projectId, assetFileId);
 
-              LOG.log(Level.INFO, "   Copying to " + newAssetFileId + ", size = " + contents.length);
-              
-              storageIo.addOutputFilesToProject(userId, projectId, newAssetFileId);
-              storageIo.uploadRawFileForce(projectId, newAssetFileId, userId, contents);
+                LOG.log(Level.INFO, "   Copying to " + newAssetFileId + ", size = " + contents.length);
+
+                storageIo.addOutputFilesToProject(userId, projectId, newAssetFileId);
+                storageIo.uploadRawFileForce(projectId, newAssetFileId, userId, contents);
+              }
+              catch (RuntimeException ex)
+              {
+                // This can happen when the user deletes an asset, but doesn't update the components
+                // using it in the designer.
+                LOG.log(Level.WARNING, "   Referenced asset " + assetFileId + " not found in storage.");
+              }
             }
           }
         }
