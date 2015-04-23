@@ -7,6 +7,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.CheckBoxJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
         "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
@@ -24,6 +25,7 @@ Blockly.CheckBoxJsGenerator.generateJSForAddingComponent = function(component){
             "document.body.appendChild(div);}"+
             "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\"" +
            this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
+	}
 };
 
 Blockly.CheckBoxJsGenerator.generateJSForRemovingComponent = function(component){

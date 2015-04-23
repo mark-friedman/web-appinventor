@@ -9,6 +9,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.LabelJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
         "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload(true);" +
@@ -23,6 +24,7 @@ Blockly.LabelJsGenerator.generateJSForAddingComponent = function(component){
         "}"+
         this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component)+
      this.getBorder(component, "True");
+	}
 };
 
 

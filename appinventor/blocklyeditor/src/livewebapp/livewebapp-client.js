@@ -101,14 +101,13 @@ Blockly.liveWebAppClient = (function(){
 		console.log("------ addLiveWebAppComponent: " + componentInfo);
 		var component = JSON.parse(componentInfo);
 		for (var i = 0; i < component.$Components.length; i++) {
-			var changedComponent = component.$Components[i];
-			if (changedComponent.Changed == "true") {
+			var changedComponent = component.$Components[i];			
 				var js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(changedComponent);
 				console.log("####### JS: " + js);
-				if (js.length > 0) {
-					sendMessage(js, MSG_COMPONENT_ADD);
+				if(js != undefined){			
+					sendMessage(js, MSG_COMPONENT_ADD);				
 				}
-			}
+			
 		}
 	}
   }
