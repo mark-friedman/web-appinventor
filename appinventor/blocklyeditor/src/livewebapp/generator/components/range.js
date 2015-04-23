@@ -18,7 +18,7 @@ Blockly.RangeJsGenerator.generateJSForAddingComponent = function(component){
             "rangefield.setAttribute(\"type\", \"range\");" +
             "div.appendChild(rangefield);" +
             "document.body.appendChild(div);}"+
-        this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
+        this.getWidthSizeVal("-1", component);
 };
 
 Blockly.RangeJsGenerator.generateJSForRemovingComponent = function(component){
