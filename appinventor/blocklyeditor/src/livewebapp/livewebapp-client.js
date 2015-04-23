@@ -97,23 +97,20 @@ Blockly.liveWebAppClient = (function(){
   }
 
   addLiveWebAppComponent = function(componentInfo) {
-    if(checkLiveEditOpen()){
-        console.log("------ addLiveWebAppComponent: " + componentInfo);
-        var js;
-        var jsonObject = JSON.parse(componentInfo);
-        var components = jsonObject.$Components;
-
-        for(var component in components) {
-            if(js == undefined)
-                js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(component);
-            else
-                js += Blockly.ComponentJSGenerator.generateJSForAddingComponent(component);
-        }
-        console.log("####### JS: " + js);
-        if(js.length > 0){
-            sendMessage(js,MSG_COMPONENT_ADD);
-        }
-    }
+    if (checkLiveEditOpen()) {
+		console.log("------ addLiveWebAppComponent: " + componentInfo);
+		var component = JSON.parse(componentInfo);
+		for (var i = 0; i < component.$Components.length; i++) {
+			var changedComponent = component.$Components[i];
+			if (changedComponent.Changed == "true") {
+				var js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(changedComponent);
+				console.log("####### JS: " + js);
+				if (js.length > 0) {
+					sendMessage(js, MSG_COMPONENT_ADD);
+				}
+			}
+		}
+	}
   }
 
   removeLiveWebAppComponent = function(componentInfo) {
