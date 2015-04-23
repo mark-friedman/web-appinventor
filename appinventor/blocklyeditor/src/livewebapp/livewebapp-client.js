@@ -356,8 +356,12 @@ Blockly.liveWebAppClient = (function(){
 	console.log("RESPONCE ==>"+event.data);
 	var json = goog.json.parse(event.data);
 	console.log("JSON Status ==>"+json.status);		
-	if (json.status == 'OK') {		                   
-	Blockly.ReplMgr.processRetvals([json.values]);
+	if (json.status == 'OK') {
+        projectId = Object.keys(window.parent.Blocklies).pop().split("_")[0];
+        var urlElements = liveWebAppUrl.split("/");
+        var currentScreenName = urlElements[urlElements.length - 1];
+        blockly = window.parent.Blocklies[projectId + "_" + screenName];
+	    blockly.ReplMgr.processRetvals([json.values]);
 	}
 	else if(json.status == 'BAD'){
 	console.log("ERROR BAD MESSAGE==>"+json.values);   
