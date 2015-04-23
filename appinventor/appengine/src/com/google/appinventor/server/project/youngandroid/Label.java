@@ -145,16 +145,16 @@ public class Label extends Component{
   {
     StringBuilder sb = new StringBuilder();
     if(hasParent==null)
-    	sb.append("<div style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    	sb.append("<div id=\"div_"+this.getName()+"\" style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
     else if(hasParent)
     {
-    	sb.append("<div class=\"col-md-10\"");
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"col-md-10\"");
     	sb.append(" style=\"padding-left:0px; padding-right:0px;");
     	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
     }
     else
     {
-    	sb.append("<div class=\"row-md-10\"");
+    	sb.append("<div id=\"div_"+this.getName()+"\" class=\"row-md-10\"");
     	sb.append(" style=\"padding-left:0px; padding-right:0px;");
     	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
     }

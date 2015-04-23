@@ -137,13 +137,13 @@ private String generateHTMLforComponent(ArrayList<String> containedHtmlList, Boo
   {}
   else if(hasParent==true)
   {
-  	sb.append("<div class=\"col-md-10\"");
+  	sb.append("<div id=\"div_"+this.getName()+"\" class=\"col-md-10\"");
   	sb.append(" style=\"padding-left:0px; padding-right:0px;");
   	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
   }
   else
   {
-  	sb.append("<div class=\"row-md-10\"");
+  	sb.append("<div id=\"div_"+this.getName()+"\" class=\"row-md-10\"");
   	sb.append(" style=\"padding-left:0px; padding-right:0px;");
   	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
   }
