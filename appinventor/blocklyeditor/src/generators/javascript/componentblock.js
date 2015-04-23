@@ -708,7 +708,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
     case 'visible':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code2 += Blockly.JavaScript.codeHelper(elementCode, 0);
-      code3 += '.style.visibility = (' + bodyCode + ' ? \"visible\" : \"hidden\");';
+      code3 += '.hidden = !' + bodyCode + ';';
       code += code3;
       code2 += code3;
       break;
@@ -761,19 +761,42 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       break;
     case 'image':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.style.backgroundImage = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
+      // code += '.style.backgroundImage = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
+      code += '.style.backgroundImage = ';
+      code += '(function() { ' +
+        'var _bodyCode = ' + bodyCode + ';' +
+        'var _code = \"url(\'assets/\" + eval(\'_bodyCode\') + \"\')\"; ' +
+        'return _code; ' +
+      '})();';
       break;
     case 'picture':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.src = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
+      // code += '.src = \"url(\\\'assets/' + eval(bodyCode) + '\\\')\";';
+      code += '.src = ';
+      code += '(function() { ' +
+        'var _bodyCode = ' + bodyCode + ';' +
+        'var _code = \"assets/\" + eval(\'_bodyCode\'); ' +
+        'return _code; ' +
+      '})();';
       break;
     case 'volume':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.volume = ' + eval(bodyCode / 100) + ';';
+      // code += '.volume = ' + eval(bodyCode / 100) + ';';
+      code += '.volume = ';
+      code += '(function() { ' +
+        'var _bodyCode = ' + bodyCode + ';' +
+        'var _code = eval(\'_bodyCode\')/100; ' +
+        'return _code; ' +
+      '})();';
       break;
     case 'source':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.src = \"assets/' + eval(bodyCode) + '\";';
+      code += '.src = ';
+      code += '(function() { ' +
+        'var _bodyCode = ' + bodyCode + ';' +
+        'var _code = \"assets/\" + eval(\'_bodyCode\'); ' +
+        'return _code; ' +
+      '})();';
       break;
     case 'loop':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -906,12 +929,12 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       //track parent in order to replace old image with clone
       code += 'var parent =' + elemCode + '.parentNode;';
 
-      //clone eventually replaces animated image  
+      //clone eventually replaces animated image
       code += 'var clone = ' + elemCode + '.cloneNode();';
 
       //following line is needed in order set the position
       code += elemCode + '.style.position = \"relative\";';
-      
+
       //deal with moving cases
       code += 'if((stringInput==\"scrollleftslow\")||';
       code += '(stringInput==\"scrollleft\")||(stringInput==\"scrollleftfast\")||';
@@ -934,7 +957,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
       code += 'var x =  0 - (' + elemCode + '.width);';
       code += 'if(stringInput.match(/left/)==\"left\"){';
       code += 'x = screen.width ;};';
-      
+
       //doAnimate moves image across screen
       code += 'var doAnimate = setInterval(function(){' ;
       code += 'x = x + (direction * speed);';
@@ -1090,7 +1113,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'visible':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.style.visibility == \"visible\"';
+      code += '.hidden == false';
       break;
     case 'hasmargins':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
@@ -1126,7 +1149,7 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
       break;
     case 'image':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
-      code += '.style.backgroundImage';
+      code = 'window.getComputedStyle(' + code + ', false).backgroundImage';
       // returns "url(blahblahblah/what_you_want)"
       // so we need to trim 'url(' and ')'
       code += '.slice(4,-1)';
@@ -1150,6 +1173,8 @@ Blockly.JavaScript.getPropertyHelper = function(elementCode, propertyName, typeN
     case 'source':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
       code += '.src';
+      code += '.split(\"/\")';
+      code += '.slice(-1)[0]';
       break;
     case 'isplaying':
       code += Blockly.JavaScript.codeHelper(elementCode, 1);
