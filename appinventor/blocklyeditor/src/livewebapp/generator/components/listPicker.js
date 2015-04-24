@@ -24,7 +24,7 @@ Blockly.ListPickerJsGenerator.generateJSForAddingComponent = function(component)
             "div.appendChild(label);" +
             "div.appendChild(listView);" +
             "document.body.appendChild(div);}"+
-        "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\";"+
+        //"document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\";"+
         this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 	}
 };

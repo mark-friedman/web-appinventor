@@ -23,7 +23,7 @@ Blockly.CheckBoxJsGenerator.generateJSForAddingComponent = function(component){
             "div.appendChild(checkBox);" +
             "div.appendChild(label);" +
             "document.body.appendChild(div);}"+
-            "document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\";" +
+            //"document.getElementById(\"div_"+ component.$Name + "\").style.cssFloat = \"left\";" +
            this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
 	}
 };
