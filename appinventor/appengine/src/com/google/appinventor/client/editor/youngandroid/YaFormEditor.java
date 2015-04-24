@@ -283,9 +283,9 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
 
     // FormChangeListener publish methods
-    protected String encodeComponentAsJsonString(MockComponent component) {
+    protected String encodeComponentAsJsonString(MockComponent topComponent, MockComponent componentChanged) {
         StringBuilder sb = new StringBuilder();
-        encodeComponentProperties(component, sb);
+        encodeComponentProperties(topComponent, componentChanged, sb, -1);
         return sb.toString();
     }
 
@@ -299,7 +299,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     public void onComponentPropertyChanged(MockComponent component,
                                            String propertyName, String propertyValue) {
         if (loadComplete) {
-            String componentInfo = encodeComponentAsJsonString(component);
+            String componentInfo = encodeComponentAsJsonString(component, component);
             OdeLog.log("====== onComponentPropertyChanged, properties: " + componentInfo +
                     " propertyName: " + propertyName + " propertyValue: " + propertyValue);
             // If the property isn't actually persisted to the .scm file, we don't need to do anything.
@@ -317,9 +317,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
         if (loadComplete) {
             if (permanentlyDeleted) {
-                OdeLog.log("====== onComponentRemoved, properties: " + encodeComponentAsJsonString(component) +
+                OdeLog.log("====== onComponentRemoved, properties: " +
+                        encodeComponentAsJsonString(component, component) +
                         " permanentlyDeleted: " + permanentlyDeleted);
-                String componentInfo = encodeComponentAsJsonString(component);
+                String componentInfo = encodeComponentAsJsonString(component, component);
                 getBlocksEditor().sendComponentRemoved(componentInfo);
                 onFormStructureChange();
             }
@@ -331,7 +332,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     @Override
     public void onComponentAdded(MockComponent component) {
         if (loadComplete) {
-            String componentInfo = encodeComponentAsJsonString(component);
+            String componentInfo = encodeComponentAsJsonString(form, component);
             OdeLog.log("====== onComponentAdded, ComponentInfo: " + componentInfo);
             getBlocksEditor().sendComponentAdded(componentInfo);
             onFormStructureChange();
@@ -343,7 +344,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     @Override
     public void onComponentRenamed(MockComponent component, String oldName) {
         if (loadComplete) {
-            String componentInfo = encodeComponentAsJsonString(component);
+            String componentInfo = encodeComponentAsJsonString(component, component);
             OdeLog.log("====== onComponentRenamed, properties: " + componentInfo + " oldName: "
                     + oldName);
             onFormStructureChange();
@@ -587,7 +588,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     sb.append("\"YaVersion\":\"").append(YaVersion.YOUNG_ANDROID_VERSION).append("\",");
     sb.append("\"Source\":\"Form\",");
     sb.append("\"Properties\":");
-    encodeComponentProperties(form, sb);
+    encodeComponentProperties(form, null, sb, -1);
     sb.append("}");
     return sb.toString();
   }
@@ -601,7 +602,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   /*
    * Encodes a component and its properties into a JSON encoded string.
    */
-  private void encodeComponentProperties(MockComponent component, StringBuilder sb) {
+  private void encodeComponentProperties(MockComponent component, MockComponent componentChanged, StringBuilder sb, int position) {
     // The component encoding starts with component name and type
     String componentType = component.getType();
     EditableProperties properties = component.getProperties();
@@ -622,14 +623,27 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       sb.append(propertiesString);
     }
 
+    // add the position
+    sb.append(",\"Position\":\"");
+    sb.append(String.valueOf(position));
+    sb.append("\"");
+
+    // determine what component changed
+    sb.append(",\"Changed\":\"");
+    String changed = (component == componentChanged) ? "true" : "false";
+    if(component == null) changed = "unknown";
+    sb.append(changed);
+    sb.append("\"");
+
     // Finally any children of the component
     List<MockComponent> children = component.getChildren();
     if (!children.isEmpty()) {
       sb.append(",\"$Components\":[");
       String separator = "";
-      for (MockComponent child : children) {
+      //for (MockComponent child : children) {
+      for(int i = 0; i < children.size(); i++){
         sb.append(separator);
-        encodeComponentProperties(child, sb);
+        encodeComponentProperties(children.get(i), componentChanged, sb, i);
         separator = ",";
       }
       sb.append(']');

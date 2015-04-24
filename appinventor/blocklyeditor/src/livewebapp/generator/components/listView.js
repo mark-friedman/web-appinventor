@@ -9,6 +9,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.ListViewJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
         "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
@@ -19,6 +20,7 @@ Blockly.ListViewJsGenerator.generateJSForAddingComponent = function(component){
             "div.appendChild(listView);" +
             "document.body.appendChild(div);}"+
         this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
+	}
 };
 
 Blockly.ListViewJsGenerator.generateJSForRemovingComponent = function(component){
