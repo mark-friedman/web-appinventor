@@ -194,7 +194,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
   doitOption.text = Blockly.Msg.DO_IT;
   doitOption.callback = function() {
 
-     if(!Blockly.liveWebAppClient.checkLiveEditOpen()){
+     if(!window.parent.liveWebAppClient.checkLiveEditOpen()){
            var dialog;
            dialog = new goog.ui.Dialog(null, true);
            dialog.setTitle(Blockly.Msg.CAN_NOT_DO_IT);
@@ -205,7 +205,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
            dialog.setVisible(true);
 
      }else{
-        Blockly.liveWebAppClient.doItAction(myBlock);
+        window.parent.liveWebAppClient.doItAction(myBlock);
      }
 
   };
