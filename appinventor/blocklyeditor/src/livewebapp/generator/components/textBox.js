@@ -9,6 +9,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.TextBoxJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
      var txtBox = "var element =  document.getElementById(\""+component.$Name+"\");"+
         "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
@@ -24,6 +25,7 @@ Blockly.TextBoxJsGenerator.generateJSForAddingComponent = function(component){
          "}");
     return txtBox+
         this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
+	}
 };
 
 

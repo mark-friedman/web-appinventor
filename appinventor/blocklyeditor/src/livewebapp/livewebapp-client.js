@@ -97,13 +97,29 @@ Blockly.liveWebAppClient = (function(){
   }
 
   addLiveWebAppComponent = function(componentInfo) {
+    if (checkLiveEditOpen()) {
+		console.log("------ addLiveWebAppComponent: " + componentInfo);
+		var component = JSON.parse(componentInfo);
+		for (var i = 0; i < component.$Components.length; i++) {
+			var changedComponent = component.$Components[i];			
+				var js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(changedComponent);
+				console.log("####### JS: " + js);
+				if(js != undefined){			
+					sendMessage(js, MSG_COMPONENT_ADD);				
+				}
+			
+		}
+	}
+  }
+
+  removeLiveWebAppComponent = function(componentInfo) {
     if(checkLiveEditOpen()){
-        console.log("------ addLiveWebAppComponent: " + componentInfo);
+        console.log("------ removeLiveWebAppComponent: " + componentInfo);
         var component = JSON.parse(componentInfo);
-        var js = Blockly.ComponentJSGenerator.generateJSForAddingComponent(component);
+        var js = Blockly.ComponentJSGenerator.generateJSForRemovingComponent(component);
         console.log("####### JS: " + js);
         if(js.length > 0){
-            sendMessage(js,MSG_COMPONENT_ADD);
+            sendMessage(js,MSG_COMPONENT_REMOVE);
         }
     }
   }
@@ -268,20 +284,6 @@ Blockly.liveWebAppClient = (function(){
 
   }
 
-
-
-  removeLiveWebAppComponent = function(componentInfo) {
-    if(checkLiveEditOpen()){
-        console.log("------ removeLiveWebAppComponent: " + componentInfo);
-        var component = JSON.parse(componentInfo);
-        var js = Blockly.ComponentJSGenerator.generateJSForRemovingComponent(component);
-        console.log("####### JS: " + js);
-        if(js.length > 0){
-            sendMessage(js,MSG_COMPONENT_REMOVE);
-        }
-    }
-  }
-
   sendMessage = function(data,messageType,blockId){
       message = generateMessageForType(data,messageType,blockId)
       var sMessage = data
@@ -334,7 +336,7 @@ Blockly.liveWebAppClient = (function(){
 	            msg = true;	            	       
 	        }	
 	        return msg;
-	    }
+   }
 
   doItAction = function(block) {
      var js  = Blockly.JavaScript.blockToCode1(block);

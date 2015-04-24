@@ -9,6 +9,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.AudioJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
         "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
@@ -22,6 +23,7 @@ Blockly.AudioJsGenerator.generateJSForAddingComponent = function(component){
       "div.appendChild(audio);"+
       "document.body.appendChild(div);" +
         "}";
+	}
 };
 
 

@@ -10,6 +10,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.ButtonJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
     "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload(true);" +
@@ -22,6 +23,7 @@ Blockly.ButtonJsGenerator.generateJSForAddingComponent = function(component){
             "div.appendChild(btn);" +
             "document.body.appendChild(div);"+
         "}"+  this.getWidthSizeVal("-1", component) +  this.getHeightSizeVal("-1", component);
+	}
 };
 
 

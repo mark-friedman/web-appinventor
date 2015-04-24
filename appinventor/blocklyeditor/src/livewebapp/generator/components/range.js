@@ -9,6 +9,7 @@ goog.require('Blockly.Generator');
 /////// Methods to be implemented for every component JS Generator Start
 
 Blockly.RangeJsGenerator.generateJSForAddingComponent = function(component){
+	if(component.Changed == "true"){
     return "var element =  document.getElementById(\""+component.$Name+"\");"+
         "if (typeof(element) != 'undefined' && element != null) { " +
         "location.reload();" +
@@ -19,6 +20,7 @@ Blockly.RangeJsGenerator.generateJSForAddingComponent = function(component){
             "div.appendChild(rangefield);" +
             "document.body.appendChild(div);}"+
         this.getWidthSizeVal("-1", component);
+    }
 };
 
 Blockly.RangeJsGenerator.generateJSForRemovingComponent = function(component){
