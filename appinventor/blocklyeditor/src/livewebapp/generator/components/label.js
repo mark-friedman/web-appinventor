@@ -15,7 +15,9 @@ Blockly.LabelJsGenerator.generateJSForAddingComponent = function(component){
         "location.reload(true);" +
         "}else {"+
         "var div = document.createElement(\"div\");" +
+        "div.setAttribute(\"id\",\"" + "div_"+component.$Name + "\");" +
         "var btn = document.createElement(\"Lable\");" +
+        "btn.setAttribute(\"class\",\"default-component-size\");" +
         "btn.setAttribute(\"id\",\"" + component.$Name + "\");" +
         "var txt = document.createTextNode(\"" + component.Text + "\");" +
         "btn.appendChild(txt);" +
@@ -107,28 +109,36 @@ Blockly.LabelJsGenerator.getBorder = function(component, propValue) {
 };
 
 Blockly.LabelJsGenerator.getWidthSizeVal = function(index, component) {
-    if(index == "-1")
-        return "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
-    else if(index == "-2")
-        return "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
-            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
-    else if(index.indexOf("-")<0)
-        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
-    else
-        return "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
-            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
+	 if(index == "-1")
+	        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.width = \"auto\";"+
+	        "document.getElementById(\"" + component.$Name + "\").style.width = \"auto\";";
+	    else if(index == "-2")
+	        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.width = \"100%\";"+ 
+	        "document.getElementById(\"" + component.$Name + "\").style.width = \"100%\";"+
+	            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
+	    else if(index.indexOf("-")<0)
+	        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.width =\""+ index+"px\";"+ 
+	        "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index+"px\";";
+	    else
+	        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+	        "document.getElementById(\"" + component.$Name + "\").style.width =\""+ index.substring(3)+"%\";"+
+	            "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 
 Blockly.LabelJsGenerator.getHeightSizeVal = function(index, component) {
-    if(index == "-1")
-        return "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
+	if(index == "-1")
+        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.height = \"auto\";"+ 
+        "document.getElementById(\"" + component.$Name + "\").style.height = \"auto\";";
     else if(index == "-2")
-        return "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
+        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.height = \"100%\";"+ 
+        "document.getElementById(\"" + component.$Name + "\").style.height = \"100%\";"+
             "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
     else if(index.indexOf("-")<0)
-        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
+        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.height =\""+ index+"px\";"+ 
+        "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index+"px\";";
     else
-        return "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
+        return "document.getElementById(\"" + "div_"+component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+ 
+        "document.getElementById(\"" + component.$Name + "\").style.height =\""+ index.substring(3)+"%\";"+
             "document.getElementById(\"" + component.$Name + "\").style.display = \"block\";";
 };
 

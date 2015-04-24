@@ -186,8 +186,12 @@ public class Button extends ImageComponent{
     sb.append(" min-height : 16px;\n");
     sb.append(" font-style : "+this.getFontItalic()+";\n");
     sb.append(" font-family : "+this.getFontTypeface()+";\n");
-    sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
-    sb.append(" background-size: 100% 100%;");
+    
+    if(!this.getImage().equalsIgnoreCase(""))
+    {
+      sb.append(" background-image : url("+this.getPrefixedSrc(this.getImage())+");\n");
+      sb.append(" background-size: 100% 100%;");      
+    }
     sb.append(" color : "+this.getTextColor()+";\n");
     sb.append(" border-radius : "+this.getShape()+";\n");
     sb.append(" text-align : "+this.getTextAlign()+";\n");
@@ -200,16 +204,16 @@ public class Button extends ImageComponent{
   {
     StringBuilder sb = new StringBuilder();
     if(hasParent==null)
-    	sb.append("<div style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
+    	sb.append("<div id= "+"\"div_"+this.getName()+"\" style=\"width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
     else if(hasParent)
     {
-    	sb.append("<div class=\"col-md-10\"");
+    	sb.append("<div id= "+"\"div_"+this.getName()+"\" class=\"col-md-10\"");
     	sb.append(" style=\"padding-left:0px; padding-right:0px;");
     	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
     }
     else
     {
-    	sb.append("<div class=\"row-md-10\"");
+    	sb.append("<div id= "+"\"div_"+this.getName()+"\" class=\"row-md-10\"");
     	sb.append(" style=\"padding-left:0px; padding-right:0px;");
     	sb.append(" width: "+this.getWidth()+"; height: "+this.getHeight()+";\">\n");
     }

@@ -13,73 +13,80 @@ goog.provide('Blockly.JavaScript.color');
 
 Blockly.JavaScript.color = function() {
   // Convert hex value to numeric value
-  var code = -1 * (window.Math.pow(16,6) - window.parseInt("0x" + this.getFieldValue('COLOR').substr(1)));
+  var val = window.parseInt("0x" + this.getFieldValue('COLOR').substr(1));
+  // var code = -1 * (window.Math.pow(16,6) - window.parseInt("0x" + this.getFieldValue('COLOR').substr(1)));
+  var code = (val).toString(16);
+  while (code.length < 6) {
+    code = '0' + code;
+  }
+  code = '#' + code;
+  var code = '"' + code + '"';
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
 Blockly.JavaScript['color_black'] = function() {
-  return ['"#000000"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#000000"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_blue'] = function() {
-  return ['"#0000FF"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#0000FF"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_cyan'] = function() {
-  return ['"#00FFFF"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#00FFFF"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_dark_gray'] = function() {
-  return ['"#A9A9A9"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#A9A9A9"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_gray'] = function() {
-  return ['"#808080"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#808080"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_green'] = function() {
-  return ['"#008000"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#008000"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_light_gray'] = function() {
-  return ['"#D3D3D3"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#D3D3D3"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_magenta'] = function() {
-  return ['"#FF00FF"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#FF00FF"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_pink'] = function() {
-  return ['"#FFC0CB"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#FFC0CB"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_red'] = function() {
-  return ['"#FF0000"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#FF0000"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_white'] = function() {
-  return ['"#FFFFFF"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#FFFFFF"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_orange'] = function() {
-  return ['"#FFA500"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#FFA500"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 Blockly.JavaScript['color_yellow'] = function() {
-  return ['"#FFFF00"', Blockly.JavaScript.ORDER_ATOMIC];
-  // return Blockly.JavaScript.color.call(this);
+  // return ['"#FFFF00"', Blockly.JavaScript.ORDER_ATOMIC];
+  return Blockly.JavaScript.color.call(this);
 };
 
 
