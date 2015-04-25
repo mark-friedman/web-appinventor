@@ -68,8 +68,8 @@ public class Image extends ImageComponent{
     sb.append("#"+this.getName()+"\n");
     sb.append("{\n");
 
-    sb.append(" width : "+this.getWidth()+";\n");
-    sb.append(" height : "+this.getHeight()+";\n");
+    sb.append(" width : 100%;\n");
+    sb.append(" height : 100%;\n");
 
     sb.append("}\n");
 

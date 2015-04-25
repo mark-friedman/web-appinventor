@@ -18,7 +18,7 @@ public class PasswordTextBox extends Component{
   String textAlign = "left";
   String textColor = "#000000";
   String visible = "true";
-  String width = "auto";
+  String width = "160px";
   String height = "auto";	
   String hint = "hint";
 
