@@ -52,6 +52,7 @@ public class Shell {
     htmlStringBuilder.append("<html lang='en'>\n");
     htmlStringBuilder.append("<head>\n");
     htmlStringBuilder.append("<meta charset='utf-8'>\n");
+    htmlStringBuilder.append("<meta name=viewport content=\"width=device-width, initial-scale=1\">");
     htmlStringBuilder.append("<title>");
     // ToDo #1 - do we need to html encode here 
     //          (guessing yes, but would need to verify how client stores string property values)
