@@ -64,7 +64,9 @@ Blockly.liveWebAppClient = (function(){
 
             if(liveWebAppWindow.closed){
 
-                liveWebAppWindow = window.parent.open(liveWebAppUrl,liveWebAppWindowIdentifier);
+                liveWebAppWindow = window.parent.open(liveWebAppUrl,
+                                                      liveWebAppWindowIdentifier,
+                                                      "_blank, height=1000, width=800");
                 console.log('assigned url to newly created live web app window again');
 
             }else{

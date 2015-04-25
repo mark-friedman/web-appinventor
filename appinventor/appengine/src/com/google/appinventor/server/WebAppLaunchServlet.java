@@ -11,12 +11,12 @@ import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
-
-
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.net.FileNameMap;
+import java.net.URLConnection;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -76,22 +76,29 @@ public class WebAppLaunchServlet extends OdeServlet {
         String userId = null;
 
         try {
-            String uri = req.getRequestURI();
-            userId = userInfoProvider.getUserId();
-            String[] uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_OUTPUT);
-            long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
-            String target = uriComponents[TARGET_INDEX];
-            String currentScreen = uriComponents[CURRENT_SCREEN_INDEX];
+          String uri = req.getRequestURI();
+          userId = userInfoProvider.getUserId();
+          String[] uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_OUTPUT);
+          long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+          String target = uriComponents[TARGET_INDEX];
+          String currentScreen = uriComponents[CURRENT_SCREEN_INDEX];
 
-            LOG.log(Level.FINE, "Web app launch: " + uri);
+          LOG.log(Level.FINE, "Web app launch: " + uri);
 
-            if(currentScreen.equalsIgnoreCase(ASSET_IDENTIFIER)){
-                String assetName = uriComponents[ASSET_INDEX];
-                downloadableFile = fileExporter.exportFile(userId, projectId, ASSET_IDENTIFIER +"/"+ assetName );
-            }else{
-                resp.setContentType(HTML_CONTENT_TYPE);
-                downloadableFile = fileExporter.exportProjectOutputFile(userId, projectId, target, currentScreen);
-            }
+          if(currentScreen.equalsIgnoreCase(ASSET_IDENTIFIER)){
+              String assetName = uriComponents[ASSET_INDEX];
+              downloadableFile = fileExporter.exportFile(userId, projectId, ASSET_IDENTIFIER +"/"+ assetName );
+              
+              // We are assuming the request url has a file with the appropriate extension 
+              // so the content type map will work (ie: Screen1.html, myButton.png, etc).
+              FileNameMap fileNameMap = URLConnection.getFileNameMap();
+              String contentType = fileNameMap.getContentTypeFor(uri);
+              resp.setContentType(contentType);
+          }else{
+            // This assumes anything that isn't an asset is html
+            resp.setContentType(HTML_CONTENT_TYPE);
+            downloadableFile = fileExporter.exportProjectOutputFile(userId, projectId, target, currentScreen);
+          }
 
 
         } catch (IllegalArgumentException e) {
