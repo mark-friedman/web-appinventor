@@ -668,7 +668,7 @@ Blockly.JavaScript.setPropertyHelper = function(elementCode, propertyName, bodyC
         // Check if the value evaluated from the body code is numeric or a string with -px
         // Its numeric
         'if (!isNaN(bodyVal)) { ' +
-        ' code += bodyVal + \"vh\"; ' +
+        ' code += bodyVal + \"vw\"; ' +
         // Should be a string otherwise
         '} else { ' +
         ' code += bodyVal; ' +
