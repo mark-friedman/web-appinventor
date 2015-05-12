@@ -1,3 +1,5 @@
+_**Please note that his is not really the MIT App Inventor code.  It is a clone created for building a web-targetted version of App Inventor, i.e. a tool for building HTML/JavaScript/CSS based web applications.  We just haven't updated the README.md file**_
+
 #Welcome to MIT App Inventor
 
 ##Introduction
